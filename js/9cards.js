@@ -5,6 +5,14 @@
 
 var m9cards = {
 
+	connectServer : function() {
+
+		connData = m9cards.loadData(['gameserver','jid','password']);
+
+		console.log('would connect using data:', connData.gameserver,connData.jid,connData.password);
+
+	},
+
 	loadData : function(data) {
 		var loadedObjects = {};
 		$.each(data, function(index,value){
@@ -40,6 +48,16 @@ $(document).on('pageshow', '#settings-page', function() {
 	$('#settings-form #gameserver').val(settingsData.gameserver);
 	$('#settings-form #jid').val(settingsData.jid);
 	$('#settings-form #password').val(settingsData.password);
+
+	return true;
+});
+
+
+
+
+$(document).on('pageshow', '#games-page', function(){
+	
+	m9cards.connectServer();
 
 	return true;
 });
