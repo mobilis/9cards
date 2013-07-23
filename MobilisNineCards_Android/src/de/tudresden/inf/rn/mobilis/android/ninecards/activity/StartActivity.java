@@ -14,11 +14,16 @@ import android.widget.Button;
 import android.widget.Toast;
 import de.tudresden.inf.rn.mobilis.android.ninecards.R;
 import de.tudresden.inf.rn.mobilis.android.ninecards.communication.MXAProxy;
+import de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.BackgroundService;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.ServiceConnector;
 import de.tudresden.inf.rn.mobilis.mxa.MXAController;
+import de.tudresden.inf.rn.mobilis.mxa.ConstMXA.MessageItems;
 import de.tudresden.inf.rn.mobilis.mxa.activities.PreferencesClient;
 import de.tudresden.inf.rn.mobilis.mxa.activities.Setup;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscoveryBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceInfo;
 
 /*******************************************************************************
  * Copyright (C) 2013 Technische Universität Dresden
@@ -59,8 +64,11 @@ public class StartActivity extends Activity {
 		
 		MXAController.get().setSharedPreferencesName(this, "de.tudresden.inf.rn.mobilis.android.ninecards.mxa");
 		
-		addButtonListeners();
+		initComponents();
 		bindBackgroundService();
+		
+		// delete old MUC messages from internal database
+		getContentResolver().delete(MessageItems.contentUri, null, null);
 	}
 	
 	
@@ -98,16 +106,16 @@ public class StartActivity extends Activity {
 	/**
 	 * 
 	 */
-	private void addButtonListeners() {
+	private void initComponents() {
+		
 		// 'Start' button
 		Button btn_Play = (Button) findViewById(R.id.act_start_btn_play);
 		btn_Play.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				// give a warning if 'mMxaProxy == null'
 				if(mMxaProxy == null) {
-					Toast.makeText(StartActivity.this, "mMxaProxy == null", Toast.LENGTH_LONG).show();
+					Log.e(StartActivity.this.getClass().getSimpleName(), "mMxaProxy == null");
 					return;
 				}
 				
@@ -147,6 +155,7 @@ public class StartActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				//TODO
+				Toast.makeText(StartActivity.this, "coming soon", Toast.LENGTH_LONG).show();
 			}
 		});
 		
@@ -182,6 +191,8 @@ public class StartActivity extends Activity {
 			
 			mMxaProxy.getMucProxy().registerIncomingMessageObserver(StartActivity.this);
 			mBackgroundServiceConnector.getBackgroundService().createGame();
+
+			mBackgroundServiceConnector.getBackgroundService().setGameState(new GameStateStart());
 		}
 	};
 	
@@ -192,8 +203,6 @@ public class StartActivity extends Activity {
 		public void handleMessage(Message msg) {
 			Toast.makeText(StartActivity.this, "XMPP connection established", Toast.LENGTH_SHORT).show();	
 			mMxaProxy.getIqProxy().registerCallbacks();
-			
-			requestOpenGames();
 		}
 	};
 	
@@ -210,7 +219,19 @@ public class StartActivity extends Activity {
 	    
 	    return super.onKeyDown(keyCode, event);	    
 	}
-    
+	
+	
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onResume()
+	 */
+	@Override
+	protected void onResume() {
+		if(mBackgroundServiceConnector.getBackgroundService() != null)
+			mBackgroundServiceConnector.getBackgroundService().setGameState(new GameStateStart());
+		
+		super.onResume();
+	}
+	
 	
 	/*
 	 * (non-Javadoc)
@@ -226,7 +247,63 @@ public class StartActivity extends Activity {
 			unbindService(mBackgroundServiceConnector);
 		}
 		
+		// delete old MUC messages from internal database
+		getContentResolver().delete(MessageItems.contentUri, null, null);
+		
 		super.finish();
+	}
+	
+	
+	private class GameStateStart extends GameState {
+
+		@Override
+		public void processPacket(XMPPBean inBean) {
+			if(inBean.getType() == XMPPBean.TYPE_ERROR)
+				Log.e(this.getClass().getSimpleName(), "IQ Type ERROR: " + inBean.toXML());
+		
+
+			if(inBean instanceof MobilisServiceDiscoveryBean) {		
+				MobilisServiceDiscoveryBean bean = (MobilisServiceDiscoveryBean) inBean;
+				
+				// check if NineCards is supported
+				if((bean != null) && (bean.getType() != XMPPBean.TYPE_ERROR)) {
+					if((bean.getDiscoveredServices() != null) && (bean.getDiscoveredServices().size() > 0)) {
+						
+						boolean serverSupportsNineCards = false;
+						for(MobilisServiceInfo info : bean.getDiscoveredServices()){
+							if(info.getServiceNamespace().toLowerCase().contains("ninecards")){
+								serverSupportsNineCards = true;
+								break;
+							}								
+						}
+					
+						// if it's supported, go to open games view
+						if(serverSupportsNineCards) {
+							Intent intent = new Intent(StartActivity.this, OpenGamesActivity.class);
+							StartActivity.this.startActivity(intent);
+						}
+						
+						// else notify user
+						else 
+							Toast.makeText(StartActivity.this, "No 9Cards Service installed on Server", Toast.LENGTH_SHORT).show();
+					}
+				}
+				
+				// If Mobilis Server doesn't respond, notify user
+				else if(bean.getType() == XMPPBean.TYPE_ERROR)
+					Toast.makeText(StartActivity.this, "Server not found. Please check your settings!", Toast.LENGTH_SHORT).show();			
+			}
+			
+			// Other Beans of type get or set will be responded with an ERROR
+			else if(inBean.getType() == XMPPBean.TYPE_GET || inBean.getType() == XMPPBean.TYPE_SET) {
+				inBean.errorType = "wait";
+				inBean.errorCondition = "unexpected-request";
+				inBean.errorText = "This request is not supportet at this game state(main)";
+				
+				mMxaProxy.getIqProxy().sendXMPPBeanError(inBean);
+			}
+		}
+		
 	}
 	
 	

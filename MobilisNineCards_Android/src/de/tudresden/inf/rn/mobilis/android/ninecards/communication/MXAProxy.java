@@ -107,7 +107,6 @@ public class MXAProxy implements MXAListener {
 					
 					mIqProxy = new IQProxy(bgService, iXMPPService);
 					mMucProxy = new MUCProxy(bgService, iXMPPService);
-					mMucProxy.connectToMUC(bgService.getMucRoomId(), bgService.getMucRoomPw());
 				}
 			} catch (RemoteException e) {
 				Log.e(this.getClass().getSimpleName(), "Couldn't connect to XMPP Server!" + e.getMessage());

@@ -1,5 +1,7 @@
 package de.tudresden.inf.rn.mobilis.android.ninecards.game;
 
+import java.util.HashMap;
+
 /*******************************************************************************
  * Copyright (C) 2013 Technische Universität Dresden
  * 
@@ -21,15 +23,39 @@ package de.tudresden.inf.rn.mobilis.android.ninecards.game;
  ******************************************************************************/
 public class Game {
 
-	/** The state of the game. */
-	private State state;
-	/** The possible states of the game. */
-	public static enum State {
-		UNINITIALIZED, LOBBY, PLAY
+	/** The game's name. */
+	private String name;
+	
+	/** The current round of the game. */
+	private int round;
+	
+	/** The game players (JID, player) */
+	private HashMap<String, Player> gamePlayers;
+	
+
+	/**
+	 * 
+	 */
+	public Game() {
+		this.gamePlayers = new HashMap<String, Player>();
 	}
 	
 	
-	public Game() {
-		state = State.UNINITIALIZED;
+	/**
+	 * Returns the player corresponding to the JabberID that is used.
+	 * @param jid The JabberID of the player.
+	 * @return Player the player that matches the JabberID.
+	 */
+	public Player getPlayer(String jid) {
+		return gamePlayers.get(jid);
+	}
+	
+	public String getName() {
+		return name != null ? name : "name not set";
+	}
+	
+	
+	public void setName(String name) {
+		this.name = name;
 	}
 }

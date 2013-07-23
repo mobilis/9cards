@@ -8,6 +8,7 @@ import android.os.RemoteException;
 import android.util.Log;
 import de.tudresden.inf.rn.mobilis.android.ninecards.communication.MXAProxy;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.Game;
+import de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
 /*******************************************************************************
@@ -49,6 +50,12 @@ public class BackgroundService extends Service {
 	/** The password of the chat room. */
 	private String mucRoomPw;
 	
+	/** The state of the game. */
+	private GameState gameState;
+
+	
+	private int serviceVersion;
+	
 
 	// =====================================================================================
 	// Service specific methods
@@ -62,6 +69,7 @@ public class BackgroundService extends Service {
     	super.onCreate();
 
 		mMxaProxy = new MXAProxy(this);
+		
 		Log.v(this.getClass().getName(), this.getClass().getName() + " started");
     }
     
@@ -107,8 +115,13 @@ public class BackgroundService extends Service {
 	}
 	
 	
+	/**
+	 * 
+	 * @param inBean
+	 */
 	public void processIq(XMPPBean inBean) {
-		//TODO
+		if(gameState != null)
+			gameState.processPacket(inBean);
 	}
 	
 	
@@ -127,8 +140,18 @@ public class BackgroundService extends Service {
 	 * 
 	 * @return
 	 */
-	public Game getCurrentGame() {
+	public Game getGame() {
 		return mGame != null ? mGame : new Game();
+	}
+	
+	
+	public void setGameState(GameState state) {
+		this.gameState = state;
+	}
+	
+	
+	public void setServiceVersion(int version) {
+		this.serviceVersion = version;
 	}
 	
 	
@@ -172,6 +195,15 @@ public class BackgroundService extends Service {
     }
     
     
+    /**
+     * 
+     * @param gameServiceJid
+     */
+    public void setGameServiceJid(String gameServiceJid) {
+    	this.gameServiceJid = gameServiceJid;
+    }
+    
+    
     public String getCoordinatorServiceJID() {
     	if(coordinatorServiceJid == null) {
     		Log.w(this.getClass().getName(), "CoordinatorServiceJid was not set!");
@@ -181,8 +213,18 @@ public class BackgroundService extends Service {
     }
     
     
+    public void setMucRoomId(String mucRoomId) {
+    	this.mucRoomID = mucRoomId;
+    }
+    
+    
     public String getMucRoomId() {
     	return mucRoomID;
+    }
+    
+    
+    public void setMucRoomPw(String mucRoomPw) {
+    	this.mucRoomPw = mucRoomPw;
     }
     
     

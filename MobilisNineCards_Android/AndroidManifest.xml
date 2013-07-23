@@ -16,7 +16,7 @@
   
   Dresden, University of Technology, Faculty of Computer Science
   Computer Networks Group: http://www.rn.inf.tu-dresden.de
-  mobilis project: https://github.com/mobilis
+  mobilis project: https://github.com/mobilis
 -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
@@ -53,7 +53,7 @@
         </activity>
 
         <service
-            android:name=".service.BackgroundService"
+            android:name="de.tudresden.inf.rn.mobilis.android.ninecards.service.BackgroundService"
             android:exported="false" />
 
         <!-- MXA activities, services and providers -->
@@ -101,6 +101,31 @@
             android:authorities="de.tudresden.inf.rn.mobilis.mxa.provider.messages.ninecards"
             android:exported="false" >
         </provider>
+
+        <activity
+            android:name="de.tudresden.inf.rn.mobilis.android.ninecards.activity.OpenGamesActivity"
+            android:label="@string/title_activity_open_games"
+            android:parentActivityName="de.tudresden.inf.rn.mobilis.android.ninecards.activity.StartActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.tudresden.inf.rn.mobilis.android.ninecards.activity.StartActivity" />
+        </activity>
+        <activity
+            android:name="de.tudresden.inf.rn.mobilis.android.ninecards.activity.CreateGameActivity"
+            android:label="@string/title_activity_create_game"
+            android:parentActivityName="de.tudresden.inf.rn.mobilis.android.ninecards.activity.OpenGamesActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.tudresden.inf.rn.mobilis.android.ninecards.activity.OpenGamesActivity" />
+        </activity>
+        <activity
+            android:name="de.tudresden.inf.rn.mobilis.android.ninecards.activity.LobbyActivity"
+            android:label="@string/title_activity_lobby"
+            android:parentActivityName="de.tudresden.inf.rn.mobilis.android.ninecards.activity.OpenGamesActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.tudresden.inf.rn.mobilis.android.ninecards.activity.OpenGamesActivity" />
+        </activity>
     </application>
 
 </manifest>

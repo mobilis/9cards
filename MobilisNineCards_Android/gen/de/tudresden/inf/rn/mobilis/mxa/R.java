@@ -8,50 +8,50 @@ package de.tudresden.inf.rn.mobilis.mxa;
 
 public final class R {
 	public static final class id {
-		public static final int main_activity_statistics_button = 0x7f09000d;
-		public static final int menu_pref = 0x7f09002f;
-		public static final int debug_activity_et = 0x7f090005;
-		public static final int statistics_server = 0x7f090020;
-		public static final int main_activity_preferences_button = 0x7f09000b;
-		public static final int main_activity_deletemessages_button = 0x7f09000e;
-		public static final int setup_btn_manual = 0x7f090013;
-		public static final int setup_basics_edt_password = 0x7f090016;
-		public static final int statistics_count_queue = 0x7f090028;
-		public static final int sb_txt_title = 0x7f09002d;
-		public static final int statistics_user = 0x7f090026;
-		public static final int statistics_active_network = 0x7f09002a;
-		public static final int linearLayout7 = 0x7f090027;
-		public static final int setup_basics_btn_next = 0x7f090018;
-		public static final int main_activity_logout_button = 0x7f09000f;
-		public static final int textView1 = 0x7f090009;
-		public static final int linearLayout2 = 0x7f090007;
-		public static final int linearLayout1 = 0x7f090008;
-		public static final int setup_complete_btn_close = 0x7f09001a;
-		public static final int linearLayout4 = 0x7f09001e;
-		public static final int linearLayout3 = 0x7f09001c;
-		public static final int linearLayout6 = 0x7f090021;
-		public static final int linearLayout5 = 0x7f090024;
-		public static final int main_activity_setup_button = 0x7f09000c;
-		public static final int sb_img_icon = 0x7f09002c;
-		public static final int setup_basics_edt_address = 0x7f090015;
-		public static final int debug_activity_bu = 0x7f090006;
-		public static final int debug_activity_tv = 0x7f090004;
-		public static final int setup_txt_welcome = 0x7f090012;
-		public static final int setup_btn_next = 0x7f090014;
-		public static final int statistics_status = 0x7f09001d;
-		public static final int textView2 = 0x7f09001f;
-		public static final int textView3 = 0x7f090025;
-		public static final int textView4 = 0x7f090022;
-		public static final int sb_text = 0x7f09002e;
-		public static final int textView5 = 0x7f09001b;
-		public static final int textView6 = 0x7f090029;
-		public static final int RelativeLayout01 = 0x7f090017;
-		public static final int sm_tbtn_connection = 0x7f090011;
-		public static final int main_activity_login_button = 0x7f09000a;
-		public static final int statistics_port = 0x7f090023;
-		public static final int statistics_ip = 0x7f09002b;
-		public static final int sm_txt_head = 0x7f090010;
-		public static final int setup_complete_txt_conclusion = 0x7f090019;
+		public static final int main_activity_statistics_button = 0x7f090019;
+		public static final int menu_pref = 0x7f09003c;
+		public static final int debug_activity_et = 0x7f090011;
+		public static final int statistics_server = 0x7f09002c;
+		public static final int main_activity_preferences_button = 0x7f090017;
+		public static final int main_activity_deletemessages_button = 0x7f09001a;
+		public static final int setup_btn_manual = 0x7f09001f;
+		public static final int setup_basics_edt_password = 0x7f090022;
+		public static final int statistics_count_queue = 0x7f090034;
+		public static final int sb_txt_title = 0x7f090039;
+		public static final int statistics_user = 0x7f090032;
+		public static final int statistics_active_network = 0x7f090036;
+		public static final int linearLayout7 = 0x7f090033;
+		public static final int setup_basics_btn_next = 0x7f090024;
+		public static final int main_activity_logout_button = 0x7f09001b;
+		public static final int textView1 = 0x7f090015;
+		public static final int linearLayout2 = 0x7f090013;
+		public static final int linearLayout1 = 0x7f090014;
+		public static final int setup_complete_btn_close = 0x7f090026;
+		public static final int linearLayout4 = 0x7f09002a;
+		public static final int linearLayout3 = 0x7f090028;
+		public static final int linearLayout6 = 0x7f09002d;
+		public static final int linearLayout5 = 0x7f090030;
+		public static final int main_activity_setup_button = 0x7f090018;
+		public static final int sb_img_icon = 0x7f090038;
+		public static final int setup_basics_edt_address = 0x7f090021;
+		public static final int debug_activity_bu = 0x7f090012;
+		public static final int debug_activity_tv = 0x7f090010;
+		public static final int setup_txt_welcome = 0x7f09001e;
+		public static final int setup_btn_next = 0x7f090020;
+		public static final int statistics_status = 0x7f090029;
+		public static final int textView2 = 0x7f09002b;
+		public static final int textView3 = 0x7f090031;
+		public static final int textView4 = 0x7f09002e;
+		public static final int sb_text = 0x7f09003a;
+		public static final int textView5 = 0x7f090027;
+		public static final int textView6 = 0x7f090035;
+		public static final int RelativeLayout01 = 0x7f090023;
+		public static final int sm_tbtn_connection = 0x7f09001d;
+		public static final int main_activity_login_button = 0x7f090016;
+		public static final int statistics_port = 0x7f09002f;
+		public static final int statistics_ip = 0x7f090037;
+		public static final int sm_txt_head = 0x7f09001c;
+		public static final int setup_complete_txt_conclusion = 0x7f090025;
 	}
 	public static final class string {
 		public static final int mxa_pref_port_dialogtitle = 0x7f050008;
@@ -105,23 +105,23 @@ public final class R {
 		public static final int mxa_pref_xmpp_debug_directory_summary = 0x7f05001d;
 	}
 	public static final class menu {
-		public static final int mxa_menu_map = 0x7f080000;
+		public static final int mxa_menu_map = 0x7f080002;
 	}
 	public static final class layout {
-		public static final int mxa_servicemonitor = 0x7f030003;
-		public static final int mxa_main = 0x7f030002;
-		public static final int mxa_statistic = 0x7f030007;
-		public static final int mxa_layout_debug_activity = 0x7f030001;
-		public static final int mxa_statusbar = 0x7f030008;
-		public static final int mxa_setup = 0x7f030004;
-		public static final int mxa_setup_complete = 0x7f030006;
-		public static final int mxa_setup_basics = 0x7f030005;
+		public static final int mxa_servicemonitor = 0x7f030008;
+		public static final int mxa_main = 0x7f030007;
+		public static final int mxa_statistic = 0x7f03000c;
+		public static final int mxa_layout_debug_activity = 0x7f030006;
+		public static final int mxa_statusbar = 0x7f03000d;
+		public static final int mxa_setup = 0x7f030009;
+		public static final int mxa_setup_complete = 0x7f03000b;
+		public static final int mxa_setup_basics = 0x7f03000a;
 	}
 	public static final class drawable {
-		public static final int mxa_button_indicator_next = 0x7f020001;
-		public static final int mxa_icon = 0x7f020003;
-		public static final int mxa_stat_notify_chat = 0x7f020004;
-		public static final int mxa_ic_menu_preferences = 0x7f020002;
+		public static final int mxa_button_indicator_next = 0x7f020002;
+		public static final int mxa_icon = 0x7f020004;
+		public static final int mxa_stat_notify_chat = 0x7f020005;
+		public static final int mxa_ic_menu_preferences = 0x7f020003;
 	}
 	public static final class xml {
 		public static final int mxa_servers = 0x7f040001;

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="Parameters for new game" >
+
+        <EditTextPreference
+            android:key="@string/key_newgame_gamename"
+            android:title="Game name"
+            android:dialogTitle="Enter name for the new game:"
+            android:summary=""
+            android:defaultValue="New Game" />
+
+        <EditTextPreference
+            android:key="@string/key_newgame_maxplayers"
+            android:title="Max. number of players"
+            android:dialogTitle="Enter max. number of players:"
+            android:summary=""
+            android:defaultValue="6" />
+
+        <EditTextPreference
+            android:key="@string/key_newgame_rounds"
+            android:title="Number of rounds"
+            android:dialogTitle="Enter number of rounds:"
+            android:summary=""
+            android:defaultValue="9" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
