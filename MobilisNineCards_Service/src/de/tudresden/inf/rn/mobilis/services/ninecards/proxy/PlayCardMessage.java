@@ -4,6 +4,7 @@ import org.xmlpull.v1.XmlPullParser;
 
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 
+
 public class PlayCardMessage implements XMPPInfo {
 
 	private String PlayersName = null;

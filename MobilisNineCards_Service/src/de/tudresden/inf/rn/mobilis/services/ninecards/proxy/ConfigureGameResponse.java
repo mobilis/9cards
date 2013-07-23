@@ -4,6 +4,7 @@ import org.xmlpull.v1.XmlPullParser;
 
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
+
 public class ConfigureGameResponse extends XMPPBean {
 
 	public ConfigureGameResponse(){

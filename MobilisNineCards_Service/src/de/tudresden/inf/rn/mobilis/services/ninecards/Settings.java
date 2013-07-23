@@ -21,6 +21,7 @@ package de.tudresden.inf.rn.mobilis.services.ninecards;
 
 import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
 
+
 /**
  * The Class Settings contains global setting for the game.
  */

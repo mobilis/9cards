@@ -1,6 +1,7 @@
 package de.tudresden.inf.rn.mobilis.services.ninecards.proxy;
 
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
+
 public class MobilisNineCardsProxy {
 
 	private IMobilisNineCardsOutgoing _bindingStub;

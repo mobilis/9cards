@@ -4,6 +4,7 @@ import org.xmlpull.v1.XmlPullParser;
 
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
+
 public class JoinGameResponse extends XMPPBean {
 
 	private String ChatRoom = null;

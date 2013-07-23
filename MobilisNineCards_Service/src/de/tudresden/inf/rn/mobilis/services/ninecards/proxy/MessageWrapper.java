@@ -4,6 +4,7 @@ import org.xmlpull.v1.XmlPullParser;
 
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 
+
 public class MessageWrapper implements XMPPInfo {
 
 	private boolean IsSystemMessage = false;

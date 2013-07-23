@@ -1,5 +1,6 @@
 package de.tudresden.inf.rn.mobilis.services.ninecards.communication;
 
+import java.text.Normalizer.Form;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
@@ -7,7 +8,6 @@ import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smackx.Form;
 import org.jivesoftware.smackx.FormField;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
