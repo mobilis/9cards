@@ -8,12 +8,14 @@ public class JoinGameResponse extends XMPPBean {
 
 	private String ChatRoom = null;
 	private String ChatPassword = null;
+	private String CreatorJid = null;
 
 
-	public JoinGameResponse( String ChatRoom, String ChatPassword ) {
+	public JoinGameResponse( String ChatRoom, String ChatPassword, String CreatorJid ) {
 		super();
 		this.ChatRoom = ChatRoom;
 		this.ChatPassword = ChatPassword;
+		this.CreatorJid = CreatorJid;
 
 		this.setType( XMPPBean.TYPE_RESULT );
 	}
@@ -40,6 +42,9 @@ public class JoinGameResponse extends XMPPBean {
 				}
 				else if (tagName.equals( "ChatPassword" ) ) {
 					this.ChatPassword = parser.nextText();
+				}
+				else if (tagName.equals( "CreatorJid" ) ) {
+					this.CreatorJid = parser.nextText();
 				}
 				else if (tagName.equals("error")) {
 					parser = parseErrorAttributes(parser);
@@ -78,7 +83,7 @@ public class JoinGameResponse extends XMPPBean {
 
 	@Override
 	public XMPPBean clone() {
-		JoinGameResponse clone = new JoinGameResponse( ChatRoom, ChatPassword );
+		JoinGameResponse clone = new JoinGameResponse( ChatRoom, ChatPassword, CreatorJid );
 		this.cloneBasicAttributes( clone );
 
 		return clone;
@@ -95,6 +100,10 @@ public class JoinGameResponse extends XMPPBean {
 		sb.append( "<ChatPassword>" )
 			.append( this.ChatPassword )
 			.append( "</ChatPassword>" );
+
+		sb.append( "<CreatorJid>" )
+			.append( this.CreatorJid )
+			.append( "</CreatorJid>" );
 
 		sb = appendErrorPayload(sb);
 
@@ -116,6 +125,14 @@ public class JoinGameResponse extends XMPPBean {
 
 	public void setChatPassword( String ChatPassword ) {
 		this.ChatPassword = ChatPassword;
+	}
+
+	public String getCreatorJid() {
+		return this.CreatorJid;
+	}
+
+	public void setCreatorJid( String CreatorJid ) {
+		this.CreatorJid = CreatorJid;
 	}
 
 }

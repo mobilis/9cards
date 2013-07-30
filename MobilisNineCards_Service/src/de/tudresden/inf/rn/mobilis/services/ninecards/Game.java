@@ -43,6 +43,8 @@ public class Game {
 	private int round;
 	/** The game players (JID, player) */
 	private HashMap<String, Player> gamePlayers;
+	/** The JID of the player who created the game. */
+	private String creator;
 	
 	/** The class specific Logger object. */
 	private final static Logger LOGGER = Logger.getLogger(Game.class.getCanonicalName());
@@ -225,5 +227,21 @@ public class Game {
 	 */
 	public boolean isGameOpen() {
 		return gameOpen;
+	}
+	
+	/**
+	 * Sets the game creator.
+	 * @param creator the JID of the creator 
+	 */
+	public void setCreator(String creator) {
+		this.creator = creator;
+	}
+	
+	/**
+	 * Returns the player which created the game.
+	 * @return the JID of the game creator
+	 */
+	public String getCreator() {
+		return creator;
 	}
 }

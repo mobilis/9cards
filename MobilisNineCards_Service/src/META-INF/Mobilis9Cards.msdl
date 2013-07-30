@@ -28,6 +28,7 @@
 					<xs:sequence>
 						<xs:element name="ChatRoom" type="xs:string" />
 						<xs:element name="ChatPassword" type="xs:string" />
+						<xs:element name="CreatorJid" type="xs:string" />
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>

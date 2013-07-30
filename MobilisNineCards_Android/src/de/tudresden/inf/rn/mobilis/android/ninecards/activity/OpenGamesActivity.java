@@ -107,7 +107,6 @@ public class OpenGamesActivity extends Activity {
 		public void handleMessage(Message messg) {
 			mBackgroundServiceConnector.getBackgroundService().setGameState(new GameStateOpenGames());
 			mMxaProxy = mBackgroundServiceConnector.getBackgroundService().getMXAProxy();
-			mMxaProxy.getMucProxy().registerIncomingMessageObserver(OpenGamesActivity.this);
 			
 			discoverOpenGames();
 		}
@@ -192,6 +191,7 @@ public class OpenGamesActivity extends Activity {
 		/* (non-Javadoc)
 		 * @see android.widget.Adapter#getCount()
 		 */
+		@Override
 		public int getCount() {
 			return List.size();
 		}
@@ -199,6 +199,7 @@ public class OpenGamesActivity extends Activity {
 		/* (non-Javadoc)
 		 * @see android.widget.Adapter#getItem(int)
 		 */
+		@Override
 		public OpenGameItem getItem(int position) {
 			return List.get(position);
 		}
@@ -206,6 +207,7 @@ public class OpenGamesActivity extends Activity {
 		/* (non-Javadoc)
 		 * @see android.widget.Adapter#getItemId(int)
 		 */
+		@Override
 		public long getItemId(int position) {
 			return List.size() > 0
 				? List.get(position).GameId
@@ -215,11 +217,12 @@ public class OpenGamesActivity extends Activity {
 		/* (non-Javadoc)
 		 * @see android.widget.Adapter#getView(int, android.view.View, android.view.ViewGroup)
 		 */
+		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 	        View view = null;
 
 	        if(convertView != null){
-	        	view = (LinearLayout)convertView;
+	        	view = convertView;
 	        }
 	        
 	        else if(convertView == null) {

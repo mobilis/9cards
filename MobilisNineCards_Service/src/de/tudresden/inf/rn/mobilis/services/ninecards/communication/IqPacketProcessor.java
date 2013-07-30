@@ -90,7 +90,8 @@ public class IqPacketProcessor {
 								inBean.getFrom(),
 								inBean.getId(),
 								mServiceInstance.getSettings().getChatID(),
-								mServiceInstance.getSettings().getChatPW());
+								mServiceInstance.getSettings().getChatPW(),
+								mServiceInstance.getGame().getCreator());
 						// close game if max. number of participants is reached
 						if(mServiceInstance.getGame().getPlayers().size() == mServiceInstance.getSettings().getMaxPlayers())
 							mServiceInstance.getGame().setGameOpen(false);
@@ -121,6 +122,7 @@ public class IqPacketProcessor {
 				mServiceInstance.getSettings().setGameName(inBean.getGameName());
 				mServiceInstance.getSettings().setRounds(inBean.getNumberOfRounds());
 				mServiceInstance.getSettings().setMaxPlayers(inBean.getMaxPlayers());
+				mServiceInstance.getGame().setCreator(inBean.getFrom());
 				
 				mServiceInstance.getGame().setGameOpen(true);
 				mServiceInstance.getGame().setGameState(State.LOBBY);

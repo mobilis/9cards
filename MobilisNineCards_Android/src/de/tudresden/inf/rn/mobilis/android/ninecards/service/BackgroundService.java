@@ -52,6 +52,9 @@ public class BackgroundService extends Service {
 	
 	/** The state of the game. */
 	private GameState gameState;
+	
+	/** Whether the player is the one who created the game. */
+	private boolean isCreator;
 
 	
 	private int serviceVersion;
@@ -141,7 +144,7 @@ public class BackgroundService extends Service {
 	 * @return
 	 */
 	public Game getGame() {
-		return mGame != null ? mGame : new Game();
+		return mGame;
 	}
 	
 	
@@ -206,9 +209,16 @@ public class BackgroundService extends Service {
     
     public String getCoordinatorServiceJID() {
     	if(coordinatorServiceJid == null) {
-    		Log.w(this.getClass().getName(), "CoordinatorServiceJid was not set!");
-    		return "";
+    		String node = "mobilis";
+    		String domain = getUserJid().substring(getUserJid().indexOf("@"), getUserJid().indexOf("/"));
+    		String ressource = "/Coordinator";
+    		
+    		Log.w(this.getClass().getName(),
+    				"CoordinatorServiceJid was not set! Using generated JID " + node + domain + ressource);
+    		
+    		return node + domain + ressource;
     	}
+    	
     	return coordinatorServiceJid;
     }
     
@@ -231,4 +241,12 @@ public class BackgroundService extends Service {
     public String getMucRoomPw() {
     	return mucRoomPw;
     }
+    
+	/**
+	 * Returns true if the player is the one who created the game, else if not.
+	 * @return
+	 */
+	public boolean isCreator() {
+		return isCreator;
+	}
 }

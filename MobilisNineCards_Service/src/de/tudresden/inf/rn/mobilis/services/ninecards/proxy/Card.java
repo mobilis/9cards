@@ -4,7 +4,6 @@ import org.xmlpull.v1.XmlPullParser;
 
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 
-
 public class Card implements XMPPInfo {
 
 	private int Value = Integer.MIN_VALUE;

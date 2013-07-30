@@ -1,7 +1,6 @@
 package de.tudresden.inf.rn.mobilis.services.ninecards.proxy;
 
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
-
 public class MobilisNineCardsProxy {
 
 	private IMobilisNineCardsOutgoing _bindingStub;
@@ -30,11 +29,11 @@ public class MobilisNineCardsProxy {
 		return out;
 	}
 
-	public XMPPBean JoinGame( String toJid, String packetId, String ChatRoom, String ChatPassword ) {
+	public XMPPBean JoinGame( String toJid, String packetId, String ChatRoom, String ChatPassword, String CreatorJid ) {
 		if ( null == _bindingStub )
 			return null;
 
-		JoinGameResponse out = new JoinGameResponse( ChatRoom, ChatPassword );
+		JoinGameResponse out = new JoinGameResponse( ChatRoom, ChatPassword, CreatorJid );
 		out.setTo( toJid );
 		out.setId( packetId );
 

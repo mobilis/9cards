@@ -100,19 +100,23 @@ public class MucConnection implements PacketListener {
 	 * @throws XMPPException an XMPP exception
 	 */
 	public void openMultiUserChat() throws XMPPException {
+		
+		if(muc == null)
+			muc = new MultiUserChat(mServiceInstance.getAgent().getConnection(), mServiceInstance.getSettings().getChatID());
+
 		muc = new MultiUserChat(mServiceInstance.getAgent().getConnection(), mServiceInstance.getSettings().getChatID());
 		muc.create("Server");
-		
+	
 		org.jivesoftware.smackx.Form oldForm = muc.getConfigurationForm();
 		org.jivesoftware.smackx.Form newForm = oldForm.createAnswerForm();
-		
+	
 		for (Iterator<FormField> fields = oldForm.getFields(); fields.hasNext();) {
 		    FormField field = (FormField) fields.next();
 		    if (!FormField.TYPE_HIDDEN.equals(field.getType()) && field.getVariable() != null) {
 		    	newForm.setDefaultAnswer(field.getVariable());
 		    }
 		}
-		
+	
 		newForm.setAnswer("muc#roomconfig_passwordprotectedroom", true);
 		newForm.setAnswer("muc#roomconfig_roomsecret", mServiceInstance.getSettings().getChatPW());
 		
@@ -120,7 +124,6 @@ public class MucConnection implements PacketListener {
 		
 		LOGGER.info("Chat created (ID: " + mServiceInstance.getSettings().getChatID()
 				+ ", Pw: " + mServiceInstance.getSettings().getChatPW() +")");
-
 	}
 	
 	

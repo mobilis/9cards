@@ -101,7 +101,6 @@ public class CreateGameActivity extends PreferenceActivity {
 		public void handleMessage(Message messg) {
 			mBackgroundServiceConnector.getBackgroundService().setGameState(new GameStateCreateGame());
 			mMxaProxy = mBackgroundServiceConnector.getBackgroundService().getMXAProxy();
-			mMxaProxy.getMucProxy().registerIncomingMessageObserver(CreateGameActivity.this);
 		}
 	};
 	

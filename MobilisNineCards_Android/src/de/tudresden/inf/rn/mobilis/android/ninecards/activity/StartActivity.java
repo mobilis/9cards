@@ -67,8 +67,10 @@ public class StartActivity extends Activity {
 		initComponents();
 		bindBackgroundService();
 		
-		// delete old MUC messages from internal database
-		getContentResolver().delete(MessageItems.contentUri, null, null);
+		try {
+			// delete old MUC messages from internal database
+			getContentResolver().delete(MessageItems.contentUri, null, null);
+		} catch (Exception ignore) {}
 	}
 	
 	
@@ -91,14 +93,19 @@ public class StartActivity extends Activity {
 	 * 
 	 */
 	private void connectToXMPP() {
-		Toast.makeText(this, "Setting up XMPP connection...", Toast.LENGTH_LONG).show();
+		if((mMxaProxy != null) && mMxaProxy.isConnectedToXMPPServer())
+			requestOpenGames();
+		
+		else {
+			Toast.makeText(this, "Setting up XMPP connection...", Toast.LENGTH_LONG).show();
 
-		mMxaProxy.addXMPPConnectedHandler(mMxaConnectedHandler);
-		try {
-			mMxaProxy.connectMXA();
-		} catch (Exception e) {
-			Log.e(this.getClass().getName(), e.getMessage());
-			Toast.makeText(this, "Failed to connect to MXA!\n(" + e.getMessage() + ")", Toast.LENGTH_LONG).show();
+			mMxaProxy.addXMPPConnectedHandler(mMxaConnectedHandler);
+			try {
+				mMxaProxy.connectMXA();
+			} catch (Exception e) {
+				Log.e(this.getClass().getName(), e.getMessage());
+				Toast.makeText(this, "Failed to connect to MXA!\n(" + e.getMessage() + ")", Toast.LENGTH_LONG).show();
+			}
 		}
 	}
 
@@ -113,12 +120,7 @@ public class StartActivity extends Activity {
 		btn_Play.setOnClickListener(new OnClickListener() {
 
 			@Override
-			public void onClick(View v) {
-				if(mMxaProxy == null) {
-					Log.e(StartActivity.this.getClass().getSimpleName(), "mMxaProxy == null");
-					return;
-				}
-				
+			public void onClick(View v) {		
 				// check if user already configured XMPP
 				if (!MXAController.get().checkSetupDone()) {
 					Toast.makeText(StartActivity.this,
@@ -126,14 +128,17 @@ public class StartActivity extends Activity {
 							Toast.LENGTH_SHORT).show();
 					
 					Intent quickSetupIntent = new Intent(StartActivity.this, Setup.class);
-					startActivity(quickSetupIntent);	
+					startActivity(quickSetupIntent);
+					
+					return;
 				}
 				
 				// connect to XMPP if not done yet
-				if (!mMxaProxy.isConnectedToXMPPServer())
-						connectToXMPP();
+				if ((mMxaProxy != null) && (mMxaProxy.isConnectedToXMPPServer()))
+					requestOpenGames();
 				
-				requestOpenGames();
+				else connectToXMPP();
+				
 			}
 		});
 		
@@ -143,8 +148,8 @@ public class StartActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				Intent setupIntent = new Intent(StartActivity.this, PreferencesClient.class);
-				startActivity(setupIntent);
+				Intent intent = new Intent(StartActivity.this, PreferencesClient.class);
+				startActivity(intent);
 			}
 		});
 		
@@ -154,8 +159,8 @@ public class StartActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				//TODO
-				Toast.makeText(StartActivity.this, "coming soon", Toast.LENGTH_LONG).show();
+				Intent intent = new Intent(StartActivity.this, InstructionsActivity.class);
+				startActivity(intent);
 			}
 		});
 		
@@ -175,7 +180,7 @@ public class StartActivity extends Activity {
      * Start the game. This will set the nickname of the player and send an empty
      * MobilisServiceDiscoveryBean to the Mobilis-Server.
      */
-    private void requestOpenGames(){
+    private void requestOpenGames() {
 		//mMxaProxy.setNickname(mBackgroundServiceConnector.getBackgroundService().getSharedPrefHelper()
 		//		.getValue(getResources().getString(R.string.bundle_key_settings_username)));
 
@@ -188,9 +193,6 @@ public class StartActivity extends Activity {
 		@Override
 		public void handleMessage(Message messg) {
 			mMxaProxy = mBackgroundServiceConnector.getBackgroundService().getMXAProxy();
-			
-			mMxaProxy.getMucProxy().registerIncomingMessageObserver(StartActivity.this);
-			mBackgroundServiceConnector.getBackgroundService().createGame();
 
 			mBackgroundServiceConnector.getBackgroundService().setGameState(new GameStateStart());
 		}
@@ -203,6 +205,8 @@ public class StartActivity extends Activity {
 		public void handleMessage(Message msg) {
 			Toast.makeText(StartActivity.this, "XMPP connection established", Toast.LENGTH_SHORT).show();	
 			mMxaProxy.getIqProxy().registerCallbacks();
+			
+			requestOpenGames();
 		}
 	};
 	
@@ -240,15 +244,20 @@ public class StartActivity extends Activity {
 	@Override
 	public void finish() {
 		// if the background service is up, unregister all IQ-Listeners and stop the background service
-		if((mBackgroundServiceConnector != null) && (mBackgroundServiceConnector.getBackgroundService() != null)) {
+		if((mBackgroundServiceConnector != null)
+				&& (mBackgroundServiceConnector.getBackgroundService() != null)
+				&& (mMxaProxy != null)
+				&& (mMxaProxy.getIqProxy() != null)) {
 			mMxaProxy.getIqProxy().unregisterCallbacks();
 			
 			mBackgroundServiceConnector.getBackgroundService().stopSelf();
 			unbindService(mBackgroundServiceConnector);
 		}
 		
-		// delete old MUC messages from internal database
-		getContentResolver().delete(MessageItems.contentUri, null, null);
+		try {
+			// delete old MUC messages from internal database
+			getContentResolver().delete(MessageItems.contentUri, null, null);
+		} catch (Exception ignore) {}
 		
 		super.finish();
 	}
@@ -257,7 +266,8 @@ public class StartActivity extends Activity {
 	private class GameStateStart extends GameState {
 
 		@Override
-		public void processPacket(XMPPBean inBean) {
+		public void processPacket(XMPPBean inBean) {	
+			
 			if(inBean.getType() == XMPPBean.TYPE_ERROR)
 				Log.e(this.getClass().getSimpleName(), "IQ Type ERROR: " + inBean.toXML());
 		

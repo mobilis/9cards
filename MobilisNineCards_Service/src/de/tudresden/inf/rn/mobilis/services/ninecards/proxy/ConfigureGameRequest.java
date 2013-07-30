@@ -4,7 +4,6 @@ import org.xmlpull.v1.XmlPullParser;
 
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
-
 public class ConfigureGameRequest extends XMPPBean {
 
 	private String GameName = null;

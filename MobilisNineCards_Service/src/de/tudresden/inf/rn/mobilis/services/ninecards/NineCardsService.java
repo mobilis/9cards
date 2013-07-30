@@ -51,7 +51,8 @@ public class NineCardsService extends MobilisService {
 	 */
 	@Override
 	public void startup(MobilisAgent agent) throws Exception  {
-		super.startup(agent);
+
+		mSettings = new Settings(this.getAgent());
 		
 		try {
 			mIqConnection = new IqConnection(this);
@@ -64,6 +65,8 @@ public class NineCardsService extends MobilisService {
 		
 		mSettings = new Settings(getAgent());
 		mGame = new Game(this);
+
+		super.startup(agent);
 	}
 
 	@Override

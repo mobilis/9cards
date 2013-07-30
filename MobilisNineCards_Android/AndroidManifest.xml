@@ -16,7 +16,7 @@
   
   Dresden, University of Technology, Faculty of Computer Science
   Computer Networks Group: http://www.rn.inf.tu-dresden.de
-  mobilis project: https://github.com/mobilis
+  mobilis project: https://github.com/mobilis
 -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
@@ -125,6 +125,14 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.tudresden.inf.rn.mobilis.android.ninecards.activity.OpenGamesActivity" />
+        </activity>
+        <activity
+            android:name="de.tudresden.inf.rn.mobilis.android.ninecards.activity.InstructionsActivity"
+            android:label="@string/title_activity_instructions"
+            android:parentActivityName="de.tudresden.inf.rn.mobilis.android.ninecards.activity.StartActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.tudresden.inf.rn.mobilis.android.ninecards.activity.StartActivity" />
         </activity>
     </application>
 

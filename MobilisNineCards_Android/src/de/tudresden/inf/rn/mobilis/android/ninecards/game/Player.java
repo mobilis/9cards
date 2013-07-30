@@ -51,6 +51,7 @@ public class Player {
 		
 		this.jid = jid;
 		this.name = name;
+		
 		this.roundsWon = 0;
 		this.chosenCard = -1;
 		

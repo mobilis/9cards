@@ -116,7 +116,6 @@ public class LobbyActivity extends Activity {
 		public void handleMessage(Message messg) {
 			mBackgroundServiceConnector.getBackgroundService().setGameState(new GameStateLobby());
 			mMxaProxy = mBackgroundServiceConnector.getBackgroundService().getMXAProxy();
-			mMxaProxy.getMucProxy().registerIncomingMessageObserver(LobbyActivity.this);
 			
 			mMxaProxy.getIqProxy().joinGame(
 					mBackgroundServiceConnector.getBackgroundService().getGameServiceJid(),
@@ -136,10 +135,14 @@ public class LobbyActivity extends Activity {
 			}
 			
 			else {
-				mBackgroundServiceConnector.getBackgroundService().setMucRoomId(
-						bean.getChatRoom().toLowerCase());
-				mBackgroundServiceConnector.getBackgroundService().setMucRoomPw(
-						bean.getChatPassword());
+				mBackgroundServiceConnector.getBackgroundService().setMucRoomId(bean.getChatRoom().toLowerCase());
+				mBackgroundServiceConnector.getBackgroundService().setMucRoomPw(bean.getChatPassword());
+				mMxaProxy.getMucProxy().registerIncomingMessageObserver(LobbyActivity.this);
+				
+	//			boolean isOwnGame = mBackgroundServiceConnector
+				mBackgroundServiceConnector.getBackgroundService().createGame();
+	//			mBackgroundServiceConnector.getBackgroundService().getGame().setOwnGame(isOwnGame);
+				
 				
 				try {
 					mMxaProxy.getMucProxy().connectToMUC(
@@ -149,8 +152,6 @@ public class LobbyActivity extends Activity {
 					Log.e(this.getClass().getSimpleName(), "Failed to connect to MUC");
 					Toast.makeText(LobbyActivity.this, "Failed to connect to chat", Toast.LENGTH_LONG).show();
 				}
-
-				mMxaProxy.getMucProxy().registerIncomingMessageObserver(LobbyActivity.this);
 			}
 		}
 	};

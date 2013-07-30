@@ -190,13 +190,14 @@ public class IQProxy {
 	 */
 	public void sendServiceDiscoveryIQ(String serviceNamespace) {
 		MobilisServiceDiscoveryBean bean = new MobilisServiceDiscoveryBean(serviceNamespace, Integer.MIN_VALUE, false);
-		
+				
 		bean.setType(XMPPBean.TYPE_GET);
 		bean.setFrom(bgService.getUserJid());
 		bean.setTo(bgService.getCoordinatorServiceJID());
 		sendIQ(beanToIQ(bean, true));
 		
-		Log.v("IQProxy", "MobilisServiceDiscoveryBean send");
+		Log.v("IQProxy", "MobilisServiceDiscoveryBean send" +
+				" - from:"+bean.getFrom() + "; to:"+bean.getTo()+"; ns:"+bean.getNamespace());
 	}
 	
 	
@@ -258,9 +259,14 @@ public class IQProxy {
 	// -------------------------------------------------------------------------------------
 	/**
 	 * Register XMPPBean prototypes used in this application to communicate with the MobilisNineCards service.
+	 * For all incoming Beans of a registered type, the method "processIQ(XMPPIQ iq)" will be called
+	 * (see "IXMPPIQCallback AbstractCallback" a little down in this source code file).
 	 */
 	// called from constructor
 	private void registerBeanPrototypes(){
+		registerXMPPBean(new MobilisServiceDiscoveryBean());
+		registerXMPPBean(new CreateNewServiceInstanceBean());
+		
 		registerXMPPBean(new ConfigureGameRequest());
 		registerXMPPBean(new ConfigureGameResponse());
 		registerXMPPBean(new JoinGameRequest());
@@ -290,7 +296,7 @@ public class IQProxy {
 	// Register Callbacks (necessary before sending/receiving)
 	// -------------------------------------------------------------------------------------
 	/**
-	 * Register a global callback(AbstractCallback) which will be notified if an
+	 * Register a global callback (AbstractCallback) which will be notified if an
 	 * IQ related to the registered XMPPBeans is arriving in MXAProxy/MXA.
 	 */
 	// called from StartActivity.mMxaConnectedHandler
@@ -357,6 +363,7 @@ public class IQProxy {
 						+ " to prevent GameService zombies from interfering"
 						+ " - see IQProxy.AbstractCallback.processIQ()";
 				Log.w(this.getClass().getName(), msg);
+
 				return;
 			}
 
@@ -372,9 +379,7 @@ public class IQProxy {
 					} catch(ClassCastException e) { e.printStackTrace(); }
 				}
 				
-			} else {
-				bgService.processIq(inBean);
-			}
+			} else bgService.processIq(inBean);
 		}
 	};
 	

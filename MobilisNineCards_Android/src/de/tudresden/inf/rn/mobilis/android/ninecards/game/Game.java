@@ -32,6 +32,9 @@ public class Game {
 	/** The game players (JID, player) */
 	private HashMap<String, Player> gamePlayers;
 	
+	/** Whether the player created the game. */
+	private boolean isOwnGame;
+	
 
 	/**
 	 * 
@@ -57,5 +60,13 @@ public class Game {
 	
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public boolean isOwnGame() {
+		return isOwnGame;
+	}
+	
+	public void setOwnGame(boolean isOwnGame) {
+		this.isOwnGame = isOwnGame;
 	}
 }

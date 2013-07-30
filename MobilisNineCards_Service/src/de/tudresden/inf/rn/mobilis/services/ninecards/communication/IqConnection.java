@@ -50,7 +50,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.server.BeanProviderAdapter;
  */
 public class IqConnection implements PacketListener {
 	
-	/** The XHunt service. */
+	/** The NineCards service. */
 	private NineCardsService mServiceInstance;
 	/** The class which processes iq packets. */
 	private IqPacketProcessor packetProcessor;

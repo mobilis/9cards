@@ -104,7 +104,7 @@ public class MXAProxy implements MXAListener {
 					Log.v(this.getClass().getName(), "Connected to XMPP Server.");
 					for(int i=0; i<xmppConnectedHandlers.size(); i++)
 						xmppConnectedHandlers.get(i).sendEmptyMessage(0);
-					
+
 					mIqProxy = new IQProxy(bgService, iXMPPService);
 					mMucProxy = new MUCProxy(bgService, iXMPPService);
 				}
