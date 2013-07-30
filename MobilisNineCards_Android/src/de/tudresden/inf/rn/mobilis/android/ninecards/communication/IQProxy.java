@@ -213,8 +213,7 @@ public class IQProxy {
 	 * @param servicePassword the service password
 	 */
 	public void sendCreateNewServiceInstanceIQ(String serviceNamespace, String serviceName, String servicePassword){
-		CreateNewServiceInstanceBean bean = 
-			new CreateNewServiceInstanceBean(serviceNamespace, servicePassword);
+		CreateNewServiceInstanceBean bean = new CreateNewServiceInstanceBean(serviceNamespace, servicePassword);
 		bean.setServiceName(serviceName);
 		
 		bean.setType(XMPPBean.TYPE_SET);

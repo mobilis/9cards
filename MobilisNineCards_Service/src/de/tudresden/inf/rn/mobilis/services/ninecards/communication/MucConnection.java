@@ -103,8 +103,8 @@ public class MucConnection implements PacketListener {
 		muc = new MultiUserChat(mServiceInstance.getAgent().getConnection(), mServiceInstance.getSettings().getChatID());
 		muc.create("Server");
 		
-		Form oldForm = muc.getConfigurationForm();
-		Form newForm = oldForm.createAnswerForm();
+		org.jivesoftware.smackx.Form oldForm = muc.getConfigurationForm();
+		org.jivesoftware.smackx.Form newForm = oldForm.createAnswerForm();
 		
 		for (Iterator<FormField> fields = oldForm.getFields(); fields.hasNext();) {
 		    FormField field = (FormField) fields.next();
