@@ -69,7 +69,7 @@
 		 *    The current unix time (in ms)
 		 */
 		getUnixTime : function() {
-			return parseInt(new Date.getTime() / 1000);
+			return new Date().getTime();
 		}
 	}
 

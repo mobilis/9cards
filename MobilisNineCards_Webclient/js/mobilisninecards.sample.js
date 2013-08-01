@@ -32,8 +32,8 @@ var mobilisninecards = {
 	createJoinGameRequest : function() {
 		return new Mobilis.mobilisninecards.ELEMENTS.JoinGameRequest();
 	},
-	createJoinGameResponse : function(ChatRoom, ChatPassword) {
-		return new Mobilis.mobilisninecards.ELEMENTS.JoinGameResponse(ChatRoom, ChatPassword);
+	createJoinGameResponse : function(ChatRoom, ChatPassword, CreatorJid) {
+		return new Mobilis.mobilisninecards.ELEMENTS.JoinGameResponse(ChatRoom, ChatPassword, CreatorJid);
 	},
 
 	onConfigureGame : function(ConfigureGameResponse) {

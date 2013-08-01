@@ -53,19 +53,10 @@
 		 */
 		connect : function(uFullJid, uPassword, mBareJid, bind, onSuccess, onError) {
 			// Set full jid of coordinator service
-			Mobilis.core.SERVICES[Mobilis.core.NS.COORDINATOR].jid = mBareJid + "/Coordinator";
-			onError = onError || this.trace;
+			Mobilis.core.SERVICES[Mobilis.core.NS.COORDINATOR].jid = 'mobilis@'+ mBareJid + "/Coordinator";
+			onError = onError || Mobilis.utils.trace;
 
 			var conn = new Strophe.Connection(bind);
-
-            conn.rawInput = function (data) { 
-                console.log('RECV: ' + data);
-    	    };
-    	    conn.rawOutput = function (data) {
-    	        console.log('Send: ' + data);
-    	    };
-    	    //var barejid = jid + '@mobilis.inf.tu-dresden.de';
-
 			conn.connect(uFullJid, uPassword, function(status) {
 				if (status == Strophe.Status.ERROR) {
 					onError("Connection error");

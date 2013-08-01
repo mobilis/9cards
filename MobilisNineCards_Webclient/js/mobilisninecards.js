@@ -5,7 +5,7 @@
 
 var mobilisninecards = {
 
-	HTTPBIND : "http://mobilis-dev.inf.tu-dresden.de/http-bind/",
+	HTTPBIND : "http://mobilis-dev.inf.tu-dresden.de/http-bind",
 
 	connect : function(uFullJid, uPassword, mBareJid) {
 		Mobilis.utils.trace("Trying to establish a connection to Mobilis");
@@ -18,10 +18,12 @@ var mobilisninecards = {
 			
 				console.log('connect success:', success, message);
 				mobilisninecards.addHandlers();
+
 			},
 			function(error,message) {
 			
 				console.log('connect error:', error, message);
+
 			}
 		);
 	},

@@ -134,7 +134,7 @@
 					this.NumberOfRounds = NumberOfRounds;
 				}
 			},
-			JoinGameResponse : function JoinGameResponse(ChatRoom, ChatPassword) {
+			JoinGameResponse : function JoinGameResponse(ChatRoom, ChatPassword, CreatorJid) {
 				if (arguments[0] instanceof jQuery) {
 					var _JoinGameResponse = this;
 
@@ -142,11 +142,13 @@
 						switch($(this).prop("tagName")) {
 							case "ChatRoom": _JoinGameResponse.ChatRoom = $(this).text(); break;
 							case "ChatPassword": _JoinGameResponse.ChatPassword = $(this).text(); break;
+							case "CreatorJid": _JoinGameResponse.CreatorJid = $(this).text(); break;
 						}
 					});
 				} else {
 					this.ChatRoom = ChatRoom;
 					this.ChatPassword = ChatPassword;
+					this.CreatorJid = CreatorJid;
 				}
 			},
 			JoinGameRequest : function JoinGameRequest() {
@@ -198,7 +200,7 @@
 			}
 		},
 
-		sendConfigureGame : function(ConfigureGameRequest, onResult, onError, onTimeout) {
+		ConfigureGame : function(ConfigureGameRequest, onResult, onError, onTimeout) {
 			var _iq = Mobilis.utils.createMobilisServiceIq(Mobilis.mobilisninecards.NS.SERVICE, {
 				type : "set"
 			});
@@ -206,10 +208,10 @@
 				xmlns : Mobilis.mobilisninecards.NS.CONFIGUREGAME
 			});
 			Mobilis.utils.appendElement(_iq, ConfigureGameRequest);
-			Mobilis.core.sendIQ(_iq, Mobilis.mobilisninecards.DECORATORS.ConfigureGameHandler(onResult, false), Mobilis.mobilisninecards.DECORATORS.ConfigureGameFaultHandler(onError), onTimeout);
+			Mobilis.core.sendIQ(_iq, onResult ? Mobilis.mobilisninecards.DECORATORS.ConfigureGameHandler(onResult, false) : null, onError ? Mobilis.mobilisninecards.DECORATORS.ConfigureGameFaultHandler(onError) : null, onTimeout);
 		},
 
-		sendJoinGame : function(JoinGameRequest, onResult, onError, onTimeout) {
+		JoinGame : function(JoinGameRequest, onResult, onError, onTimeout) {
 			var _iq = Mobilis.utils.createMobilisServiceIq(Mobilis.mobilisninecards.NS.SERVICE, {
 				type : "set"
 			});
@@ -217,7 +219,7 @@
 				xmlns : Mobilis.mobilisninecards.NS.JOINGAME
 			});
 			Mobilis.utils.appendElement(_iq, JoinGameRequest);
-			Mobilis.core.sendIQ(_iq, Mobilis.mobilisninecards.DECORATORS.JoinGameHandler(onResult, false), Mobilis.mobilisninecards.DECORATORS.JoinGameFaultHandler(onError), onTimeout);
+			Mobilis.core.sendIQ(_iq, onResult ? Mobilis.mobilisninecards.DECORATORS.JoinGameHandler(onResult, false) : null, onError ? Mobilis.mobilisninecards.DECORATORS.JoinGameFaultHandler(onError) : null, onTimeout);
 		},
 
 		addConfigureGameHandler : function(handler) {
