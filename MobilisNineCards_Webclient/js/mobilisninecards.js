@@ -61,6 +61,38 @@ var mobilisninecards = {
 
 	},
 
+	createGame : function(GameName, MaxPlayers, NumberOfRounds) {
+
+		//return new Mobilis.mobilisninecards.ELEMENTS.ConfigureGameRequest(GameName, MaxPlayers, NumberOfRounds);
+
+		Mobilis.core.createServiceInstance({
+				'serviceNamespace': Mobilis.mobilisninecards.NS.SERVICE, 
+				'serviceName' : GameName,
+				'servicePassword' : null
+			},
+			function(result){
+				console.log('createServiceInstance:',result);
+			},
+			function(error){
+				console.log('createServiceInstance:',error);
+			}
+
+			
+			// {
+			// 	'GameName' : GameName,
+			// 	'MaxPlayers' : MaxPlayers,
+			// 	'NumberOfRounds' : NumberOfRounds
+			// },
+			// function(result){
+			// 	console.log('createGame result', result);
+			// },
+			// function(error){
+			// 	console.log('createGame error', error);
+			// }
+
+		);
+	},
+
 	loadData : function(data) {
 		var loadedObjects = {};
 		$.each(data, function(index,value){
@@ -130,4 +162,26 @@ $(document).on('vclick', '#settings-form #submit', function() {
 
 	return true;
 });
+
+
+
+
+$(document).on('vclick', '#create-game-form #submit', function() {
+
+	var gamename = $('#create-game-form #gamename').val();
+	var numplayers = $('#create-game-form #numplayers').val();
+	var numrounds = $('#create-game-form #numrounds').val();
+	
+	if (gamename && numplayers && numrounds) {
+	
+		// var game = mobilisninecards.createConfigureGameRequest(gamename, numplayers, numrounds);
+		mobilisninecards.createGame(gamename, numplayers, numrounds);
+
+	}
+	// 	$.mobile.changePage('game.html');
+	// } else {
+	// 	$('#create-game-popup').popup('open');
+	// }
+});
+
 
