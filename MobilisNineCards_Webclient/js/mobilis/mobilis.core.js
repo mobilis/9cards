@@ -82,7 +82,7 @@
 							};
 						});
 						Mobilis.utils.trace("Initial Service Discovery successful");
-						onSuccess && onSuccess();
+						onSuccess && onSuccess(iq);
 					}, function(iq) {
 						onError("Initial Service Discovery failed", iq);
 					}, 30000);
@@ -200,6 +200,7 @@
 		 *    (Function) onError - Callback for incoming response IQ stanzas of type ERROR, or timeout (Stanza will be null on timeout)
 		 */
 		mobilisServiceDiscovery : function(constraints, onResult, onError) {
+
 			var discoiq = Mobilis.utils.createMobilisServiceIq(Mobilis.core.NS.COORDINATOR, {
 				type : "get"
 			}).c("serviceDiscovery", {
@@ -207,7 +208,7 @@
 			});
 			if (constraints) {
 				$.each(constraints, function(k, v) {
-					discoiq.c(k).t(v).up();
+					discoiq.c('serviceNamespace').t(v).up();
 				});
 			}
 

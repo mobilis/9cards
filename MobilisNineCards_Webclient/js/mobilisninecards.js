@@ -14,18 +14,51 @@ var mobilisninecards = {
 			uPassword, 
 			mBareJid, 
 			mobilisninecards.HTTPBIND, 
-			function(success,message) {
+			function(iq) {
 			
-				console.log('connect success:', success, message);
-				mobilisninecards.addHandlers();
+				console.log('connect success:', iq);
+
+				mobilisninecards.queryGames();
 
 			},
-			function(error,message) {
+			function(iq) {
 			
-				console.log('connect error:', error, message);
+				console.log('connect error:', iq);
 
 			}
 		);
+	},
+
+	queryGames : function() {
+
+		Mobilis.core.mobilisServiceDiscovery(
+			[Mobilis.mobilisninecards.NS.SERVICE],
+			function(iq) {
+				$('#game-list').empty().listview();
+				console.log('listing games…');
+				if ($(iq).find('mobilisService').length){
+					$(iq).find('mobilisService').each( function() {
+						Mobilis.core.SERVICES[$(this).attr('namespace')] = {
+							'version': $(this).attr('version'),
+							'jid': $(this).attr('jid'),
+							'servicename' : $(this).attr('serviceName')
+						};
+						$('#game-list').append('<li><a class="available-game" id="'
+												 + $(this).attr('jid') 
+												 + '" href="lobby.html" data-transition="slide">' 
+												 + $(this).attr('serviceName') 
+												 + '</a></li>');
+					});
+				} else {
+					$('#game-list').append('<li>No games found</li>');
+				}
+				$('#game-list').listview('refresh');
+			},
+			function(iq) {
+				console.log('error:',iq);
+			}
+		);
+
 	},
 
 	loadData : function(data) {
@@ -97,3 +130,4 @@ $(document).on('vclick', '#settings-form #submit', function() {
 
 	return true;
 });
+
