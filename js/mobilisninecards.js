@@ -3,21 +3,34 @@
  */
 
 
-var m9cards = {
+var mobilisninecards = {
 
-	connectServer : function() {
+	HTTPBIND : "http://mobilis-dev.inf.tu-dresden.de/http-bind/",
 
-		connData = m9cards.loadData(['gameserver','jid','password']);
-
-		console.log('would connect using data:', connData.gameserver,connData.jid,connData.password);
-
+	connect : function(uFullJid, uPassword, mBareJid) {
+		Mobilis.utils.trace("Trying to establish a connection to Mobilis");
+		Mobilis.core.connect(
+			uFullJid, 
+			uPassword, 
+			mBareJid, 
+			mobilisninecards.HTTPBIND, 
+			function(success,message) {
+			
+				console.log('connect success:', success, message);
+				mobilisninecards.addHandlers();
+			},
+			function(error,message) {
+			
+				console.log('connect error:', error, message);
+			}
+		);
 	},
 
 	loadData : function(data) {
 		var loadedObjects = {};
 		$.each(data, function(index,value){
 			loadedObjects[value] = localStorage.getItem('mobilis.9cards.'+value);
-			console.log('loaded', value, ': ', loadedObjects[value]);
+			console.log('loaded from localStorage:', value, '=', loadedObjects[value]);
 		});
 		return loadedObjects;
 	},
@@ -26,7 +39,7 @@ var m9cards = {
 
 		$.each(storedObjects, function(index,value){
 			localStorage.setItem('mobilis.9cards.'+index, value);
-			console.log('stored', index, ': ', value);
+			console.log('stored in localStorage:', index, '=', value);
 		});
 		return true;
 	}
@@ -42,7 +55,7 @@ var m9cards = {
 
 $(document).on('pageshow', '#settings-page', function() {
 
-	settingsData = m9cards.loadData(['username','gameserver','jid','password']);
+	var settingsData = mobilisninecards.loadData(['username','gameserver','jid','password']);
 
 	$('#settings-form #username').val(settingsData.username);
 	$('#settings-form #gameserver').val(settingsData.gameserver);
@@ -57,7 +70,13 @@ $(document).on('pageshow', '#settings-page', function() {
 
 $(document).on('pageshow', '#games-page', function(){
 	
-	m9cards.connectServer();
+	var connData = mobilisninecards.loadData(['gameserver','jid','password']);
+
+	mobilisninecards.connect(
+		connData.jid,
+		connData.password,
+		connData.gameserver
+		);
 
 	return true;
 });
@@ -67,7 +86,7 @@ $(document).on('pageshow', '#games-page', function(){
 
 $(document).on('vclick', '#settings-form #submit', function() {
 
-	m9cards.storeData({
+	mobilisninecards.storeData({
 		'username': 	$('#settings-form #username').val(),
 		'gameserver': 	$('#settings-form #gameserver').val(),
 		'jid': 			$('#settings-form #jid').val(),

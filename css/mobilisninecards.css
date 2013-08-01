@@ -1,0 +1,19 @@
+div[data-role=page] {
+	/*margin-top: -42px;*/
+	/*height: 100%;*/
+}
+div[data-role=content] {
+	/*margin-top: -42px;*/
+	height: 100%;
+}
+table#numpad {
+	height: 50%;
+	width: 100%;
+}
+
+table#numpad a {
+	height: 100%;
+}
+table#numpad a .ui-btn-inner {
+	/*font-size: 200%;*/
+}
