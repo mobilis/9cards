@@ -8,243 +8,71 @@
 			JOINGAME : "mobilisninecards:iq:joingame"
 		},
 
-		ELEMENTS : {
-			MessageWrapper : function MessageWrapper(IsSystemMessage, MessageString, MessageType) {
-				if (arguments[0] instanceof jQuery) {
-					var _MessageWrapper = this;
+        settings: {},
+        
+        handlers: {},
 
-					arguments[0].children().each(function() {
-						switch($(this).prop("tagName")) {
-							case "IsSystemMessage": _MessageWrapper.IsSystemMessage = $(this).text(); break;
-							case "MessageString": _MessageWrapper.MessageString = $(this).text(); break;
-							case "MessageType": _MessageWrapper.MessageType = $(this).text(); break;
-						}
-					});
-				} else {
-					this.IsSystemMessage = IsSystemMessage;
-					this.MessageString = MessageString;
-					this.MessageType = MessageType;
-				}
-			},
-			StartGameMessage : function StartGameMessage() {
-			},
-			PlayCardMessage : function PlayCardMessage(PlayersName, PlayersJID, CardID) {
-				if (arguments[0] instanceof jQuery) {
-					var _PlayCardMessage = this;
 
-					arguments[0].children().each(function() {
-						switch($(this).prop("tagName")) {
-							case "PlayersName": _PlayCardMessage.PlayersName = $(this).text(); break;
-							case "PlayersJID": _PlayCardMessage.PlayersJID = $(this).text(); break;
-							case "CardID": _PlayCardMessage.CardID = $(this).text(); break;
-						}
-					});
-				} else {
-					this.PlayersName = PlayersName;
-					this.PlayersJID = PlayersJID;
-					this.CardID = CardID;
-				}
-			},
-			RoundCompleteMessage : function RoundCompleteMessage(RoundID, RoundWinnersName, RoundWinnersJID, PlayerInfos, EndOfGame) {
-				if (arguments[0] instanceof jQuery) {
-					var _RoundCompleteMessage = this;
-					_RoundCompleteMessage.PlayerInfos = [];
+        createServiceInstance: function (name, resultcallback, errorcallback) {
+            var customIq = $iq({
+                to: Mobilis.core.SERVICES[Mobilis.core.NS.COORDINATOR].jid,
+                type: 'set'                
+            })
+            .c('createNewServiceInstance', {xmlns: Mobilis.core.NS.COORDINATOR} )
+            .c('serviceNamespace').t(Mobilis.core.NS.SERVICE).up()
+            .c('serviceName').t(name);
 
-					arguments[0].children().each(function() {
-						switch($(this).prop("tagName")) {
-							case "RoundID": _RoundCompleteMessage.RoundID = $(this).text(); break;
-							case "RoundWinnersName": _RoundCompleteMessage.RoundWinnersName = $(this).text(); break;
-							case "RoundWinnersJID": _RoundCompleteMessage.RoundWinnersJID = $(this).text(); break;
-							case "PlayerInfo": _RoundCompleteMessage.PlayerInfos.push(new Mobilis.mobilisninecards.ELEMENTS.PlayerInfo($(this))); break;
-							case "EndOfGame": _RoundCompleteMessage.EndOfGame = $(this).text(); break;
-						}
-					});
-				} else {
-					this.RoundID = RoundID;
-					this.RoundWinnersName = RoundWinnersName;
-					this.RoundWinnersJID = RoundWinnersJID;
-					this.PlayerInfos = PlayerInfos;
-					this.EndOfGame = EndOfGame;
-				}
-			},
-			PlayerLeavingMessage : function PlayerLeavingMessage(LeavingJID) {
-				if (arguments[0] instanceof jQuery) {
-					var _PlayerLeavingMessage = this;
+            Mobilis.core.sendIQ(customIq, resultcallback, errorcallback);
+        },
 
-					arguments[0].children().each(function() {
-						switch($(this).prop("tagName")) {
-							case "LeavingJID": _PlayerLeavingMessage.LeavingJID = $(this).text(); break;
-						}
-					});
-				} else {
-					this.LeavingJID = LeavingJID;
-				}
-			},
-			PlayerInfo : function PlayerInfo(PlayersName, PlayersJID, PlayersWins, PlayersUsedCards) {
-				if (arguments[0] instanceof jQuery) {
-					var _PlayerInfo = this;
-					_PlayerInfo.PlayersUsedCards = [];
 
-					arguments[0].children().each(function() {
-						switch($(this).prop("tagName")) {
-							case "PlayersName": _PlayerInfo.PlayersName = $(this).text(); break;
-							case "PlayersJID": _PlayerInfo.PlayersJID = $(this).text(); break;
-							case "PlayersWins": _PlayerInfo.PlayersWins = $(this).text(); break;
-							case "Card": _PlayerInfo.PlayersUsedCards.push(new Mobilis.mobilisninecards.ELEMENTS.Card($(this))); break;
-						}
-					});
-				} else {
-					this.PlayersName = PlayersName;
-					this.PlayersJID = PlayersJID;
-					this.PlayersWins = PlayersWins;
-					this.PlayersUsedCards = PlayersUsedCards;
-				}
-			},
-			Card : function Card(Value, AlreadyUsed) {
-				if (arguments[0] instanceof jQuery) {
-					var _Card = this;
+        ConfigureGame: function(gameJID, GameName, MaxPlayers, NumberOfRounds, resultcallback, errorcallback) {
+            if (!resultcallback) 
+                resultcallback = Mobilis.core.defaultcallback; 
+            if (!errorcallback) 
+                errorcallback = Mobilis.core.defaulterrorback;
 
-					arguments[0].children().each(function() {
-						switch($(this).prop("tagName")) {
-							case "Value": _Card.Value = $(this).text(); break;
-							case "AlreadyUsed": _Card.AlreadyUsed = $(this).text(); break;
-						}
-					});
-				} else {
-					this.Value = Value;
-					this.AlreadyUsed = AlreadyUsed;
-				}
-			},
-			ConfigureGameResponse : function ConfigureGameResponse() {
-			},
-			ConfigureGameRequest : function ConfigureGameRequest(GameName, MaxPlayers, NumberOfRounds) {
-				if (arguments[0] instanceof jQuery) {
-					var _ConfigureGameRequest = this;
+            var customIq = $iq({
+                to: gameJID,
+                type: 'set'
+            })
+            .c('CreateGameRequest', {xmlns : Mobilis.xhunt.NS.CREATEGAME})
+            .c('GameName').t(GameName).up()
+            .c('MaxPlayers').t(gamepassword).up()
+            .c('NumberOfRounds').t(NumberOfRounds).up();
 
-					arguments[0].children().each(function() {
-						switch($(this).prop("tagName")) {
-							case "GameName": _ConfigureGameRequest.GameName = $(this).text(); break;
-							case "MaxPlayers": _ConfigureGameRequest.MaxPlayers = $(this).text(); break;
-							case "NumberOfRounds": _ConfigureGameRequest.NumberOfRounds = $(this).text(); break;
-						}
-					});
-				} else {
-					this.GameName = GameName;
-					this.MaxPlayers = MaxPlayers;
-					this.NumberOfRounds = NumberOfRounds;
-				}
-			},
-			JoinGameResponse : function JoinGameResponse(ChatRoom, ChatPassword, CreatorJid) {
-				if (arguments[0] instanceof jQuery) {
-					var _JoinGameResponse = this;
+            console.log(customIq);
+            Mobilis.core.sendIQ(customIq, resultcallback, errorcallback);
+        }, 
 
-					arguments[0].children().each(function() {
-						switch($(this).prop("tagName")) {
-							case "ChatRoom": _JoinGameResponse.ChatRoom = $(this).text(); break;
-							case "ChatPassword": _JoinGameResponse.ChatPassword = $(this).text(); break;
-							case "CreatorJid": _JoinGameResponse.CreatorJid = $(this).text(); break;
-						}
-					});
-				} else {
-					this.ChatRoom = ChatRoom;
-					this.ChatPassword = ChatPassword;
-					this.CreatorJid = CreatorJid;
-				}
-			},
-			JoinGameRequest : function JoinGameRequest() {
-			}
-		},
 
-		DECORATORS : {
-			ConfigureGameHandler : function(_callback, _return) {
-				return function(_iq) {
-					var $iq = $(_iq);
 
-					_callback.apply(this, [new Mobilis.mobilisninecards.ELEMENTS.ConfigureGameResponse($iq.children())]);
 
-					return _return;
-				};
-			},
-			JoinGameHandler : function(_callback, _return) {
-				return function(_iq) {
-					var $iq = $(_iq);
+        joinGame: function(gameJID, playerName, resultcallback, errorcallback) {
+            if (!resultcallback) 
+                resultcallback = Mobilis.core.defaultcallback; 
+            if (!errorcallback) 
+                errorcallback = Mobilis.core.defaulterrorback;
+                 
+            if (gameJID){ 
+                Mobilis.xhunt.gameJID = gameJID;
+                var customiq = $iq({
+                    to: gameJID,
+                    type: 'set'
+                })
+                .c('JoinGameRequest' , {xmlns : Mobilis.xhunt.NS.JOINGAME})
+                .c('GamePassword').t('null').up();
+                if (playerName) 
+                    customiq.c('PlayerName').t(playerName).up().c('IsSpectator').t('false');
+            } else {
+                errorcallback(null, 'Game JID not defined');
+            }
 
-					_callback.apply(this, [new Mobilis.mobilisninecards.ELEMENTS.JoinGameResponse($iq.children())]);
+            Mobilis.core.sendIQ(customiq, resultcallback, errorcallback);
+        }
 
-					return _return;
-				};
-			},
-			ConfigureGameFaultHandler : function(_callback) {
-				return function(_iq) {
-					var $iq = $(_iq).children();
-					var $error = $iq.children("error");
 
-					_callback.apply(this, [new Mobilis.mobilisninecards.ELEMENTS.ConfigureGameRequest($iq), {
-						type : $error.attr("type"),
-						condition : $error.children().prop("tagName"),
-						message : $error.find("text").text()
-					}]);
-				}
-			},
-			JoinGameFaultHandler : function(_callback) {
-				return function(_iq) {
-					var $iq = $(_iq).children();
-					var $error = $iq.children("error");
 
-					_callback.apply(this, [new Mobilis.mobilisninecards.ELEMENTS.JoinGameRequest($iq), {
-						type : $error.attr("type"),
-						condition : $error.children().prop("tagName"),
-						message : $error.find("text").text()
-					}]);
-				}
-			}
-		},
-
-		// ConfigureGame : function(ConfigureGameRequest, onResult, onError, onTimeout) {
-		// 	var _iq = Mobilis.utils.createMobilisServiceIq(Mobilis.mobilisninecards.NS.SERVICE, {
-		// 		type : "set"
-		// 	});
-		// 	_iq.c("ConfigureGameRequest", {
-		// 		xmlns : Mobilis.mobilisninecards.NS.CONFIGUREGAME
-		// 	});
-		// 	Mobilis.utils.appendElement(_iq, ConfigureGameRequest);
-		// 	Mobilis.core.sendIQ(_iq, onResult ? Mobilis.mobilisninecards.DECORATORS.ConfigureGameHandler(onResult, false) : null, onError ? Mobilis.mobilisninecards.DECORATORS.ConfigureGameFaultHandler(onError) : null, onTimeout);
-		ConfigureGame : function(constraints, gameJID, onResult, onError, onTimeout) {
-
-			var customiq = Mobilis.utils.createMobilisServiceIq(Mobilis.mobilisninecards.NS.SERVICE, {
-				to: gameJID,
-				type : "set"
-			}).c("ConfigureGameRequest", {
-				xmlns : Mobilis.mobilisninecards.NS.CONFIGUREGAME
-			});
-			if (constraints) {
-				$.each(constraints, function(k, v) {
-					customiq.c(k).t(v).up();
-				});
-			}
-
-			Mobilis.core.sendIQ(customiq, onResult, onError);
-
-		},
-
-		JoinGame : function(JoinGameRequest, onResult, onError, onTimeout) {
-			var _iq = Mobilis.utils.createMobilisServiceIq(Mobilis.mobilisninecards.NS.SERVICE, {
-				type : "set"
-			});
-			_iq.c("JoinGame", {
-				xmlns : Mobilis.mobilisninecards.NS.JOINGAME
-			});
-			Mobilis.utils.appendElement(_iq, JoinGameRequest);
-			Mobilis.core.sendIQ(_iq, onResult ? Mobilis.mobilisninecards.DECORATORS.JoinGameHandler(onResult, false) : null, onError ? Mobilis.mobilisninecards.DECORATORS.JoinGameFaultHandler(onError) : null, onTimeout);
-		},
-
-		addConfigureGameHandler : function(handler) {
-			Mobilis.core.addHandler(Mobilis.mobilisninecards.DECORATORS.ConfigureGameHandler(handler, true), Mobilis.mobilisninecards.NS.CONFIGUREGAME, "result");
-		},
-
-		addJoinGameHandler : function(handler) {
-			Mobilis.core.addHandler(Mobilis.mobilisninecards.DECORATORS.JoinGameHandler(handler, true), Mobilis.mobilisninecards.NS.JOINGAME, "result");
-		}
 	}
 
 	Mobilis.extend("mobilisninecards", mobilisninecards);

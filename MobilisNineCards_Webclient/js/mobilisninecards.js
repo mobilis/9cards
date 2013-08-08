@@ -7,14 +7,13 @@ var mobilisninecards = {
 
 	HTTPBIND : "http://mobilis-dev.inf.tu-dresden.de/http-bind",
 
-	connect : function(uFullJid, uPassword, mBareJid) {
+	connect : function(userJid, userPassword, serverURL) {
 		console.log('connect');
-		Mobilis.utils.trace("Trying to establish a connection to Mobilis");
+
 		Mobilis.core.connect(
-			uFullJid, 
-			uPassword, 
-			mBareJid, 
-			mobilisninecards.HTTPBIND, 
+			serverURL, 
+			userJid, 
+			userPassword, 
 			function(iq) {
 			
 				console.log('connect success:', iq);
@@ -46,7 +45,7 @@ var mobilisninecards = {
 						};
 						$('#game-list').append('<li><a class="available-game" id="'
 												 + $(this).attr('jid') 
-												 + '" href="lobby.html" data-transition="slide">' 
+												 + '" href="game.html" data-transition="slide">' 
 												 + $(this).attr('serviceName') 
 												 + '</a></li>');
 					});
@@ -179,7 +178,7 @@ $(document).on('pageshow', '#games-page', function(){
 		connData.gameserver
 		);
 
-	return true;
+	// return true;
 });
 
 
@@ -209,26 +208,7 @@ $(document).on('vclick', '#create-game-form #submit', function() {
 	if (gamename && numplayers && numrounds) {
 	
 		mobilisninecards.createGame(gamename, numplayers, numrounds);
-		// var game = mobilisninecards.createConfigureGameRequest(gamename, numplayers, numrounds);
-		// console.log('gamerequest',game);
-
-		// Mobilis.mobilisninecards.ConfigureGame(
-		// 	game,
-		// 	function(result){
-		// 		console.log('result',result);
-		// 	},
-		// 	function(error){
-		// 		console.log('error',error);
-		// 	},
-		// 	function(timeout){
-		// 		console.log('timeout',timeout);
-		// 	}
-		// );
 	}
-	// 	$.mobile.changePage('game.html');
-	// } else {
-	// 	$('#create-game-popup').popup('open');
-	// }
 });
 
 
