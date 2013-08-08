@@ -134,8 +134,8 @@ public class BackgroundService extends Service {
 		/**
 	 * 
 	 */
-	public void createGame() {
-		mGame = new Game();
+	public void createGame(String name) {
+		mGame = new Game(name);
 	}
 	
 	

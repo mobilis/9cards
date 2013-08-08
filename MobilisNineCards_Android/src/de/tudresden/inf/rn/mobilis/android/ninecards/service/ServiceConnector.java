@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.ServiceConnection;
 import android.os.Handler;
 import android.os.IBinder;
@@ -34,14 +35,14 @@ public class ServiceConnector implements ServiceConnection {
 	private BackgroundService mBackgroundService;
 	
 	/** The handlers bound to the background service. */
-	private List<Handler> mBoundServiceHandlers;
+	private List<Handler> mServiceBoundHandlers;
 	
 	
 	/**
 	 * 
 	 */
 	public ServiceConnector() {
-		mBoundServiceHandlers = new ArrayList<Handler>();
+		mServiceBoundHandlers = new ArrayList<Handler>();
 	}
 	
 
@@ -55,8 +56,8 @@ public class ServiceConnector implements ServiceConnection {
         Log.v(this.getClass().getName(), "BackgroundService bound");
         
         // notify all registered handlers
-        for(int i=0; i<mBoundServiceHandlers.size(); i++){
-        	mBoundServiceHandlers.get(i).sendEmptyMessage(0);
+        for(int i=0; i<mServiceBoundHandlers.size(); i++){
+        	mServiceBoundHandlers.get(i).sendEmptyMessage(0);
 		}
 	}
 
@@ -77,7 +78,7 @@ public class ServiceConnector implements ServiceConnection {
 	 * @param handler
 	 */
 	public void addHandlerToList(Handler handler) {
-		mBoundServiceHandlers.add(handler);
+		mServiceBoundHandlers.add(handler);
 	}
 	
 	

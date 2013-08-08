@@ -1,0 +1,160 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+
+        <!-- upper part with player info -->
+        <TableLayout
+            android:id="@+id/tbl_players"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="5dp"
+            android:stretchColumns="1" >
+        </TableLayout>
+
+
+        <!-- black line for separation -->
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dip"
+            android:background="@android:color/black" />
+
+        
+        <!-- middle part with cards -->
+        <TableLayout
+            android:id="@+id/tbl_cards"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:padding="5dp"
+            android:stretchColumns="1"
+            android:weightSum="3.0" >
+
+            <TableRow
+                android:id="@+id/tbl_row_cards_1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:padding="5dip" >
+
+                <ImageButton
+                    android:id="@+id/imageButton1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.3"
+                    android:src="@drawable/ic_card_1"
+                    android:clickable="false" />
+
+                <ImageButton
+                    android:id="@+id/imageButton2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.3"
+                    android:src="@drawable/ic_card_2"
+                    android:clickable="false" />
+
+                <ImageButton
+                    android:id="@+id/imageButton3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.3"
+                    android:src="@drawable/ic_card_3"
+                    android:clickable="false" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tbl_row_cards_2"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:padding="5dip" >
+
+                <ImageButton
+                    android:id="@+id/imageButton4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.3"
+                    android:src="@drawable/ic_card_4"
+                    android:clickable="false" />
+
+                <ImageButton
+                    android:id="@+id/imageButton5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.3"
+                    android:src="@drawable/ic_card_5"
+                    android:clickable="false" />
+
+                <ImageButton
+                    android:id="@+id/imageButton6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.3"
+                    android:src="@drawable/ic_card_6"
+                    android:clickable="false" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tbl_row_cards_3"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:padding="5dip" >
+
+                <ImageButton
+                    android:id="@+id/imageButton7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.3"
+                    android:src="@drawable/ic_card_7"
+                    android:clickable="false" />
+
+                <ImageButton
+                    android:id="@+id/imageButton8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.3"
+                    android:src="@drawable/ic_card_8"
+                    android:clickable="false" />
+
+                <ImageButton
+                    android:id="@+id/imageButton9"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.3"
+                    android:src="@drawable/ic_card_9"
+                    android:clickable="false" />
+            </TableRow>
+        </TableLayout>
+
+        
+        <!-- black line for separation -->
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dip"
+            android:background="@android:color/black" />
+
+        
+        <!-- bottom part with button -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="bottom|right"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/btn_ready"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:enabled="false"
+                android:text="@string/txt_btn_play_start_1" />
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

@@ -32,14 +32,12 @@ public class Game {
 	/** The game players (JID, player) */
 	private HashMap<String, Player> gamePlayers;
 	
-	/** Whether the player created the game. */
-	private boolean isOwnGame;
-	
 
 	/**
 	 * 
 	 */
-	public Game() {
+	public Game(String name) {
+		this.name = name;
 		this.gamePlayers = new HashMap<String, Player>();
 	}
 	
@@ -53,20 +51,15 @@ public class Game {
 		return gamePlayers.get(jid);
 	}
 	
+	public HashMap<String, Player> getPlayers() {
+		return gamePlayers;
+	}
+	
+	public void removePlayer(String jid) {
+		gamePlayers.remove(jid);
+	}
+	
 	public String getName() {
 		return name != null ? name : "name not set";
-	}
-	
-	
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public boolean isOwnGame() {
-		return isOwnGame;
-	}
-	
-	public void setOwnGame(boolean isOwnGame) {
-		this.isOwnGame = isOwnGame;
 	}
 }

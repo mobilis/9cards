@@ -57,16 +57,22 @@ public class OpenGamesActivity extends Activity {
 	
 	/** The connection to the background service. */
 	private ServiceConnector mBackgroundServiceConnector;
-	
 	/** The MXAProxy. */
 	private MXAProxy mMxaProxy;
 	
 	/** The list adapter for the list of the open games. */
 	private OpenGamesListAdapter mOpenGamesListAdapter;
-	
 	/** The layout inflater. */
 	private LayoutInflater mLayoutInflater;
+	
+	/** Is used if Mobilis Server supports 9Cards Service. */
+	private static final int CODE_SERVICE_GAMES_AVAILABLE = 1;
+	/** Is used if Mobilis Server doesn't supports 9Cards Service. */
+	private static final int CODE_SERVICE_NO_GAMES_AVAILABLE = 0;
+	/** Is used if contacting the Mobilis Server fails. */
+	private static final int CODE_SERVICE_GAMES_FAILURE = -1;
 
+	
 	
 	/**
 	 * 
@@ -75,12 +81,12 @@ public class OpenGamesActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_open_games);
+
+		// For dynamic layout of the games list
+		mLayoutInflater = getLayoutInflater();
 		
 		bindBackgroundService();
 		initComponents();
-		
-		// For dynamic layout of the games list
-		mLayoutInflater = getLayoutInflater();
 		
 		// Show the Up button in the action bar.
 		setupActionBar();
@@ -132,10 +138,10 @@ public class OpenGamesActivity extends Activity {
 				Log.v(OpenGamesActivity.class.getSimpleName(), "Game item tapped (itemId: " + openGameItem.GameId + ")");
 				
 				mBackgroundServiceConnector.getBackgroundService().setGameServiceJid(openGameItem.Jid);
-				mBackgroundServiceConnector.getBackgroundService().getGame().setName(openGameItem.Name);
+				mBackgroundServiceConnector.getBackgroundService().createGame(openGameItem.Name);
 				mBackgroundServiceConnector.getBackgroundService().setServiceVersion(openGameItem.ServiceVersion);
 
-	        	startActivity(new Intent(OpenGamesActivity.this, LobbyActivity.class));
+	        	startActivity(new Intent(OpenGamesActivity.this, PlayActivity.class));
 			}
     		
 		});
@@ -171,6 +177,28 @@ public class OpenGamesActivity extends Activity {
 		// Send a ServiceDiscovery to the Mobilis-Server to ask for running 9Cards-Services
     	mMxaProxy.getIqProxy().sendServiceDiscoveryIQ("http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService");
     }
+    
+    
+    /** The handler for response of the MobilisServiceDiscoveryBean. */
+    private Handler mDiscoverGamesHandler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			
+			// Update list of the open games
+			mOpenGamesListAdapter.notifyDataSetChanged();
+			
+			switch(msg.what){
+				case CODE_SERVICE_GAMES_AVAILABLE:					
+					break;
+				case CODE_SERVICE_NO_GAMES_AVAILABLE:
+					Toast.makeText(OpenGamesActivity.this, "There are no games available right now!", Toast.LENGTH_LONG).show();
+					break;
+				case CODE_SERVICE_GAMES_FAILURE:
+					Toast.makeText(OpenGamesActivity.this, "Failed to load open games!", Toast.LENGTH_LONG).show();
+					break;
+			}
+		}
+	};
 	
     
     /**
@@ -221,8 +249,8 @@ public class OpenGamesActivity extends Activity {
 		public View getView(int position, View convertView, ViewGroup parent) {
 	        View view = null;
 
-	        if(convertView != null){
-	        	view = convertView;
+	        if(convertView != null) {
+	        	view = (LinearLayout) convertView;
 	        }
 	        
 	        else if(convertView == null) {
@@ -296,15 +324,20 @@ public class OpenGamesActivity extends Activity {
 	 */
 	@Override
 	protected void onResume() {
+
 		if(mBackgroundServiceConnector.getBackgroundService() != null)
 			mBackgroundServiceConnector.getBackgroundService().setGameState(new GameStateOpenGames());
+		
+		if(mMxaProxy != null)
+			discoverOpenGames();
 		
 		super.onResume();
 	}
 	
 	
-	/**
-	 * 
+	/*
+	 * (non-Javadoc)
+	 * @see android.app.Activity#finish()
 	 */
 	@Override
 	public void finish() {
@@ -320,6 +353,8 @@ public class OpenGamesActivity extends Activity {
 
 		@Override
 		public void processPacket(XMPPBean inBean) {
+System.out.println("GameStateOpenGames received bean: " + inBean.toXML());
+			
 			if(inBean.getType() == XMPPBean.TYPE_ERROR){
 				Log.e(this.getClass().getSimpleName(), "IQ Type ERROR: " + inBean.toXML());
 			}
@@ -350,14 +385,16 @@ public class OpenGamesActivity extends Activity {
 								mOpenGamesListAdapter.List.add(new OpenGameItem(info.hashCode(), R.drawable.ic_game,
 										info.getJid(), Integer.parseInt(info.getVersion()), info.getServiceName(), ""));
 							}
+							
+							mDiscoverGamesHandler.sendEmptyMessage(CODE_SERVICE_GAMES_AVAILABLE);
 						}
 						
 						else {
-							Toast.makeText(OpenGamesActivity.this, "There are no games available right now!", Toast.LENGTH_LONG).show();
+							mDiscoverGamesHandler.sendEmptyMessage(CODE_SERVICE_NO_GAMES_AVAILABLE);
 						}
 
 					} else {
-						Toast.makeText(OpenGamesActivity.this, "There are no games available right now!", Toast.LENGTH_LONG).show();
+						mDiscoverGamesHandler.sendEmptyMessage(CODE_SERVICE_NO_GAMES_AVAILABLE);
 					}
 				}
 			}

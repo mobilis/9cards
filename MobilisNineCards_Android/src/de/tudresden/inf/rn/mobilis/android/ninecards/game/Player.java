@@ -103,6 +103,18 @@ public class Player {
 		return usedCards;
 	}
 	
+	
+	public String getUsedCardsAsString() {
+		String str = "";
+		
+		for(int i=0; i<usedCards.size() -1; i++)
+			str += usedCards.get(i) + ", ";
+		if(usedCards.size() > 0)
+			str += usedCards.get(usedCards.size() -1);
+		
+		return str;
+	}
+	
 
 	/**
 	 * Gets the jid of the player.

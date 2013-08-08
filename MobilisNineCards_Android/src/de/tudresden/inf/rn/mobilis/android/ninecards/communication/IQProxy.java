@@ -91,6 +91,7 @@ public class IQProxy {
 	 * @param xmppIQ
 	 */
 	public void sendIQ(XMPPIQ xmppIQ) {
+		
 		Log.v(this.getClass().getName(),
 				"Sending IQ: ID=" + xmppIQ.packetID
 				+ ", ns=" + xmppIQ.namespace
@@ -102,7 +103,7 @@ public class IQProxy {
 			iXMPPService.sendIQ(
 					new Messenger(mAckHandler),
 					new Messenger(mResultHandler),
-					1,	// oder 0? ka was das macht
+					0,	// oder 0? "request code. < 0 if reply is not requested."
 					xmppIQ);
 			
 		} catch(RemoteException e) {
@@ -151,6 +152,7 @@ public class IQProxy {
 	 * @return the XMPPIQ
 	 */
 	public XMPPIQ beanToIQ(XMPPBean bean, boolean mergePayload) {
+System.out.println("converting bean to send: " + bean.toXML());
 		
 		int type;
 		switch (bean.getType()) {
@@ -312,9 +314,12 @@ public class IQProxy {
 					}
 				}
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				Log.e(getClass().getSimpleName(), "Error while registering callbacks: " + e.getMessage());
 			}
 		}
+		
+		else
+			Log.w(this.getClass().getSimpleName(), "Couldn't register callbacks because there's no connection to XMPP server!");
 	}
 	
 	
@@ -363,7 +368,7 @@ public class IQProxy {
 						+ " to prevent GameService zombies from interfering"
 						+ " - see IQProxy.AbstractCallback.processIQ()";
 				Log.w(this.getClass().getName(), msg);
-
+System.out.println("--> AbstractCallback.processIQ() -> discarded");
 				return;
 			}
 
@@ -372,14 +377,18 @@ public class IQProxy {
 
 			if (_waitingCallbacks.containsKey(inBean.getId())) {
 				IXMPPCallback callback = _waitingCallbacks.get(inBean.getId());
-
+System.out.println("--> AbstractCallback.processIQ() -> invoking callback " + callback.toString());
 				if(callback != null) {
+
 					try {
 						callback.invoke(inBean);
 					} catch(ClassCastException e) { e.printStackTrace(); }
 				}
 				
-			} else bgService.processIq(inBean);
+			} else {
+System.out.println("--> AbstractCallback.processIQ() -> weiterreichen");
+				bgService.processIq(inBean);
+			}
 		}
 	};
 	
@@ -501,9 +510,10 @@ public class IQProxy {
 		if(bgService.getMXAProxy().isConnectedToXMPPServer()){
 			XMPPBean bean = getRegisteredBean(beanNamespace, beanElement);
 			
-			if(bean != null)
+			if(bean != null) {
 				iXMPPService.unregisterIQCallback(callback,
 						bean.getChildElement(), bean.getNamespace());
+			}
 		}
 	}
 }

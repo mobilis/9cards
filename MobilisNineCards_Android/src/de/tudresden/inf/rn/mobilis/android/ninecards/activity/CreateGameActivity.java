@@ -101,6 +101,10 @@ public class CreateGameActivity extends PreferenceActivity {
 		public void handleMessage(Message messg) {
 			mBackgroundServiceConnector.getBackgroundService().setGameState(new GameStateCreateGame());
 			mMxaProxy = mBackgroundServiceConnector.getBackgroundService().getMXAProxy();
+			
+			// enable button for creating a new game service instance
+			Button btn_Create = (Button)findViewById(R.id.creategame_btn_create);
+			btn_Create.setEnabled(true);
 		}
 	};
 	
@@ -124,7 +128,7 @@ public class CreateGameActivity extends PreferenceActivity {
 
 		// Button listener for creating an actual game
 		Button btn_Create = (Button)findViewById(R.id.creategame_btn_create);
-		btn_Create.setOnClickListener(new OnClickListener() {	
+		btn_Create.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -162,10 +166,11 @@ public class CreateGameActivity extends PreferenceActivity {
 	 * Creates the game using the configurable parameters.
 	 */
 	private void configureGame() {
+		mBackgroundServiceConnector.getBackgroundService().createGame(mEditGameName.getText());
 		
 		int rounds = 9;
 		int maxplayers = 6;
-		
+
 		try{
 			rounds = Integer.valueOf(mEditRounds.getText());
 			maxplayers = Integer.valueOf(mEditMaxPlayers.getText());
@@ -185,12 +190,28 @@ public class CreateGameActivity extends PreferenceActivity {
 		@Override
 		public void invoke(ConfigureGameResponse bean) {
 			
-			if((bean.getType() == XMPPIQ.TYPE_ERROR) && (bean.errorText != null))
-				Toast.makeText(CreateGameActivity.this, "Couldn't create game. Reasons: " + bean.errorText, Toast.LENGTH_LONG).show();
+			if((bean.getType() == XMPPIQ.TYPE_ERROR) && (bean.errorText != null)) {
+				Message msg = new Message();
+				msg.what = -1;
+				msg.obj = bean.errorText;
+				mGameConfiguredHandler.sendMessage(msg);
+			}
 			
 			else if((bean != null) && (bean.getType() != XMPPBean.TYPE_ERROR)) {
-				startActivity(new Intent(CreateGameActivity.this, LobbyActivity.class));
-				unbindService(mBackgroundServiceConnector);
+				mGameConfiguredHandler.sendEmptyMessage(0);
+			}
+		}
+	};
+	
+    /** The handler for the ConfigureGameBean to switch to the LobbyActivity, if game was created successfully. */
+    private Handler mGameConfiguredHandler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			
+			if(msg.what == -1)
+				Toast.makeText(CreateGameActivity.this, "Couldn't create game. Reasons: " + msg.obj.toString(), Toast.LENGTH_LONG).show();
+			else{
+				startActivity(new Intent(CreateGameActivity.this, PlayActivity.class));
 				CreateGameActivity.this.finish();
 			}
 		}
@@ -219,8 +240,9 @@ public class CreateGameActivity extends PreferenceActivity {
 	}
 	
 	
-	/**
-	 * 
+	/*
+	 * (non-Javadoc)
+	 * @see android.app.Activity#finish()
 	 */
 	@Override
 	public void finish() {
@@ -236,9 +258,9 @@ public class CreateGameActivity extends PreferenceActivity {
 
 		@Override
 		public void processPacket(XMPPBean inBean) {
-			
+System.out.println("GameStateCreateGame received bean: " + inBean.toXML());		
 			// Handle error bean
-			if(inBean.getType() == XMPPBean.TYPE_ERROR){
+			if(inBean.getType() == XMPPBean.TYPE_ERROR) {
 				Log.e(this.getClass().getSimpleName(), "IQ Type ERROR: " + inBean.toXML());
 				
 				if(inBean.errorText != null)
@@ -251,9 +273,8 @@ public class CreateGameActivity extends PreferenceActivity {
 				
 				if((bean != null) && (bean.getType() != XMPPBean.TYPE_ERROR)) {
 					mBackgroundServiceConnector.getBackgroundService().setGameServiceJid(bean.jidOfNewService);
-					mBackgroundServiceConnector.getBackgroundService().setServiceVersion(bean.serviceVersion);		
-
-					configureGame();
+					mBackgroundServiceConnector.getBackgroundService().setServiceVersion(bean.serviceVersion);	
+					mCreateNewInstanceHandler.sendEmptyMessage(0);
 				}
 			}
 			
@@ -268,6 +289,16 @@ public class CreateGameActivity extends PreferenceActivity {
 		}
 		
 	}
+	
+	
+    /** The handler for the CreateNewServiceInstanceBean to create a new Game instance if
+     * the new service instance was successfully created. */
+    private Handler mCreateNewInstanceHandler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			configureGame();
+		}
+	};
 	
 	
 

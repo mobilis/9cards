@@ -69,7 +69,10 @@ public class MXAProxy implements MXAListener {
 	 * 
 	 */
 	public void connectMXA() {
-		MXAController.get().connectMXA(bgService.getApplicationContext(), this);
+		if (iXMPPService == null)
+			MXAController.get().connectMXA(bgService.getApplicationContext(), this);
+		
+		else connectXMPP();
 	}
 	
 
@@ -83,7 +86,15 @@ public class MXAProxy implements MXAListener {
 
 		// connect the MXA Remote Service to the XMPP Server
 		iXMPPService = MXAController.get().getXMPPService();
-		if(iXMPPService != null) {
+		connectXMPP();
+	}
+	
+	
+	/**
+	 * 
+	 */
+	private void connectXMPP() {
+		if (iXMPPService != null) {
 			try {
 				iXMPPService.connect(new Messenger(mConnectedToXMPPServerHandler));
 			} catch (RemoteException e) {
