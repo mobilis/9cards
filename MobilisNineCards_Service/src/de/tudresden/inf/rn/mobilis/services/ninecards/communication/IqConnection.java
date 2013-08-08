@@ -90,7 +90,7 @@ public class IqConnection implements PacketListener {
 		if(packet instanceof BeanIQAdapter) {
 			// Convert packet to @see XMPPBean
 			XMPPBean xmppBean = unpackBeanIQAdapter((BeanIQAdapter) packet);
-			
+System.out.println("IqConnection.processPacket(): " + xmppBean.toXML());			
 			// If Bean is of type ERROR it will be logged
 			if(xmppBean.getType() == XMPPBean.TYPE_ERROR)
 				LOGGER.severe("ERROR: Bean of Type ERROR received: " + beanToString(xmppBean));
@@ -219,13 +219,15 @@ public class IqConnection implements PacketListener {
 	 *
 	 * @param bean the XMPPBean to send
 	 */
-	private void sendBean(XMPPBean bean){
+	private void sendBean(XMPPBean bean) {
 		// just send the XMPPBean if XMPP connection is established and no FileTransfer is active
 		if((mServiceInstance.getAgent() != null)
 				&& (mServiceInstance.getAgent().getConnection() != null)
 				&& (mServiceInstance.getAgent().getConnection().isConnected()) ) {
+			
 			// send XMPPBean
 			mServiceInstance.getAgent().getConnection().sendPacket(new BeanIQAdapter(bean));
+System.out.println("IqConnection.sendBean(): " + bean.toXML());
 		}
 	}
 	

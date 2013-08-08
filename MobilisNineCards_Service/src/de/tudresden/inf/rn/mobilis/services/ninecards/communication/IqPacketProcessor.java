@@ -92,13 +92,15 @@ public class IqPacketProcessor {
 								mServiceInstance.getSettings().getChatID(),
 								mServiceInstance.getSettings().getChatPW(),
 								mServiceInstance.getGame().getCreator());
+						// notify all players about new player
+						mServiceInstance.getMucConnection().sendPlayerInfosMessage();
 						// close game if max. number of participants is reached
 						if(mServiceInstance.getGame().getPlayers().size() == mServiceInstance.getSettings().getMaxPlayers())
 							mServiceInstance.getGame().setGameOpen(false);
 					}
 				}
 				// if game was already closed, send an error message
-				mServiceInstance.getIqConnection().getProxy().getBindingStub().sendXMPPBean(
+				else mServiceInstance.getIqConnection().getProxy().getBindingStub().sendXMPPBean(
 						inBean.buildClosedGameFault("Maximum of players reached."));
 				break;
 				

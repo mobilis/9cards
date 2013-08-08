@@ -53,6 +53,7 @@ public class NineCardsService extends MobilisService {
 	public void startup(MobilisAgent agent) throws Exception  {
 
 		mSettings = new Settings(this.getAgent());
+		mGame = new Game(this);
 		
 		try {
 			mIqConnection = new IqConnection(this);
@@ -62,9 +63,6 @@ public class NineCardsService extends MobilisService {
 			LOGGER.severe("Failed to setup connections, shutting down! (" + e.getClass() + " - " + e.getMessage() + ")");
 			this.shutdown();
 		}
-		
-		mSettings = new Settings(getAgent());
-		mGame = new Game(this);
 
 		super.startup(agent);
 	}
@@ -73,7 +71,7 @@ public class NineCardsService extends MobilisService {
 	protected void registerPacketListener() {
 		PacketTypeFilter mesFil = new PacketTypeFilter(Message.class);		
 		getAgent().getConnection().addPacketListener(mMucConnection, mesFil);		
-		
+
 		PacketTypeFilter locFil = new PacketTypeFilter(IQ.class);		
 		getAgent().getConnection().addPacketListener(mIqConnection, locFil);	
 		
@@ -84,8 +82,9 @@ public class NineCardsService extends MobilisService {
 	public void shutdown() {
 		LOGGER.info(getAgent().getFullJid() + " is shutting down.");
 		try {
-			for(String playerJID : mGame.getPlayers().keySet())
-				mGame.removePlayerByJid(playerJID);
+			if (mGame != null)
+				for (String playerJID : mGame.getPlayers().keySet())
+					mGame.removePlayerByJid(playerJID);
 			mMucConnection.closeMultiUserChat();
 		} catch (Exception e) {
 			LOGGER.warning("failed to close MUC (" + e.getClass() + " - " + e.getMessage() + ")");

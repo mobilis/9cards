@@ -67,8 +67,8 @@ public class Settings {
 		minPlayers = 1;
 		
 		// default chatroom data, replaces all '/' and ':' because they would produce an error in chat name
-		chatID = serviceResource.replaceAll( "[/:]", "" ) + "@conference." + serverIdent;
-		chatPW = "tnuhx";
+		chatID = (serviceResource.replaceAll( "[/:]", "" ) + "@conference." + serverIdent).toLowerCase();
+		chatPW = "9Cards#" + System.currentTimeMillis();
 	}
 	
 	/**

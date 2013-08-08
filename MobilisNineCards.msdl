@@ -35,6 +35,12 @@
 			
 
 			<!-- Messages sent via Multi User Chat or private Chat -->
+			<xs:complexType name="PlayerInfosMessage">
+				<xs:sequence>
+					<xs:element name="Players" type="tns:PlayerInfo" minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:complexType>
+			
 			<xs:complexType name="MessageWrapper">
 				<xs:sequence>
 					<xs:element name="IsSystemMessage" type="xs:boolean" />
