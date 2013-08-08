@@ -8,6 +8,7 @@ var mobilisninecards = {
 	HTTPBIND : "http://mobilis-dev.inf.tu-dresden.de/http-bind",
 
 	connect : function(uFullJid, uPassword, mBareJid) {
+		console.log('connect');
 		Mobilis.utils.trace("Trying to establish a connection to Mobilis");
 		Mobilis.core.connect(
 			uFullJid, 
@@ -35,7 +36,7 @@ var mobilisninecards = {
 			[Mobilis.mobilisninecards.NS.SERVICE],
 			function(iq) {
 				$('#game-list').empty().listview();
-				console.log('listing games…');
+				console.log('listing games…',iq);
 				if ($(iq).find('mobilisService').length){
 					$(iq).find('mobilisService').each( function() {
 						Mobilis.core.SERVICES[$(this).attr('namespace')] = {
@@ -61,9 +62,13 @@ var mobilisninecards = {
 
 	},
 
-	createGame : function(GameName, MaxPlayers, NumberOfRounds) {
 
-		//return new Mobilis.mobilisninecards.ELEMENTS.ConfigureGameRequest(GameName, MaxPlayers, NumberOfRounds);
+	createConfigureGameRequest : function(GameName, MaxPlayers, NumberOfRounds) {
+		return new Mobilis.mobilisninecards.ELEMENTS.ConfigureGameRequest(GameName, MaxPlayers, NumberOfRounds);
+	},
+
+
+	createGame : function(GameName, MaxPlayers, NumberOfRounds) {
 
 		Mobilis.core.createServiceInstance({
 				'serviceNamespace': Mobilis.mobilisninecards.NS.SERVICE, 
@@ -72,23 +77,52 @@ var mobilisninecards = {
 			},
 			function(result){
 				console.log('createServiceInstance:',result);
+				var gameJid = ($(result).find('jidOfNewService').text());
+
+				// mobilisninecards.storeData({'gameJid': gameJid});
+
+				// var gameRequest = mobilisninecards.createConfigureGameRequest(GameName, MaxPlayers, NumberOfRounds);
+				// console.log('gameRequest', gameRequest);
+
+				Mobilis.mobilisninecards.ConfigureGame({
+						'GameName': GameName, 
+						'MaxPlayers': MaxPlayers,
+						'NumberOfRounds': NumberOfRounds
+					},
+					gameJid,
+					function(result){
+						console.log('configure result',result);
+						var myJid = mobilisninecards.loadData(['jid']).jid;
+						console.log(myJid);
+						// Mobiis.mobilisninecards.JoinGame({
+						// 		'ChatRoom': gameJid,
+						// 		'ChatPassword':'',
+						// 		'CreatorJid': myJid
+						// 	},
+						// 	function(result){
+						// 		console.log('join result',result);							
+						// 	},
+						// 	function(error){
+						// 		console.log('join error',error);
+						// 	},
+						// 	function(timeout){
+						// 		console.log('join timeout',timeout);
+						// 	}
+						// );
+					},
+					function(error){
+						console.log('configure error',error);
+					},
+					function(timeout){
+						console.log('configure timeout',timeout);
+					}
+				);
+
+
 			},
 			function(error){
 				console.log('createServiceInstance:',error);
 			}
-
-			
-			// {
-			// 	'GameName' : GameName,
-			// 	'MaxPlayers' : MaxPlayers,
-			// 	'NumberOfRounds' : NumberOfRounds
-			// },
-			// function(result){
-			// 	console.log('createGame result', result);
-			// },
-			// function(error){
-			// 	console.log('createGame error', error);
-			// }
 
 		);
 	},
@@ -174,9 +208,22 @@ $(document).on('vclick', '#create-game-form #submit', function() {
 	
 	if (gamename && numplayers && numrounds) {
 	
-		// var game = mobilisninecards.createConfigureGameRequest(gamename, numplayers, numrounds);
 		mobilisninecards.createGame(gamename, numplayers, numrounds);
+		// var game = mobilisninecards.createConfigureGameRequest(gamename, numplayers, numrounds);
+		// console.log('gamerequest',game);
 
+		// Mobilis.mobilisninecards.ConfigureGame(
+		// 	game,
+		// 	function(result){
+		// 		console.log('result',result);
+		// 	},
+		// 	function(error){
+		// 		console.log('error',error);
+		// 	},
+		// 	function(timeout){
+		// 		console.log('timeout',timeout);
+		// 	}
+		// );
 	}
 	// 	$.mobile.changePage('game.html');
 	// } else {

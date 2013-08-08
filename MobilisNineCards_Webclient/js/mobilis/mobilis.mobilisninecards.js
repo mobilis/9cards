@@ -200,15 +200,31 @@
 			}
 		},
 
-		ConfigureGame : function(ConfigureGameRequest, onResult, onError, onTimeout) {
-			var _iq = Mobilis.utils.createMobilisServiceIq(Mobilis.mobilisninecards.NS.SERVICE, {
+		// ConfigureGame : function(ConfigureGameRequest, onResult, onError, onTimeout) {
+		// 	var _iq = Mobilis.utils.createMobilisServiceIq(Mobilis.mobilisninecards.NS.SERVICE, {
+		// 		type : "set"
+		// 	});
+		// 	_iq.c("ConfigureGameRequest", {
+		// 		xmlns : Mobilis.mobilisninecards.NS.CONFIGUREGAME
+		// 	});
+		// 	Mobilis.utils.appendElement(_iq, ConfigureGameRequest);
+		// 	Mobilis.core.sendIQ(_iq, onResult ? Mobilis.mobilisninecards.DECORATORS.ConfigureGameHandler(onResult, false) : null, onError ? Mobilis.mobilisninecards.DECORATORS.ConfigureGameFaultHandler(onError) : null, onTimeout);
+		ConfigureGame : function(constraints, gameJID, onResult, onError, onTimeout) {
+
+			var customiq = Mobilis.utils.createMobilisServiceIq(Mobilis.mobilisninecards.NS.SERVICE, {
+				to: gameJID,
 				type : "set"
-			});
-			_iq.c("ConfigureGame", {
+			}).c("ConfigureGameRequest", {
 				xmlns : Mobilis.mobilisninecards.NS.CONFIGUREGAME
 			});
-			Mobilis.utils.appendElement(_iq, ConfigureGameRequest);
-			Mobilis.core.sendIQ(_iq, onResult ? Mobilis.mobilisninecards.DECORATORS.ConfigureGameHandler(onResult, false) : null, onError ? Mobilis.mobilisninecards.DECORATORS.ConfigureGameFaultHandler(onError) : null, onTimeout);
+			if (constraints) {
+				$.each(constraints, function(k, v) {
+					customiq.c(k).t(v).up();
+				});
+			}
+
+			Mobilis.core.sendIQ(customiq, onResult, onError);
+
 		},
 
 		JoinGame : function(JoinGameRequest, onResult, onError, onTimeout) {
