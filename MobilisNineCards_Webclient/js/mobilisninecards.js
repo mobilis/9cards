@@ -44,7 +44,7 @@ var mobilisninecards = {
 						};
 						$('#game-list').append('<li><a class="available-game" id="'
 												 + $(this).attr('jid') 
-												 + '" href="game.html" data-transition="slide">' 
+												 + '" href="#game" data-transition="slide">' 
 												 + $(this).attr('serviceName') 
 												 + '</a></li>');
 					});
@@ -76,7 +76,7 @@ var mobilisninecards = {
 					function(result){
 						console.log('ConfigureGame result',result);
 						mobilisninecards.joinGame(gameJid);
-						$.mobile.changePage('game.html', { transition: "slide"} );
+						jQuery.mobile.changePage('#game', { transition: "slide"} );
 					},
 					function(error){
 						console.error('ConfigureGame error',error);
@@ -168,7 +168,7 @@ var mobilisninecards = {
 
 /* jQuery Event Handlers */
 
-$(document).on('pageshow', '#settings-page', function() {
+$(document).on('pageshow', '#settings', function() {
 
 	var settingsData = mobilisninecards.loadData(['username','gameserver','jid','password']);
 
@@ -183,7 +183,7 @@ $(document).on('pageshow', '#settings-page', function() {
 
 
 
-$(document).on('pageshow', '#games-page', function(){
+$(document).on('pageshow', '#games', function(){
 	
 	var connData = mobilisninecards.loadData(['gameserver','jid','password']);
 
