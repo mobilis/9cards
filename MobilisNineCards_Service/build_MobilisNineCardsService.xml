@@ -14,7 +14,7 @@
 	<property name="service.package" value="de.tudresden.inf.rn.mobilis.services.ninecards" />		<!-- package of the class which extends MobilisService -->
 	<property name="msdl.filepath" value="META-INF" />
 	<property name="service.name" value="NineCardsService" />					<!-- name of the class which extends MobilisService -->
-	<property name="msdl.filename" value="Mobilis9Cards.msdl" />
+	<property name="msdl.filename" value="MobilisNineCards.msdl" />
 
 	<!-- Jar archive variables -->
 	<property name="jar.filename" value="MobilisNineCardsService_v1.jar" />
