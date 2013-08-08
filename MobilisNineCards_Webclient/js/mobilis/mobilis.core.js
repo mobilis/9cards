@@ -12,7 +12,6 @@
 			COORDINATOR : "http://mobilis.inf.tu-dresden.de#services/CoordinatorService",
 			ADMIN : "http://mobilis.inf.tu-dresden.de#services/AdminService",
 			DEPLOYMENT : "http://mobilis.inf.tu-dresden.de#services/DeploymentService",
-            SERVICE: 'http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService',
 			NAMESPACE_ERROR_STANZA : "urn:ietf:params:xml:ns:xmpp-stanzas"
 		},
 
@@ -144,45 +143,9 @@
 
 
 
-
-        createServiceInstance: function(attr, resultcallback, errorcallback) {
-            if (!resultcallback) {
-                resultcallback = Mobilis.core.defaultcallback;
-            };
-            if (!errorcallback) {
-                errorcallback = Mobilis.core.defaulterrorback;
-            };
-
-            if (Mobilis.core.SERVICES[Mobilis.core.NS.COORDINATOR]){
-
-                var customiq = $iq({
-                    to: Mobilis.core.SERVICES[Mobilis.core.NS.COORDINATOR].jid,
-                    type: 'set'
-                })
-                .c('createNewServiceInstance' , {xmlns : Mobilis.core.NS.COORDINATOR});
-                if (attr[0] && attr[0] !== null) {
-                    customiq.c('serviceNamespace').t(attr[0]);
-                }
-                if (attr[1] && attr[1] !== null) {
-                    customiq.up().c('serviceName').t(attr[1]);
-                }
-                if (attr[2] && attr[2] !== null) {
-                    customiq.up().c('servicePassword').t(attr[2]);
-                }               
-
-            } else {
-                errorcallback(null, 'Mobilis.core.SERVICES.' + Mobilis.core.NS.COORDINATOR + ' not defined');
-            }
-
-            Mobilis.core.sendIQ(customiq, resultcallback, errorcallback);
-        },
-
-
-
-
         mobilisServiceDiscovery: function(attr, resultcallback, errorcallback) {
 
-            console.log('attr',attr);
+            // console.log('attr',attr);
 
             if (!resultcallback) {
                 resultcallback = Mobilis.core.defaultcallback;
@@ -207,6 +170,8 @@
         },
 
 
+
+
         defaultcallback: function (iq) {
             if (iq) {
                 var diff = (new Date).getTime() - Mobilis.core.start;
@@ -216,6 +181,8 @@
             }
         },
         
+        
+
 
         defaulterrorback: function (iq,msg) {
             console.log('default error from core');

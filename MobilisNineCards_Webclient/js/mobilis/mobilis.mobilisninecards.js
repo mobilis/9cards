@@ -19,7 +19,7 @@
                 type: 'set'                
             })
             .c('createNewServiceInstance', {xmlns: Mobilis.core.NS.COORDINATOR} )
-            .c('serviceNamespace').t(Mobilis.core.NS.SERVICE).up()
+            .c('serviceNamespace').t(Mobilis.mobilisninecards.NS.SERVICE).up()
             .c('serviceName').t(name);
 
             Mobilis.core.sendIQ(customIq, resultcallback, errorcallback);
@@ -36,34 +36,30 @@
                 to: gameJID,
                 type: 'set'
             })
-            .c('CreateGameRequest', {xmlns : Mobilis.xhunt.NS.CREATEGAME})
+            .c('ConfigureGameRequest', {xmlns : Mobilis.mobilisninecards.NS.CONFIGUREGAME})
             .c('GameName').t(GameName).up()
-            .c('MaxPlayers').t(gamepassword).up()
+            .c('MaxPlayers').t(MaxPlayers).up()
             .c('NumberOfRounds').t(NumberOfRounds).up();
 
-            console.log(customIq);
             Mobilis.core.sendIQ(customIq, resultcallback, errorcallback);
         }, 
 
 
 
 
-        joinGame: function(gameJID, playerName, resultcallback, errorcallback) {
+        joinGame: function(gameJid, resultcallback, errorcallback) {
             if (!resultcallback) 
                 resultcallback = Mobilis.core.defaultcallback; 
             if (!errorcallback) 
                 errorcallback = Mobilis.core.defaulterrorback;
                  
-            if (gameJID){ 
-                Mobilis.xhunt.gameJID = gameJID;
+            if (gameJid){ 
+                Mobilis.mobilisninecards.gameJID = gameJid;
                 var customiq = $iq({
-                    to: gameJID,
+                    to: gameJid,
                     type: 'set'
                 })
-                .c('JoinGameRequest' , {xmlns : Mobilis.xhunt.NS.JOINGAME})
-                .c('GamePassword').t('null').up();
-                if (playerName) 
-                    customiq.c('PlayerName').t(playerName).up().c('IsSpectator').t('false');
+                .c('JoinGameRequest' , {xmlns : Mobilis.mobilisninecards.NS.JOINGAME}).up();
             } else {
                 errorcallback(null, 'Game JID not defined');
             }
