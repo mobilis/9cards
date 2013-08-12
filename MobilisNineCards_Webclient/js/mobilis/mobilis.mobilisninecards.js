@@ -1,11 +1,11 @@
 (function() {
 
-	var mobilisninecards = {
+	var ninecards = {
 
 		NS : {
 			SERVICE : "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService",
-			CONFIGUREGAME : "mobilisninecards:iq:configuregame",
-			JOINGAME : "mobilisninecards:iq:joingame"
+			CONFIGUREGAME : "ninecards:iq:configuregame",
+			JOINGAME : "ninecards:iq:joingame"
 		},
 
         settings: {},
@@ -19,7 +19,7 @@
                 type: 'set'                
             })
             .c('createNewServiceInstance', {xmlns: Mobilis.core.NS.COORDINATOR} )
-            .c('serviceNamespace').t(Mobilis.mobilisninecards.NS.SERVICE).up()
+            .c('serviceNamespace').t(Mobilis.ninecards.NS.SERVICE).up()
             .c('serviceName').t(name);
 
             Mobilis.core.sendIQ(customIq, resultcallback, errorcallback);
@@ -36,7 +36,7 @@
                 to: gameJID,
                 type: 'set'
             })
-            .c('ConfigureGameRequest', {xmlns : Mobilis.mobilisninecards.NS.CONFIGUREGAME})
+            .c('ConfigureGameRequest', {xmlns : Mobilis.ninecards.NS.CONFIGUREGAME})
             .c('GameName').t(GameName).up()
             .c('MaxPlayers').t(MaxPlayers).up()
             .c('NumberOfRounds').t(NumberOfRounds).up();
@@ -54,12 +54,12 @@
                 errorcallback = Mobilis.core.defaulterrorback;
                  
             if (gameJid){ 
-                Mobilis.mobilisninecards.gameJID = gameJid;
+                Mobilis.ninecards.gameJID = gameJid;
                 var customiq = $iq({
                     to: gameJid,
                     type: 'set'
                 })
-                .c('JoinGameRequest' , {xmlns : Mobilis.mobilisninecards.NS.JOINGAME}).up();
+                .c('JoinGameRequest' , {xmlns : Mobilis.ninecards.NS.JOINGAME}).up();
             } else {
                 errorcallback(null, 'Game JID not defined');
             }
@@ -71,6 +71,6 @@
 
 	}
 
-	Mobilis.extend("mobilisninecards", mobilisninecards);
+	Mobilis.extend("ninecards", ninecards);
 
 })();

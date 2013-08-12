@@ -1,5 +1,5 @@
 
-var mobilisninecards = {
+var ninecards = {
 
 
 
@@ -14,7 +14,7 @@ var mobilisninecards = {
 			
 				console.log('connect status:', result);
 
-				mobilisninecards.queryGames();
+				ninecards.queryGames();
 
 			},
 			function(error) {
@@ -32,7 +32,7 @@ var mobilisninecards = {
 	queryGames : function() {
 
 		Mobilis.core.mobilisServiceDiscovery(
-			[Mobilis.mobilisninecards.NS.SERVICE],
+			[Mobilis.ninecards.NS.SERVICE],
 			function(result) {
 				$('#game-list').empty().listview();
 				console.log('listing games…',result);
@@ -69,7 +69,7 @@ var mobilisninecards = {
 
 	createGame : function(gameName, maxPlayers, numberOfRounds) {
 
-		Mobilis.mobilisninecards.createServiceInstance(
+		Mobilis.ninecards.createServiceInstance(
 			gameName,
 			function(result){
 				console.log('createServiceInstance result',result);
@@ -77,11 +77,11 @@ var mobilisninecards = {
 				var gameJid = ($(result).find('jidOfNewService').text());
 				console.log(gameJid);
 
-				Mobilis.mobilisninecards.ConfigureGame(
+				Mobilis.ninecards.ConfigureGame(
 					gameJid, gameName, maxPlayers, numberOfRounds, 
 					function(result){
 						console.log('ConfigureGame result',result);
-						mobilisninecards.joinGame(gameJid);
+						ninecards.joinGame(gameJid);
 						jQuery.mobile.changePage('#game', { transition: "slide"} );
 					},
 					function(error){
@@ -103,19 +103,19 @@ var mobilisninecards = {
 	joinGame : function(gameJid){
 		console.log('joining game…');
 
-		Mobilis.mobilisninecards.joinGame(gameJid,
+		Mobilis.ninecards.joinGame(gameJid,
 			function(result){
 				console.log('joinGame result',result);
 
-				mobilisninecards.storeData({
+				ninecards.storeData({
 					'chatRoom': 	($(result).find('ChatRoom').text()),
 					'chatPassword': 	($(result).find('ChatPassword').text()),
 					'creatorJid': 	($(result).find('CreatorJid').text())
 				});
 
 				Mobilis.connection.muc.join(
-					mobilisninecards.loadData(['chatRoom']).chatRoom, 
-					mobilisninecards.loadData(['username']).username, 
+					ninecards.loadData(['chatRoom']).chatRoom, 
+					ninecards.loadData(['username']).username, 
 					function (message) {
 						console.log(message);
 					}, 						
@@ -134,7 +134,7 @@ var mobilisninecards = {
 						});
 
 					},
-					mobilisninecards.loadData(['chatPassword']).chatPassword
+					ninecards.loadData(['chatPassword']).chatPassword
 				);
 
 			},
@@ -152,8 +152,8 @@ var mobilisninecards = {
 		console.log('sending message…');
 
 		Mobilis.connection.muc.message(
-			mobilisninecards.loadData(['chatRoom']).chatRoom, 
-			mobilisninecards.loadData(['username']).username, 
+			ninecards.loadData(['chatRoom']).chatRoom, 
+			ninecards.loadData(['username']).username, 
 			message, 
 			'groupchat');
 		return true;
@@ -200,7 +200,7 @@ var mobilisninecards = {
 
 $(document).on('pageshow', '#settings', function() {
 
-	var settingsData = mobilisninecards.loadData(['username','gameserver','jid','password']);
+	var settingsData = ninecards.loadData(['username','gameserver','jid','password']);
 
 	$('#settings-form #username').val(settingsData.username);
 	$('#settings-form #gameserver').val(settingsData.gameserver);
@@ -215,9 +215,9 @@ $(document).on('pageshow', '#settings', function() {
 
 $(document).on('pageshow', '#games', function(){
 	
-	var connData = mobilisninecards.loadData(['gameserver','jid','password']);
+	var connData = ninecards.loadData(['gameserver','jid','password']);
 
-	mobilisninecards.connect(
+	ninecards.connect(
 		connData.jid,
 		connData.password,
 		connData.gameserver
@@ -231,7 +231,7 @@ $(document).on('pageshow', '#games', function(){
 
 $(document).on('vclick', '#settings-form #submit', function() {
 
-	mobilisninecards.storeData({
+	ninecards.storeData({
 		'username': 	$('#settings-form #username').val(),
 		'gameserver': 	$('#settings-form #gameserver').val(),
 		'jid': 			$('#settings-form #jid').val(),
@@ -252,14 +252,14 @@ $(document).on('vclick', '#create-game-form #submit', function() {
 	
 	if (gamename && numplayers && numrounds) {
 	
-		mobilisninecards.createGame(gamename, numplayers, numrounds);
+		ninecards.createGame(gamename, numplayers, numrounds);
 	}
 });
 
 
 $(document).on('vclick', '.available-game', function () {
 
-	mobilisninecards.joinGame( $(this).attr('id') );
+	ninecards.joinGame( $(this).attr('id') );
 	
 });
 
@@ -278,7 +278,7 @@ $(document).on('vclick', '#message-form #submit', function() {
 	var message = $('#message-form #message').val();
 	if (message) {
 		// console.debug(message);
-		mobilisninecards.sendMessage(message);
+		ninecards.sendMessage(message);
 	}
 	$('#message-container').popup('close');
 	return false;
