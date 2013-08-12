@@ -1,11 +1,8 @@
-/* mobilis 9Cards
- * 
- */
-
 
 var mobilisninecards = {
 
-	HTTPBIND : "http://mobilis-dev.inf.tu-dresden.de/http-bind",
+
+
 
 	connect : function(userJid, userPassword, serverURL) {
 
@@ -27,6 +24,10 @@ var mobilisninecards = {
 			}
 		);
 	},
+
+
+
+
 
 	queryGames : function() {
 
@@ -61,6 +62,9 @@ var mobilisninecards = {
 	},
 
 
+
+
+
 	createGame : function(gameName, maxPlayers, numberOfRounds) {
 
 		Mobilis.mobilisninecards.createServiceInstance(
@@ -90,6 +94,10 @@ var mobilisninecards = {
 		);
 	},
 
+
+
+
+
 	joinGame : function(gameJid){
 		console.log('joining game…');
 
@@ -106,18 +114,23 @@ var mobilisninecards = {
 				Mobilis.connection.muc.join(
 					mobilisninecards.loadData(['chatRoom']).chatRoom, 
 					mobilisninecards.loadData(['username']).username, 
-					function (message) {	 
-						if ( from = Strophe.getResourceFromJid($(message).attr('from')) ){
-							console.log([from + ' says: ', $(message).find('body').text() ]);
-						}
-						return true;
+					function (message) {
+						console.log(message);
 					}, 						
 					function (presence){
 
-						if ( from = Strophe.getResourceFromJid($(presence).attr('from')) ){
-							console.log('presence: ' + from);
-						}
-						return true;
+						$(presence).find('item').each(function(index,value){
+							var jid = $(value).attr('jid');
+							var node = Strophe.getNodeFromJid(jid);
+							var resource = Strophe.getResourceFromJid(jid);
+
+							$('#players-list').append(
+									'<li class="player" id="' + jid + '">'
+									+ node + '/'+ resource +
+									'<span class="ui-li-count">4</span></li>'
+								).listview('refresh');
+						});
+
 					},
 					mobilisninecards.loadData(['chatPassword']).chatPassword
 				);
@@ -126,9 +139,12 @@ var mobilisninecards = {
 			function(error){
 				console.error('joinGame error',error);
 			}
-
 		);
 	},
+
+
+
+
 
 	sendMessage : function (message) {
 		console.log('sending message…');
@@ -141,6 +157,10 @@ var mobilisninecards = {
 		return true;
 	},
 
+
+
+
+
 	loadData : function(data) {
 		var loadedObjects = {};
 		$.each(data, function(index,value){
@@ -149,6 +169,10 @@ var mobilisninecards = {
 		});
 		return loadedObjects;
 	},
+
+
+
+
 
 	storeData : function(storedObjects) {
 
@@ -160,6 +184,10 @@ var mobilisninecards = {
 	}
 
 }
+
+
+
+
 
 
 
