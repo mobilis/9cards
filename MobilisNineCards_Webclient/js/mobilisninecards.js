@@ -10,16 +10,16 @@ var mobilisninecards = {
 			serverURL, 
 			userJid, 
 			userPassword, 
-			function(iq) {
+			function(result) {
 			
-				console.log('connect status:', iq);
+				console.log('connect status:', result);
 
 				mobilisninecards.queryGames();
 
 			},
-			function(iq) {
+			function(error) {
 			
-				console.error('connect error:', iq);
+				console.error('connect error:', error);
 
 			}
 		);
@@ -33,22 +33,23 @@ var mobilisninecards = {
 
 		Mobilis.core.mobilisServiceDiscovery(
 			[Mobilis.mobilisninecards.NS.SERVICE],
-			function(iq) {
+			function(result) {
 				$('#game-list').empty().listview();
-				console.log('listing games…',iq);
-				if ($(iq).find('mobilisService').length){
-					$(iq).find('mobilisService').each( function() {
+				console.log('listing games…',result);
+				if ($(result).find('mobilisService').length){
+					$(result).find('mobilisService').each( function() {
 						Mobilis.core.SERVICES[$(this).attr('namespace')] = {
 							'version': $(this).attr('version'),
 							'jid': $(this).attr('jid'),
 							'servicename' : $(this).attr('serviceName')
 						};
-						$('#game-list').append('<li><a class="available-game" id="'
-												 + $(this).attr('jid') 
-												 + '" href="#game" data-transition="slide">' 
-												 + $(this).attr('serviceName') 
-												 + ' (' + Strophe.getResourceFromJid($(this).attr('jid')) + ')'
-												 + '</a></li>');
+						$('#game-list').append(
+							'<li><a class="available-game" id="'
+							+ $(this).attr('jid')
+							+ '" href="#game" data-transition="slide">'
+							+ $(this).attr('serviceName')
+							+ ' (' + Strophe.getResourceFromJid($(this).attr('jid')) + ')'
+							+ '</a></li>');
 					});
 				} else {
 					$('#game-list').append('<li>No games found</li>');
@@ -126,9 +127,9 @@ var mobilisninecards = {
 							var resource = Strophe.getResourceFromJid(jid);
 
 							$('#players-list').append(
-									'<li class="player" id="' + jid + '">'
-									+ node + '/'+ resource +
-									'<span class="ui-li-count">4</span></li>'
+								'<li class="player" id="' + jid + '">'
+								+ node + '/'+ resource +
+								'<span class="ui-li-count">4</span></li>'
 								).listview('refresh');
 						});
 
