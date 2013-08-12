@@ -47,6 +47,7 @@ var mobilisninecards = {
 												 + $(this).attr('jid') 
 												 + '" href="#game" data-transition="slide">' 
 												 + $(this).attr('serviceName') 
+												 + ' (' + Strophe.getResourceFromJid($(this).attr('jid')) + ')'
 												 + '</a></li>');
 					});
 				} else {
