@@ -45,15 +45,21 @@ public class NineCardsService extends MobilisService {
 	/** The class specific Logger object. */
 	private final static Logger LOGGER = Logger.getLogger(NineCardsService.class.getCanonicalName());
 	
-	
+
 	/* (non-Javadoc)
 	 * @see de.tudresden.inf.rn.mobilis.server.services.MobilisService#startup(de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent)
 	 */
 	@Override
 	public void startup(MobilisAgent agent) throws Exception  {
-
 		mSettings = new Settings(this.getAgent());
 		mGame = new Game(this);
+		
+		super.startup(agent);
+	}
+	
+
+	@Override
+	protected void registerPacketListener() {
 		
 		try {
 			mIqConnection = new IqConnection(this);
@@ -63,12 +69,7 @@ public class NineCardsService extends MobilisService {
 			LOGGER.severe("Failed to setup connections, shutting down! (" + e.getClass() + " - " + e.getMessage() + ")");
 			this.shutdown();
 		}
-
-		super.startup(agent);
-	}
-
-	@Override
-	protected void registerPacketListener() {
+		
 		PacketTypeFilter mesFil = new PacketTypeFilter(Message.class);		
 		getAgent().getConnection().addPacketListener(mMucConnection, mesFil);		
 
@@ -78,6 +79,7 @@ public class NineCardsService extends MobilisService {
 		LOGGER.info("PacketListeners successfully registered (IQListener and MessageListener");
 	}
 	
+	
 	@Override
 	public void shutdown() {
 		LOGGER.info(getAgent().getFullJid() + " is shutting down.");
@@ -86,6 +88,7 @@ public class NineCardsService extends MobilisService {
 				for (String playerJID : mGame.getPlayers().keySet())
 					mGame.removePlayerByJid(playerJID);
 			mMucConnection.closeMultiUserChat();
+			LOGGER.info("Closed multi user chat");
 		} catch (Exception e) {
 			LOGGER.warning("failed to close MUC (" + e.getClass() + " - " + e.getMessage() + ")");
 		}
@@ -95,8 +98,8 @@ public class NineCardsService extends MobilisService {
 		} catch (Exception e) {
 			LOGGER.warning("failed to shut down (" + e.getClass() + " - " + e.getMessage() + ")");
 		}
-
 	}
+	
 	
 	/**
 	 * Gets the IqConnection for this service. This is a wrapper for the raw XMPP connection.

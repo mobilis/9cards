@@ -163,7 +163,7 @@ System.out.println("IqConnection.processPacket(): " + xmppBean.toXML());
 	/**
 	 * Register all XMBBBeabs labeled as XMPP extensions.
 	 */
-	private void registerXMPPExtensions(){		
+	private void registerXMPPExtensions() {		
 		registerXMPPBean(new ConfigureGameRequest());
 		registerXMPPBean(new ConfigureGameResponse());
 		

@@ -40,8 +40,6 @@ public class Settings {
 	private String chatID;
 	/** The chat password. */
 	private String chatPW;
-	/** The service resource. */
-	private String serviceResource;
 	
 	
 	/**
@@ -49,27 +47,25 @@ public class Settings {
 	 *
 	 * @param agent the MobilisAgent which contains XMPP specific attributes.
 	 */
-	public Settings(MobilisAgent agent){
-		serviceResource = agent.getResource();
-		initDefaultValues(agent.getConnection().getServiceName());
-	}
-	
-	
-	/**
-	 * Inits the default values.
-	 * @param serverIdent the server identity
-	 */
-	private void initDefaultValues(String serverIdent){
-		gameName = serverIdent;
+	public Settings(MobilisAgent agent) {
+		
+		gameName = agent.getConnection().getServiceName();
 
 		rounds = 9;
 		maxPlayers = 9;
 		minPlayers = 1;
 		
-		// default chatroom data, replaces all '/' and ':' because they would produce an error in chat name
-		chatID = (serviceResource.replaceAll( "[/:]", "" ) + "@conference." + serverIdent).toLowerCase();
+		// replace all '/' and ':' because they would produce an error in chat name
+		chatID = (
+				agent.getResource().replaceAll( "[/:]", "" )
+				+ "@conference."
+				+ agent.getConnection().getServiceName())
+				.toLowerCase();
+		
 		chatPW = "9Cards#" + System.currentTimeMillis();
 	}
+	
+	
 	
 	/**
 	 * Gets the game name.
@@ -177,11 +173,4 @@ public class Settings {
 		return rounds;
 	}
 	
-	/**
-	 * Gets the service resource.
-	 * @return the service resource
-	 */
-	public String getServiceResource() {
-		return serviceResource;
-	}
 }

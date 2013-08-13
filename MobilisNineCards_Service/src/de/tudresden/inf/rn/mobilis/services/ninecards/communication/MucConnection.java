@@ -8,7 +8,6 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smackx.FormField;
-import org.jivesoftware.smackx.muc.Affiliate;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
 import de.tudresden.inf.rn.mobilis.services.ninecards.NineCardsService;
@@ -20,10 +19,10 @@ public class MucConnection implements PacketListener {
 	
 	/** The Mobilis Service 9Cards Instance */
 	private NineCardsService mServiceInstance;
-	/** The Multi User Chat Instance */
-	private MultiUserChat muc;
 	/** The class which processes chat packets. */
 	private MucPacketProcessor packetProcessor;
+	/** The Multi User Chat Instance */
+	private MultiUserChat muc;
 
 	/** The class specific Logger object. */
 	private final static Logger LOGGER = Logger.getLogger(MucConnection.class.getCanonicalName());
@@ -43,8 +42,43 @@ public class MucConnection implements PacketListener {
 	public MucConnection(NineCardsService serviceInstance) throws Exception {
 		this.mServiceInstance = serviceInstance;
 		this.packetProcessor = new MucPacketProcessor(mServiceInstance);
-
+		
 		openMultiUserChat();
+	}
+	
+	
+	/**
+	 * Creates a new MUC room.
+	 * 
+	 * @throws XMPPException
+	 */
+	private void openMultiUserChat() throws XMPPException {
+		
+		if(!mServiceInstance.getAgent().getConnection().isConnected()) {
+			LOGGER.severe("Couldn't open MUC (no connection)!");
+			return;
+		}
+
+		muc = new MultiUserChat(mServiceInstance.getAgent().getConnection(), mServiceInstance.getSettings().getChatID());
+
+		muc.create("Server");
+
+		org.jivesoftware.smackx.Form cnfgForm = muc.getConfigurationForm().createAnswerForm();
+	
+		for (Iterator<FormField> fields = cnfgForm.getFields(); fields.hasNext();) {
+		    FormField field = (FormField) fields.next();
+		    if (!FormField.TYPE_HIDDEN.equals(field.getType()) && field.getVariable() != null) {
+		    	cnfgForm.setDefaultAnswer(field.getVariable());
+		    }
+		}
+
+		cnfgForm.setAnswer("muc#roomconfig_passwordprotectedroom", true);
+		cnfgForm.setAnswer("muc#roomconfig_roomsecret", mServiceInstance.getSettings().getChatPW());
+		
+		muc.sendConfigurationForm(cnfgForm);
+		
+		LOGGER.info("Chatroom created (ID: " + mServiceInstance.getSettings().getChatID()
+				+ ", Pw: " + mServiceInstance.getSettings().getChatPW() +")");
 	}
 	
 	
@@ -53,10 +87,10 @@ public class MucConnection implements PacketListener {
 	 * @param message
 	 */
 	public void sendMessagetoMuc(Message message) {
-System.out.println("sende Nachricht an Muc: " + message.getBody());
 
 		try {
-			muc.sendMessage(message);
+System.out.println("Sende message.toXML(): " + message.toXML());
+			muc.sendMessage(message.toXML());
 		} catch (Exception e) {
 			LOGGER.severe("failed to send message to muc! (" + e.getClass() + " - " + e.getMessage() + ")");
 		}
@@ -90,15 +124,14 @@ System.out.println("sende Nachricht an Muc: " + message.getBody());
 		MessageWrapper wrapper = new MessageWrapper(true, playersMsg.toXML(), MucConnection.TYPE_PLAYERINFOS);
 		Message finalMesg = new Message();
 		finalMesg.setBody(wrapper.toXML());
-System.out.println("Sende PlayerInfosMessage: " + finalMesg.getBody());
-		sendMessagetoMuc(finalMesg);		
+
+		sendMessagetoMuc(finalMesg);
 	}
 	
 
 	@Override
 	public void processPacket(Packet packet) {
-System.out.println("MucConnection.processPacket(): " + packet.toXML());
-System.out.println("packet instanceof Message: " + (packet instanceof Message));
+System.out.println("MucConnection received packet: " + packet.toXML());
 		if(packet instanceof Message) {
 			Message mesg = (Message) packet;
 			
@@ -111,54 +144,6 @@ System.out.println("packet instanceof Message: " + (packet instanceof Message));
 				}
 			}
 		}
-	}
-	
-	
-	/**
-	 * Opens the MultiUserChat with initialized members.
-	 * @throws XMPPException an XMPP exception
-	 */
-	private void openMultiUserChat() throws XMPPException {
-		
-		if(!mServiceInstance.getAgent().getConnection().isConnected()) {
-			LOGGER.severe("Couldn't open MUC (no connection)!");
-			return;
-		}
-
-		if(muc == null)
-			muc = new MultiUserChat(mServiceInstance.getAgent().getConnection(), mServiceInstance.getSettings().getChatID());
-
-		muc.create("Server");
-
-		org.jivesoftware.smackx.Form cnfgForm = muc.getConfigurationForm().createAnswerForm();
-	
-		for (Iterator<FormField> fields = cnfgForm.getFields(); fields.hasNext();) {
-		    FormField field = (FormField) fields.next();
-		    if (!FormField.TYPE_HIDDEN.equals(field.getType()) && field.getVariable() != null) {
-		    	cnfgForm.setDefaultAnswer(field.getVariable());
-		    }
-		}
-
-		cnfgForm.setAnswer("muc#roomconfig_passwordprotectedroom", true);
-		cnfgForm.setAnswer("muc#roomconfig_roomsecret", mServiceInstance.getSettings().getChatPW());
-		
-		muc.sendConfigurationForm(cnfgForm);
-
-/*
-System.out.println("muc.getMembers().size(): " + muc.getMembers().size() + "; muc.getOccupantsCount(): " + muc.getOccupantsCount());
-Iterator<String> i = muc.getOccupants();
-while(i.hasNext())
-	System.out.println(i.next());
-System.out.println("MUC created. Room Name: " + muc.getRoom() + "; PW: " + mServiceInstance.getSettings().getChatPW());
-//muc.addMessageListener(this);
-//muc.join("Serverarsch", mServiceInstance.getSettings().getChatPW());
-
-MultiUserChat muc2 = new MultiUserChat(mServiceInstance.getAgent().getConnection(), mServiceInstance.getSettings().getChatID());
-muc2.join(mServiceInstance.getAgent().getConnection().getUser(), mServiceInstance.getSettings().getChatID());
-muc.sendMessage("HUUUHUUUUUUUU");
-*/
-		LOGGER.info("Chat created (ID: " + mServiceInstance.getSettings().getChatID()
-				+ ", Pw: " + mServiceInstance.getSettings().getChatPW() +")");
 	}
 	
 	
