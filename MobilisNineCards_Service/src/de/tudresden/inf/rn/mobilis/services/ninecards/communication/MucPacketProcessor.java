@@ -31,7 +31,6 @@ import de.tudresden.inf.rn.mobilis.services.ninecards.Player;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.MessageWrapper;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.PlayCardMessage;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.PlayerLeavingMessage;
-import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.StartGameMessage;
 
 public class MucPacketProcessor {
 	
@@ -58,25 +57,25 @@ public class MucPacketProcessor {
 	 * @param message
 	 */
 	public void processPacket(Message message) throws Exception {
+
+		String body = message.getBody();
+		String msgType = body.substring(body.indexOf("<MessageType>") + 13, body.indexOf("</MessageType>"));
+		String msgContent = body.substring(body.indexOf("<MessageString>") + 15, body.indexOf("</MessageString>"));
+		
 		// feed XML parser with message body
 		xmlParser.setInput(new StringReader(message.getBody()));
-		
-		// try to convert the message body back to a Message Wrapper object
-		MessageWrapper mesgWrapper = new MessageWrapper();
-		mesgWrapper.fromXML(xmlParser);
 
 		// we are only interested in system messages, not normal user chat messages
-		if(mesgWrapper.getIsSystemMessage() == false)
+		if(!body.contains("<IsSystemMessage>true</IsSystemMessage>"))
 			return;
 		
-		// try message according to its type
-		String mesgType = mesgWrapper.getMessageType();
-		if(mesgType.equals(MucConnection.TYPE_STARTGAME))
-			onStartGame(message);
-		else if(mesgType.equals(MucConnection.TYPE_PLAYCARD))
-			onPlayCard(mesgWrapper);
-		else if(mesgType.equals(MucConnection.TYPE_PLAYERLEAVING))
-			onPlayerLeaving(message);
+		// handle message according to its type
+		if(msgType.equals(MucConnection.TYPE_STARTGAME))
+			onStartGame(message.getFrom());
+		else if(msgType.equals(MucConnection.TYPE_PLAYCARD))
+			onPlayCard(msgContent);
+		else if(msgType.equals(MucConnection.TYPE_PLAYERLEAVING))
+			onPlayerLeaving(message.getFrom());
 	}
 	
 	
@@ -84,21 +83,15 @@ public class MucPacketProcessor {
 	 * 
 	 * @param message
 	 */
-	private void onStartGame(Message message) {
+	private void onStartGame(String sender) {
+		
 		// check if player is allowed to start the game
-		Player player = mServiceInstance.getGame().getPlayer(message.getFrom());
+		Player player = mServiceInstance.getGame().getPlayer(sender);
 		if((player != null) && (player.isCreator())) {
+			
 			// close game for joining
 			mServiceInstance.getGame().setGameOpen(false);
-			
-			// embed start message into message wrapper
-			StartGameMessage startMesg = new StartGameMessage();
-			MessageWrapper wrapper = new MessageWrapper(true, startMesg.toXML(), MucConnection.TYPE_STARTGAME);
-			// include message wrapper into message which can be sent to muc
-			Message finalMesg = new Message();
-			finalMesg.setBody(wrapper.toXML());
-			mServiceInstance.getMucConnection().sendMessagetoMuc(finalMesg);
-			
+
 			// set game state and prepare first round
 			mServiceInstance.getGame().setGameState(State.PLAY);
 			mServiceInstance.getGame().startNewRound();
@@ -110,9 +103,9 @@ public class MucPacketProcessor {
 	 * 
 	 * @param message
 	 */
-	private void onPlayCard(MessageWrapper wrapper) throws Exception {
+	private void onPlayCard(String msgContent) throws Exception {
 		// reconstruct PlayCardMessage
-		xmlParser.setInput(new StringReader(wrapper.getMessageString()));
+		xmlParser.setInput(new StringReader(msgContent));
 		PlayCardMessage playCardMesg = new PlayCardMessage();
 		playCardMesg.fromXML(xmlParser);
 		
@@ -159,14 +152,14 @@ public class MucPacketProcessor {
 	 * 
 	 * @param message
 	 */
-	private void onPlayerLeaving(Message message) {
-		Player player = mServiceInstance.getGame().getPlayer(message.getFrom());
+	private void onPlayerLeaving(String sender) {
+		Player player = mServiceInstance.getGame().getPlayer(sender);
 		if(player != null) {
 			// remove player from game and chat
-			mServiceInstance.getGame().removePlayerByJid(message.getFrom());
+			mServiceInstance.getGame().removePlayerByJid(sender);
 			
 			// notify other players
-			PlayerLeavingMessage leaveMesg = new PlayerLeavingMessage(message.getFrom());
+			PlayerLeavingMessage leaveMesg = new PlayerLeavingMessage(sender);
 			MessageWrapper wrapper = new MessageWrapper(true, leaveMesg.toXML(), MucConnection.TYPE_PLAYERLEAVING);
 			Message finalMesg = new Message();
 			finalMesg.setBody(wrapper.toXML());

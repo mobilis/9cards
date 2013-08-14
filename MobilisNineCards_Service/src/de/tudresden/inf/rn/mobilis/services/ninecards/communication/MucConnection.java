@@ -35,7 +35,7 @@ public class MucConnection implements PacketListener {
 	
 	
 	/**
-	 * Standard Constructor, calls openMultiUserChat().
+	 * Standard Constructor, calls createMultiUserChat() and adds a listener for new users.
 	 * @param serviceInstance
 	 * @throws Exception
 	 */
@@ -43,7 +43,16 @@ public class MucConnection implements PacketListener {
 		this.mServiceInstance = serviceInstance;
 		this.packetProcessor = new MucPacketProcessor(mServiceInstance);
 		
-		openMultiUserChat();
+		muc = createMultiUserChat();
+		muc.addParticipantListener(new PacketListener() {
+
+			@Override
+			public void processPacket(Packet arg0) {
+				// notify all players about new player
+				mServiceInstance.getMucConnection().sendPlayerInfosMessage();
+			}
+			
+		});
 	}
 	
 	
@@ -52,15 +61,17 @@ public class MucConnection implements PacketListener {
 	 * 
 	 * @throws XMPPException
 	 */
-	private void openMultiUserChat() throws XMPPException {
+	private MultiUserChat createMultiUserChat() throws XMPPException {
 		
 		if(!mServiceInstance.getAgent().getConnection().isConnected()) {
 			LOGGER.severe("Couldn't open MUC (no connection)!");
-			return;
+			return null;
 		}
+		
+		if(this.muc != null)
+			return this.muc;
 
-		muc = new MultiUserChat(mServiceInstance.getAgent().getConnection(), mServiceInstance.getSettings().getChatID());
-
+		MultiUserChat muc = new MultiUserChat(mServiceInstance.getAgent().getConnection(), mServiceInstance.getSettings().getChatID());
 		muc.create("Server");
 
 		org.jivesoftware.smackx.Form cnfgForm = muc.getConfigurationForm().createAnswerForm();
@@ -79,6 +90,8 @@ public class MucConnection implements PacketListener {
 		
 		LOGGER.info("Chatroom created (ID: " + mServiceInstance.getSettings().getChatID()
 				+ ", Pw: " + mServiceInstance.getSettings().getChatPW() +")");
+		
+		return muc;
 	}
 	
 	
@@ -87,10 +100,12 @@ public class MucConnection implements PacketListener {
 	 * @param message
 	 */
 	public void sendMessagetoMuc(Message message) {
+System.out.println("sendMessagetoMuc() [body: " + message.getBody() + "]");
 
 		try {
-System.out.println("Sende message.toXML(): " + message.toXML());
-			muc.sendMessage(message.toXML());
+			message.setTo(muc.getRoom());
+			message.setType(Message.Type.groupchat);
+			muc.sendMessage(message);
 		} catch (Exception e) {
 			LOGGER.severe("failed to send message to muc! (" + e.getClass() + " - " + e.getMessage() + ")");
 		}
@@ -131,11 +146,12 @@ System.out.println("Sende message.toXML(): " + message.toXML());
 
 	@Override
 	public void processPacket(Packet packet) {
-System.out.println("MucConnection received packet: " + packet.toXML());
+		
 		if(packet instanceof Message) {
 			Message mesg = (Message) packet;
 			
 			if(mesg.getBody() != null) {
+				System.out.println("Received MUC message from " + mesg.getFrom() + ": " + mesg.getBody());
 				try {
 					LOGGER.info("processing incoming chat packet: " + mesg.getFrom() + " - " + mesg.getBody());
 					packetProcessor.processPacket(mesg);

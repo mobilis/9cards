@@ -58,6 +58,10 @@ public class Player {
 		this.chosenCard = -1;
 		
 		this.usedCards = new ArrayList<Integer>(9);
+		
+		// assure that the name is set
+		if(this.name == null || this.name.length() == 0)
+			this.name = jid.substring(0, jid.indexOf("@"));
 	}
 	
 	

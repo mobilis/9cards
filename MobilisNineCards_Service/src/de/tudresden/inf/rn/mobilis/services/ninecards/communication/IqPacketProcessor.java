@@ -19,6 +19,9 @@
  ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.services.ninecards.communication;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import de.tudresden.inf.rn.mobilis.services.ninecards.Game;
 import de.tudresden.inf.rn.mobilis.services.ninecards.Game.State;
 import de.tudresden.inf.rn.mobilis.services.ninecards.NineCardsService;
@@ -92,8 +95,6 @@ public class IqPacketProcessor {
 								mServiceInstance.getSettings().getChatID(),
 								mServiceInstance.getSettings().getChatPW(),
 								mServiceInstance.getGame().getCreator());
-						// notify all players about new player
-						mServiceInstance.getMucConnection().sendPlayerInfosMessage();
 						// close game if max. number of participants is reached
 						if(mServiceInstance.getGame().getPlayers().size() == mServiceInstance.getSettings().getMaxPlayers())
 							mServiceInstance.getGame().setGameOpen(false);
