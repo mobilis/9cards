@@ -4,8 +4,8 @@
 
 		NS : {
 			SERVICE : "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService",
-			CONFIGUREGAME : "ninecards:iq:configuregame",
-			JOINGAME : "ninecards:iq:joingame"
+			CONFIGUREGAME : "mobilisninecards:iq:configuregame",
+			JOINGAME : "mobilisninecards:iq:joingame"
 		},
 
         settings: {},

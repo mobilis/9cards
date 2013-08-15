@@ -75,7 +75,6 @@ var ninecards = {
 				console.log('createServiceInstance result',result);
 
 				var gameJid = ($(result).find('jidOfNewService').text());
-				console.log(gameJid);
 
 				Mobilis.ninecards.ConfigureGame(
 					gameJid, gameName, maxPlayers, numberOfRounds, 
@@ -120,7 +119,7 @@ var ninecards = {
 						console.log(message);
 					}, 						
 					function (presence){
-
+						console.log(presence);
 						$(presence).find('item').each(function(index,value){
 							var jid = $(value).attr('jid');
 							var node = Strophe.getNodeFromJid(jid);
