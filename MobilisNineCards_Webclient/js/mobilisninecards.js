@@ -207,17 +207,24 @@ var ninecards = {
 	},
 
 	onPresence : function (presence){
+		
 		console.log('presence:', presence);
+		
 		var presenceJid = $(presence).find('item').attr('jid');
-		// if ( from = Strophe.getResourceFromJid($(presence).attr('from')) ){
-		//  console.log('presence: ' + from);
-		// }
 
-		// $('#players-list').append(
-		// 	'<li class="player" id="' + presenceJid + '">'
-		// 	+ occupant.nick + ' ('+ occupant.affiliation + '/'+ occupant.role + ')' +
-		// 	'<span class="ui-li-count">4</span></li>'
-		// ).listview('refresh');
+		if ($(presence).attr('type') == 'unavailable') {
+			// var id = '#'+ninecards.clearJid(presenceJid);
+			// console.log(id);
+			$('#'+ninecards.clearJid(presenceJid)).remove();
+			$('#players-list').listview('refresh');
+			// $.when($(id).remove()).then( console.log('removed it') );
+		} else {
+			$('#players-list').append(
+				'<li class="player" id="' + ninecards.clearJid(presenceJid) + '">'
+				+ presenceJid +
+				'<span class="ui-li-count">4</span></li>'
+			).listview('refresh');
+		}
 
 		return true;
 	},
@@ -239,7 +246,9 @@ var ninecards = {
 	},
 
 
-
+	clearJid : function(jid){
+		return jid = jid.replace(/@/g,'-').replace(/\./g,'-').replace(/\//g,'-');
+	},
 
 
 	loadData : function(data) {
