@@ -52,65 +52,70 @@
 				Mobilis.core.HTTPBIND = 'http://'+server+'/http-bind';
 				Mobilis.core.SERVICES[Mobilis.core.NS.COORDINATOR].jid = 'mobilis@'+server+'/Coordinator'
 			}
-			var conn = new Strophe.Connection(Mobilis.core.HTTPBIND);
-			conn.rawInput = function (data) { 
-				console.log('RECV: ' + data);
+
+			var connection = new Strophe.Connection(Mobilis.core.HTTPBIND);
+			
+			connection.rawInput = function (data) { 
+				// console.log('RECV: ' + data);
 			};
-			conn.rawOutput = function (data) {
-				console.log('SEND: ' + data);
+			connection.rawOutput = function (data) {
+				// console.log('SEND: ' + data);
 			};
 			
-			conn.connect(jid, password,
-			function(status) {
-				if (status == Mobilis.core.Status.ERROR) {
-					console.log('connection error');
-				} else if (status == Mobilis.core.Status.CONNECTING) {
-					console.log('connecting');
-				} else if (status == Mobilis.core.Status.CONNFAIL) {
-					console.log('connection fail');
-				} else if (status == Mobilis.core.Status.AUTHENTICATING) {
-					console.log('authenticating');
-				} else if (status == Mobilis.core.Status.AUTHFAIL) {
-					console.log('authentication fail');
-				} else if (status == Mobilis.core.Status.CONNECTED) {
-					console.log('connected');
-					conn.send($pres());
-					var discoiq = $iq({
-						to: Mobilis.core.SERVICES[Mobilis.core.NS.COORDINATOR].jid,
-						type: "get"
-					})
-					.c("serviceDiscovery", {
-						xmlns: Mobilis.core.NS.COORDINATOR
-					});
-					conn.sendIQ(discoiq,
-					function(iq) {
-						$(iq).find("mobilisService").each(function() {
-							Mobilis.core.SERVICES[$(this).attr('namespace')] =
-							{
-								'version': $(this).attr('version'),
-								'mode': $(this).attr('mode'),
-								'instances': $(this).attr('instances'),
-								'jid': $(this).attr('jid')
-							};
+			connection.connect(
+				jid,
+				password,
+				function(status) {
+					if (status == Mobilis.core.Status.ERROR) {
+						console.log('connection error');
+					} else if (status == Mobilis.core.Status.CONNECTING) {
+						console.log('connecting');
+					} else if (status == Mobilis.core.Status.CONNFAIL) {
+						console.log('connection fail');
+					} else if (status == Mobilis.core.Status.AUTHENTICATING) {
+						console.log('authenticating');
+					} else if (status == Mobilis.core.Status.AUTHFAIL) {
+						console.log('authentication fail');
+					} else if (status == Mobilis.core.Status.CONNECTED) {
+						console.log('connected');
+						connection.send($pres());
+						var discoiq = $iq({
+							to: Mobilis.core.SERVICES[Mobilis.core.NS.COORDINATOR].jid,
+							type: "get"
+						})
+						.c("serviceDiscovery", {
+							xmlns: Mobilis.core.NS.COORDINATOR
 						});
-						if (iq) {console.log(iq);}
-						console.log('Initial Service Discovery successful');
-					},
-					function(iq) {
-						if (iq) {console.log(iq);}
-						console.log('Initial Service Discovery failed')
-					},
-					30000);
-				} else if (status == Mobilis.core.Status.DISCONNECTED) {
-					console.log('disconnected');
-				} else if (status == Mobilis.core.Status.DISCONNECTING) {
-				} else if (status == Mobilis.core.Status.ATTACHED) {}
-				if (callback) {
-					callback(status);
+						connection.sendIQ(discoiq,
+						function(iq) {
+							$(iq).find("mobilisService").each(function() {
+								Mobilis.core.SERVICES[$(this).attr('namespace')] =
+								{
+									'version': $(this).attr('version'),
+									'mode': $(this).attr('mode'),
+									'instances': $(this).attr('instances'),
+									'jid': $(this).attr('jid')
+								};
+							});
+							if (iq) {console.log(iq);}
+							console.log('Initial Service Discovery successful');
+						},
+						function(iq) {
+							if (iq) {console.log(iq);}
+							console.log('Initial Service Discovery failed')
+						},
+						30000);
+					} else if (status == Mobilis.core.Status.DISCONNECTED) {
+						console.log('disconnected');
+					} else if (status == Mobilis.core.Status.DISCONNECTING) {
+					} else if (status == Mobilis.core.Status.ATTACHED) {}
+					if (callback) {
+						callback(status);
+					}
 				}
-			});
+			);
 
-			Mobilis.connection = conn;
+			Mobilis.connection = connection;
 		},
 
 
