@@ -100,41 +100,77 @@ var ninecards = {
 
 
 	joinGame : function(gameJid){
-		console.log('joining game…');
 
 		Mobilis.ninecards.joinGame(gameJid,
 			function(result){
 				console.log('joinGame result',result);
 
 				ninecards.storeData({
-					'chatRoom': 	($(result).find('ChatRoom').text()),
-					'chatPassword': 	($(result).find('ChatPassword').text()),
-					'creatorJid': 	($(result).find('CreatorJid').text())
+					'chatRoom':     ($(result).find('ChatRoom').text()),
+					'chatPassword':     ($(result).find('ChatPassword').text()),
+					'creatorJid':   ($(result).find('CreatorJid').text())
 				});
 
-				Mobilis.connection.muc.join(
-					ninecards.loadData(['chatRoom']).chatRoom, 
-					ninecards.loadData(['username']).username, 
-					function (message) {
-						console.log(message);
-					}, 						
-					function (presence){
-						console.log(presence);
-						$(presence).find('item').each(function(index,value){
-							var jid = $(value).attr('jid');
-							var node = Strophe.getNodeFromJid(jid);
-							var resource = Strophe.getResourceFromJid(jid);
+				ninecards.joinMuc();
 
-							$('#players-list').append(
-								'<li class="player" id="' + jid + '">'
-								+ node + '/'+ resource +
-								'<span class="ui-li-count">4</span></li>'
-								).listview('refresh');
-						});
+				// Mobilis.connection.muc.join(
+				//  ninecards.loadData(['chatRoom']).chatRoom,
+				//  ninecards.loadData(['username']).username,
+				//  function (message) {
+				//      console.log('message',message);
+				//      if ( from = Strophe.getResourceFromJid($(message).attr('from')) ){
+				//          xhunt.log([from + ' says: ', $(message).find('body').text() ]);
+				//      }
 
-					},
-					ninecards.loadData(['chatPassword']).chatPassword
-				);
+				//      // $(message).find('message').each(function(index,value){
+				//      //  console.log('messagevalue',value);
+				//      // });
+				//      // $(message).find('body').each(function(index,value){
+				//      //  console.log('bodyvalue',value);
+				//      // });
+				//  },
+				//  function (presence){
+				//      console.log('presence',presence);
+				//      if ( from = Strophe.getResourceFromJid($(presence).attr('from')) ){
+				//          console.log('presence: ' + from);
+				//      }
+				//  },
+				//  function (roster){
+
+				//      console.log('roster',roster);
+
+
+				//      // var seen = [];
+
+				//      // console.log(JSON.stringify(roster, function(key, val) {
+				//      //  if (typeof val == "object") {
+				//      //      if (seen.indexOf(val) >= 0)
+				//      //          return;
+				//      //      seen.push(val);
+				//      //  }
+				//      //  return val;
+				//      // },2));
+
+				//      // console.log(JSON.stringify(roster,null,2));
+
+				//      // jQuery.each(roster,function(index,value){
+				//      //  console.log(roster[index]);
+				//      // });
+
+
+				//      // for (var occupant in roster){
+				//      //  console.log(occupant);
+
+				//      //  $('#players-list').append(
+				//      //      '<li class="player" id="' + occupant.jid + '">'
+				//      //      + occupant.nick + ' ('+ occupant.affiliation + '/'+ occupant.role + ')' +
+				//      //      '<span class="ui-li-count">4</span></li>'
+				//      //  ).listview('refresh');
+				//      // }
+				//  },
+				//  ninecards.loadData(['chatPassword']).chatPassword,
+				//  null, null
+				// );
 
 			},
 			function(error){
@@ -144,8 +180,52 @@ var ninecards = {
 	},
 
 
+	joinMuc : function() {
 
+		var chatRoom = ninecards.loadData(['chatRoom']).chatRoom; 
+		var userName = ninecards.loadData(['username']).username;
+		var chatPassword = ninecards.loadData(['chatPassword']).chatPassword;
 
+		console.log('trying to join',chatRoom);
+
+		Mobilis.connection.muc.join(
+			chatRoom,
+			userName,
+			ninecards.onMessage,
+			ninecards.onPresence,
+			ninecards.onRoster,
+			chatPassword,
+			null, null
+		);
+
+	},
+
+	onMessage : function (message){
+		// console.log'message:', (message);
+		console.log('message:', $(message).find('body').text() );
+		return true;
+	},
+
+	onPresence : function (presence){
+		console.log('presence:', presence);
+		var presenceJid = $(presence).find('item').attr('jid');
+		// if ( from = Strophe.getResourceFromJid($(presence).attr('from')) ){
+		//  console.log('presence: ' + from);
+		// }
+
+		// $('#players-list').append(
+		// 	'<li class="player" id="' + presenceJid + '">'
+		// 	+ occupant.nick + ' ('+ occupant.affiliation + '/'+ occupant.role + ')' +
+		// 	'<span class="ui-li-count">4</span></li>'
+		// ).listview('refresh');
+
+		return true;
+	},
+
+	onRoster : function (roster){
+		console.log('the roster:', roster);
+		return true;
+	},
 
 	sendMessage : function (message) {
 		console.log('sending message…');
@@ -166,7 +246,7 @@ var ninecards = {
 		var loadedObjects = {};
 		$.each(data, function(index,value){
 			loadedObjects[value] = localStorage.getItem('mobilis.ninecards.'+value);
-			// console.log('loaded from localStorage:', value, '=', loadedObjects[value]);
+			console.log('loaded from localStorage:', value, '=', loadedObjects[value]);
 		});
 		return loadedObjects;
 	},
@@ -231,10 +311,10 @@ $(document).on('pageshow', '#games', function(){
 $(document).on('vclick', '#settings-form #submit', function() {
 
 	ninecards.storeData({
-		'username': 	$('#settings-form #username').val(),
-		'gameserver': 	$('#settings-form #gameserver').val(),
-		'jid': 			$('#settings-form #jid').val(),
-		'password': 	$('#settings-form #password').val()
+		'username':     $('#settings-form #username').val(),
+		'gameserver':   $('#settings-form #gameserver').val(),
+		'jid':          $('#settings-form #jid').val(),
+		'password':     $('#settings-form #password').val()
 	});
 
 	return true;
