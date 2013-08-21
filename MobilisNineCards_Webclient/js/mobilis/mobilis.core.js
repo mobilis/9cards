@@ -78,7 +78,9 @@
 						console.log('authentication fail');
 					} else if (status == Mobilis.core.Status.CONNECTED) {
 						console.log('connected');
+
 						connection.send($pres());
+
 						var discoiq = $iq({
 							to: Mobilis.core.SERVICES[Mobilis.core.NS.COORDINATOR].jid,
 							type: "get"
@@ -86,6 +88,7 @@
 						.c("serviceDiscovery", {
 							xmlns: Mobilis.core.NS.COORDINATOR
 						});
+
 						connection.sendIQ(discoiq,
 						function(iq) {
 							$(iq).find("mobilisService").each(function() {
@@ -97,11 +100,11 @@
 									'jid': $(this).attr('jid')
 								};
 							});
-							if (iq) {console.log(iq);}
+							// if (iq) {console.log(iq);}
 							console.log('Initial Service Discovery successful');
 						},
 						function(iq) {
-							if (iq) {console.log(iq);}
+							// if (iq) {console.log(iq);}
 							console.log('Initial Service Discovery failed')
 						},
 						30000);
