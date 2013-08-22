@@ -30,6 +30,7 @@ import de.tudresden.inf.rn.mobilis.services.ninecards.NineCardsService;
 import de.tudresden.inf.rn.mobilis.services.ninecards.Player;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.MessageWrapper;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.PlayCardMessage;
+import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.PlayerInfosMessage;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.PlayerLeavingMessage;
 
 public class MucPacketProcessor {
@@ -71,7 +72,7 @@ public class MucPacketProcessor {
 		
 		// handle message according to its type
 		if(msgType.equals(MucConnection.TYPE_STARTGAME))
-			onStartGame(message.getFrom());
+			onStartGame();
 		else if(msgType.equals(MucConnection.TYPE_PLAYCARD))
 			onPlayCard(msgContent);
 		else if(msgType.equals(MucConnection.TYPE_PLAYERLEAVING))
@@ -83,11 +84,12 @@ public class MucPacketProcessor {
 	 * 
 	 * @param message
 	 */
-	private void onStartGame(String sender) {
+	private void onStartGame() {
 		
 		// check if player is allowed to start the game
-		Player player = mServiceInstance.getGame().getPlayer(sender);
-		if((player != null) && (player.isCreator())) {
+		//Player player = mServiceInstance.getGame().getPlayer(sender);
+
+		//if((player != null) && (player.isCreator())) {
 			
 			// close game for joining
 			mServiceInstance.getGame().setGameOpen(false);
@@ -95,7 +97,7 @@ public class MucPacketProcessor {
 			// set game state and prepare first round
 			mServiceInstance.getGame().setGameState(State.PLAY);
 			mServiceInstance.getGame().startNewRound();
-		}
+		//}
 	}
 	
 	
@@ -107,28 +109,30 @@ public class MucPacketProcessor {
 		// reconstruct PlayCardMessage
 		xmlParser.setInput(new StringReader(msgContent));
 		PlayCardMessage playCardMesg = new PlayCardMessage();
-		playCardMesg.fromXML(xmlParser);
-		
+
+//		playCardMesg.fromXML(xmlParser);
+
+String s1 = msgContent.substring(msgContent.indexOf("<PlayersName>") + 13, msgContent.indexOf("</PlayersName>"));
+String s2 = msgContent.substring(msgContent.indexOf("<PlayersJID>") + 12, msgContent.indexOf("</PlayersJID>"));
+String s3 = msgContent.substring(msgContent.indexOf("<CardID>") + 8, msgContent.indexOf("</CardID>"));
+
+playCardMesg.setPlayersName(s1);
+playCardMesg.setPlayersJID(s2);
+playCardMesg.setCardID(Integer.parseInt(s3));
+
 		Player player = mServiceInstance.getGame().getPlayer(playCardMesg.getPlayersJID());
 		if(player != null) {
 			// check if player already played a card this round
-			if(!(player.getChosenCard() == -1)) {
+			if(player.getChosenCard() == -1) {
 				// check if player already used this card
-				if(player.getUsedCards().contains(playCardMesg.getCardID())) {
+				if(!player.getUsedCards().contains(playCardMesg.getCardID())) {
 					// mark this card as used and set player to alreadyChose
 					player.getUsedCards().add(playCardMesg.getCardID());
 					player.setChosenCard(playCardMesg.getCardID());
-					
-					// notify other players that this player chose a card
-					PlayCardMessage plCrdMesg = new PlayCardMessage(player.getName(), player.getJid(), 0);
-					MessageWrapper wrppr = new MessageWrapper(true, plCrdMesg.toXML(), MucConnection.TYPE_PLAYCARD);
-					Message finalMesg = new Message();
-					finalMesg.setBody(wrppr.toXML());
-					mServiceInstance.getMucConnection().sendMessagetoMuc(finalMesg);
 				}
 			}
 		}
-		
+
 		// check if round is finished
 		if(mServiceInstance.getGame().checkRoundOver()) {
 			// increment winner's number of wins

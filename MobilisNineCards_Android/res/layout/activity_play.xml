@@ -47,24 +47,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.3"
-                    android:src="@drawable/ic_card_1"
-                    android:clickable="false" />
+                    android:src="@drawable/ic_card_1" />
 
                 <ImageButton
                     android:id="@+id/imageButton2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.3"
-                    android:src="@drawable/ic_card_2"
-                    android:clickable="false" />
+                    android:src="@drawable/ic_card_2" />
 
                 <ImageButton
                     android:id="@+id/imageButton3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.3"
-                    android:src="@drawable/ic_card_3"
-                    android:clickable="false" />
+                    android:src="@drawable/ic_card_3" />
             </TableRow>
 
             <TableRow
@@ -79,24 +76,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.3"
-                    android:src="@drawable/ic_card_4"
-                    android:clickable="false" />
+                    android:src="@drawable/ic_card_4" />
 
                 <ImageButton
                     android:id="@+id/imageButton5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.3"
-                    android:src="@drawable/ic_card_5"
-                    android:clickable="false" />
+                    android:src="@drawable/ic_card_5" />
 
                 <ImageButton
                     android:id="@+id/imageButton6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.3"
-                    android:src="@drawable/ic_card_6"
-                    android:clickable="false" />
+                    android:src="@drawable/ic_card_6" />
             </TableRow>
 
             <TableRow
@@ -111,24 +105,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.3"
-                    android:src="@drawable/ic_card_7"
-                    android:clickable="false" />
+                    android:src="@drawable/ic_card_7" />
 
                 <ImageButton
                     android:id="@+id/imageButton8"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.3"
-                    android:src="@drawable/ic_card_8"
-                    android:clickable="false" />
+                    android:src="@drawable/ic_card_8" />
 
                 <ImageButton
                     android:id="@+id/imageButton9"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.3"
-                    android:src="@drawable/ic_card_9"
-                    android:clickable="false" />
+                    android:src="@drawable/ic_card_9" />
             </TableRow>
         </TableLayout>
 

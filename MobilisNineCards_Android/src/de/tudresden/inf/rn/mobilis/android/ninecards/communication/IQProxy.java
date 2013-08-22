@@ -152,7 +152,6 @@ public class IQProxy {
 	 * @return the XMPPIQ
 	 */
 	public XMPPIQ beanToIQ(XMPPBean bean, boolean mergePayload) {
-System.out.println("converting bean to send: " + bean.toXML());
 		
 		int type;
 		switch (bean.getType()) {
@@ -368,7 +367,7 @@ System.out.println("converting bean to send: " + bean.toXML());
 						+ " to prevent GameService zombies from interfering"
 						+ " - see IQProxy.AbstractCallback.processIQ()";
 				Log.w(this.getClass().getName(), msg);
-System.out.println("--> AbstractCallback.processIQ() -> discarded");
+
 				return;
 			}
 
@@ -377,7 +376,7 @@ System.out.println("--> AbstractCallback.processIQ() -> discarded");
 
 			if (_waitingCallbacks.containsKey(inBean.getId())) {
 				IXMPPCallback callback = _waitingCallbacks.get(inBean.getId());
-System.out.println("--> AbstractCallback.processIQ() -> invoking callback " + callback.toString());
+				
 				if(callback != null) {
 
 					try {
@@ -386,7 +385,6 @@ System.out.println("--> AbstractCallback.processIQ() -> invoking callback " + ca
 				}
 				
 			} else {
-System.out.println("--> AbstractCallback.processIQ() -> weiterreichen");
 				bgService.processIq(inBean);
 			}
 		}
@@ -436,7 +434,7 @@ System.out.println("--> AbstractCallback.processIQ() -> weiterreichen");
 				}
 			}
 		} catch (Exception e) {
-			Log.e(this.getClass().getSimpleName(), "failed to parse XMPPIQ to XMPPBean: " + e.getMessage());
+			Log.e(this.getClass().getSimpleName(), "Failed to parse XMPPIQ to XMPPBean: " + e.getMessage());
 		}
 		
 		return null;

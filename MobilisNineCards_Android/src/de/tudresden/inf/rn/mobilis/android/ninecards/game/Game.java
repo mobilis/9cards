@@ -38,28 +38,38 @@ public class Game {
 	 */
 	public Game(String name) {
 		this.name = name;
-		this.gamePlayers = new HashMap<String, Player>();
+
+		round = 0;
+		gamePlayers = new HashMap<String, Player>();
 	}
 	
-	
-	/**
-	 * Returns the player corresponding to the JabberID that is used.
-	 * @param jid The JabberID of the player.
-	 * @return Player the player that matches the JabberID.
-	 */
-	public Player getPlayer(String jid) {
-		return gamePlayers.get(jid);
-	}
 	
 	public HashMap<String, Player> getPlayers() {
 		return gamePlayers;
 	}
 	
-	public void removePlayer(String jid) {
-		gamePlayers.remove(jid);
+	
+	public Player getWinner() {
+		Player winner = null;
+		
+		for(Player plr : gamePlayers.values()) {
+			if((winner == null) || (plr.getRoundsWon() > winner.getRoundsWon()))
+					winner = plr;
+		}
+		
+		return winner;
 	}
+	
 	
 	public String getName() {
 		return name != null ? name : "name not set";
+	}
+	
+	public void setRound(int round) {
+		this.round = round;
+	}
+	
+	public int getRound() {
+		return round;
 	}
 }

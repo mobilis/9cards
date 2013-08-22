@@ -258,7 +258,7 @@ public class CreateGameActivity extends PreferenceActivity {
 
 		@Override
 		public void processPacket(XMPPBean inBean) {
-System.out.println("GameStateCreateGame received bean: " + inBean.toXML());		
+			
 			// Handle error bean
 			if(inBean.getType() == XMPPBean.TYPE_ERROR) {
 				Log.e(this.getClass().getSimpleName(), "IQ Type ERROR: " + inBean.toXML());

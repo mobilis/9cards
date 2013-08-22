@@ -267,10 +267,6 @@ public class OpenGamesActivity extends Activity {
         			? List.get(position).Name
         			: List.get(position).Jid);
         	view.setTag(tv_name);
-        	
-        	TextView tv_openGames = (TextView)view.findViewById(R.id.listitem_opengames_players);
-        	tv_openGames.setText(List.get(position).Players);	        	
-        	view.setTag(tv_openGames);
 	        
 	        return view;
 		}
@@ -285,9 +281,6 @@ public class OpenGamesActivity extends Activity {
     	/** The Game id. */
 	    public long GameId;
     	
-	    /** The Drawable id. */
-	    public int DrawableId;
-    	
 	    /** The Name. */
 	    public String Name;
     	
@@ -295,26 +288,25 @@ public class OpenGamesActivity extends Activity {
 	    public String Jid;
 
 	    public int ServiceVersion;
-    	
-	    /** The Players as string. */
-	    public String Players;
+
+	    /** The Drawable id. */
+	    public int DrawableId;
     	
     	/**
 	     * Instantiates a new OpenGameItem.
 	     *
 	     * @param gameId the id of the game
-	     * @param drawableId the drawable id for the icon of the listelement
 	     * @param jid the jid of the game service
 	     * @param name the name of the game
 	     * @param players the players which are currently in the game
 	     */
-	    public OpenGameItem(long gameId, int drawableId, String jid, int serviceVersion, String name, String players) {
+	    public OpenGameItem(long gameId, String jid, int serviceVersion, String name) {
     		this.GameId = gameId;
-			this.DrawableId = drawableId;
 			this.Jid = jid;
 			this.ServiceVersion = serviceVersion;
 			this.Name = name;
-			this.Players = players;
+
+			this.DrawableId = R.drawable.ic_game;
 		}
     }
     
@@ -353,7 +345,6 @@ public class OpenGamesActivity extends Activity {
 
 		@Override
 		public void processPacket(XMPPBean inBean) {
-System.out.println("GameStateOpenGames received bean: " + inBean.toXML());
 			
 			if(inBean.getType() == XMPPBean.TYPE_ERROR){
 				Log.e(this.getClass().getSimpleName(), "IQ Type ERROR: " + inBean.toXML());
@@ -382,8 +373,8 @@ System.out.println("GameStateOpenGames received bean: " + inBean.toXML());
 						if(gameInstances.size() > 0) {
 							mOpenGamesListAdapter.List.clear();
 							for(MobilisServiceInfo info : gameInstances) {
-								mOpenGamesListAdapter.List.add(new OpenGameItem(info.hashCode(), R.drawable.ic_game,
-										info.getJid(), Integer.parseInt(info.getVersion()), info.getServiceName(), ""));
+								mOpenGamesListAdapter.List.add(new OpenGameItem(info.hashCode(),
+										info.getJid(), Integer.parseInt(info.getVersion()), info.getServiceName()));
 							}
 							
 							mDiscoverGamesHandler.sendEmptyMessage(CODE_SERVICE_GAMES_AVAILABLE);

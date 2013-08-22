@@ -22,6 +22,7 @@ package de.tudresden.inf.rn.mobilis.services.ninecards;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Logger;
 
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.Card;
@@ -45,9 +46,8 @@ public class Game {
 	private HashMap<String, Player> gamePlayers;
 	/** The JID of the player who created the game. */
 	private String creator;
-	
-	/** The class specific Logger object. */
-	private final static Logger LOGGER = Logger.getLogger(Game.class.getCanonicalName());
+	/** The winner of a round, needed for repeated calls of "getRoundWinner()". */
+	private Player winnerOfRound;
 	
 	/** The state of the game. */
 	private State state;
@@ -55,6 +55,9 @@ public class Game {
 	public static enum State {
 		UNINITIALIZED, LOBBY, PLAY
 	}
+
+	/** The class specific Logger object. */
+	private final static Logger LOGGER = Logger.getLogger(Game.class.getCanonicalName());
 	
 
 	
@@ -68,6 +71,7 @@ public class Game {
 		this.gameOpen = false;
 		this.round = 0;
 		this.gamePlayers = new HashMap<String, Player>();
+		this.winnerOfRound = null;
         
 		this.state = State.UNINITIALIZED;
 	}
@@ -82,6 +86,8 @@ public class Game {
 		
 		for(Player player : gamePlayers.values())
 			player.setChosenCard(-1);
+		
+		winnerOfRound = null;
 	}
 	
 	
@@ -99,18 +105,38 @@ public class Game {
 	
 	
 	/**
-	 * Returns the player that played the highest card in this round.
+	 * Returns the player that played the highest card in this round
+	 * or chooses one by random if more than one player played the same
+	 * highest card.
 	 * @return
 	 */
 	public Player getRoundWinner() {
-		Player winner = null;
-		for(Player plr : gamePlayers.values()) {
-			if((winner == null) || (plr.getChosenCard() > winner.getChosenCard())) {
-				winner = plr;
+		
+		if(winnerOfRound == null) {
+			
+			List<Player> potentialWinners = new ArrayList<Player>();
+			for (Player plr : gamePlayers.values()) {
+				
+				// if list of potential winners is empty, add current player
+				if (potentialWinners.size() == 0)
+					potentialWinners.add(plr);
+
+				// else if current player played same card as potential winners, add him to them
+				else if (plr.getChosenCard() == potentialWinners.get(0).getChosenCard())
+					potentialWinners.add(plr);
+
+				// else if current player played higher card than potential winners, remove them and add him
+				else if (plr.getChosenCard() > potentialWinners.get(0).getChosenCard()) {
+					potentialWinners.clear();
+					potentialWinners.add(plr);
+				}
 			}
+
+			// return one of the potential winners by random
+			winnerOfRound = potentialWinners.get(new Random().nextInt(potentialWinners.size()));
 		}
 		
-		return winner;
+		return winnerOfRound;
 	}
 	
 	
@@ -172,8 +198,8 @@ public class Game {
 	}
 	
 	/**
-	 * Removes a player by using his jid. Also removes him from the chat.
-	 * @param jid the jid of the player to be kicked
+	 * Removes a player by using his JID. Also removes him from the chat.
+	 * @param jid the JID of the player to be kicked
 	 */
 	public void removePlayerByJid(String jid){
 		gamePlayers.remove(jid);

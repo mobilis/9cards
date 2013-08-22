@@ -22,6 +22,8 @@ package de.tudresden.inf.rn.mobilis.android.ninecards.game;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.Card;
+
 
 /**
  * The Class for representing a specific player.
@@ -30,13 +32,16 @@ public class Player {
 	
 	/** The player's jid. */
 	private String jid;
+	
 	/** The player's name. */
 	private String name;
 
-	/** The cards (values from 1-9) which the player already used */
+	/** The cards which were already used. */
 	private List<Integer> usedCards;
+	
 	/** The number of rounds this player won during the game. */
 	private int roundsWon;
+	
 	/** The card which was chosen for the current round; -1 if the player didn't chose yet. */
 	private int chosenCard;
 	
@@ -54,8 +59,11 @@ public class Player {
 		
 		this.roundsWon = 0;
 		this.chosenCard = -1;
-		
 		this.usedCards = new ArrayList<Integer>(9);
+		
+		// assure that the name is set
+		if(this.name == null || this.name.length() == 0)
+			this.name = jid.substring(0, jid.indexOf("@"));
 	}
 	
 	
@@ -95,22 +103,42 @@ public class Player {
 	}
 	
 	
+	public void setRoundsWon(int roundsWon) {
+		this.roundsWon = roundsWon;
+	}
+	
+	
 	/**
-	 * Returns a list containing the cards the player already used.
-	 * @return a list containing the card values which were already used
+	 * 
+	 * @return
 	 */
 	public List<Integer> getUsedCards() {
 		return usedCards;
 	}
 	
 	
-	public String getUsedCardsAsString() {
+	public void setUsedCards(List<Card> cards) {
+		usedCards.clear();
+		for(Card card : cards)
+			if(card.getAlreadyUsed())
+				usedCards.add(card.getValue());
+	}
+	
+	
+	public String getUsedCardsAsString(boolean ownPlayer) {
 		String str = "";
 		
-		for(int i=0; i<usedCards.size() -1; i++)
+		for(int i=usedCards.size() -1; i>=0; i--)
 			str += usedCards.get(i) + ", ";
-		if(usedCards.size() > 0)
-			str += usedCards.get(usedCards.size() -1);
+		
+		if(chosenCard > -1)
+			str = ownPlayer ? chosenCard + ", " + str : "?, " + str; 
+		
+		if(str.length() > 0)
+			str = str.substring(0, str.lastIndexOf(","));
+		
+		else if(str.length() == 0)
+			str = " - ";
 		
 		return str;
 	}

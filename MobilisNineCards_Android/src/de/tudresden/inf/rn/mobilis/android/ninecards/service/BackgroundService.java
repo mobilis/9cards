@@ -6,10 +6,12 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
+import de.tudresden.inf.rn.mobilis.android.ninecards.activity.PlayActivity.GameStatePlay;
 import de.tudresden.inf.rn.mobilis.android.ninecards.communication.MXAProxy;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.Game;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 
 /*******************************************************************************
  * Copyright (C) 2013 Technische Universität Dresden
@@ -55,7 +57,6 @@ public class BackgroundService extends Service {
 	
 	/** Whether the player is the one who created the game. */
 	private boolean isCreator;
-
 	
 	private int serviceVersion;
 	
@@ -72,7 +73,7 @@ public class BackgroundService extends Service {
     	super.onCreate();
 
 		mMxaProxy = new MXAProxy(this);
-		
+	
 		Log.v(this.getClass().getName(), this.getClass().getName() + " started");
     }
     
@@ -113,18 +114,31 @@ public class BackgroundService extends Service {
 	// =====================================================================================
 	// Message processing methods
 	// -------------------------------------------------------------------------------------
-	public void processMucMessage(String sender, String body) {
-		//TODO
-	}
-	
-	
 	/**
 	 * 
 	 * @param inBean
 	 */
 	public void processIq(XMPPBean inBean) {
+		Log.i(this.getClass().getSimpleName(), "Incoming IQ from " + inBean.getFrom() + ": " + inBean.toXML());
+		
 		if(gameState != null)
 			gameState.processPacket(inBean);
+		
+		else Log.e(this.getClass().getSimpleName(), "Couldn't pass IQ to GameState because GameState was null!");
+	}
+	
+	
+	/**
+	 * 
+	 * @param message
+	 */
+	public void processMucMessage(XMPPInfo xmppInfo) {
+		
+		if(!(gameState instanceof GameStatePlay))
+			Log.e(this.getClass().getSimpleName(), "MUC Messages only allowed in GameStatePlay!");
+		
+		else
+			((GameStatePlay) gameState).processMucMessage(xmppInfo);
 	}
 	
 	

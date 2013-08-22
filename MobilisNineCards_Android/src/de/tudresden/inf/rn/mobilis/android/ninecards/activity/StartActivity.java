@@ -292,7 +292,7 @@ public class StartActivity extends Activity {
 
 		@Override
 		public void processPacket(XMPPBean inBean) {
-System.out.println("GameStateStart received bean: " + inBean.toXML());			
+		
 			if(inBean.getType() == XMPPBean.TYPE_ERROR)
 				Log.e(this.getClass().getSimpleName(), "IQ Type ERROR: " + inBean.toXML());
 		

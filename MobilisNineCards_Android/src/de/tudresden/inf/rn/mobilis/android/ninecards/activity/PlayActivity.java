@@ -1,5 +1,9 @@
 package de.tudresden.inf.rn.mobilis.android.ninecards.activity;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -17,7 +21,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -25,12 +29,20 @@ import android.widget.Toast;
 import de.tudresden.inf.rn.mobilis.android.ninecards.R;
 import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.IXMPPCallback;
 import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.JoinGameResponse;
+import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.MessageWrapper;
+import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.PlayCardMessage;
+import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.PlayerInfo;
+import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.PlayerInfosMessage;
+import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.PlayerLeavingMessage;
+import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.RoundCompleteMessage;
+import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.StartGameMessage;
 import de.tudresden.inf.rn.mobilis.android.ninecards.communication.MXAProxy;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.Player;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.BackgroundService;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.ServiceConnector;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 
 /*******************************************************************************
  * Copyright (C) 2013 Technische Universität Dresden
@@ -63,6 +75,8 @@ public class PlayActivity extends Activity {
 	/** A Dialog which blocks the screen until the creator of the game starts it. */
 	private ProgressDialog blockBeforeStartDialog;
 	
+	/** A Map containing all Cards/ImageButtons, with their value as key. */
+	private Map<Integer, ImageButton> cardSet;
 	
 	/**
 	 * 
@@ -71,23 +85,146 @@ public class PlayActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_play);
-
-		tbl_players = (TableLayout) findViewById(R.id.tbl_players);
+		
+		initComponents();
 		bindBackgroundService();
+		
+		// Show the Up button in the action bar.
+		setupActionBar();
+	}
+	
+	
+	/**
+	 * 
+	 */
+	private void initComponents() {
+		tbl_players = (TableLayout) findViewById(R.id.tbl_players);
+		cardSet = new HashMap<Integer, ImageButton>(9);
+		
+		cardSet.put(1, (ImageButton) findViewById(R.id.imageButton1));
+		cardSet.put(2, (ImageButton) findViewById(R.id.imageButton2));
+		cardSet.put(3, (ImageButton) findViewById(R.id.imageButton3));
+		cardSet.put(4, (ImageButton) findViewById(R.id.imageButton4));
+		cardSet.put(5, (ImageButton) findViewById(R.id.imageButton5));
+		cardSet.put(6, (ImageButton) findViewById(R.id.imageButton6));
+		cardSet.put(7, (ImageButton) findViewById(R.id.imageButton7));
+		cardSet.put(8, (ImageButton) findViewById(R.id.imageButton8));
+		cardSet.put(9, (ImageButton) findViewById(R.id.imageButton9));
+		
+		for(ImageButton button : cardSet.values()) {
+			button.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					handleCardClick((ImageButton) v);
+				}
+			});
+			
+			button.setClickable(false);
+			button.setAlpha(0);
+		}
 		
 		// display a progress dialog until the creator starts the game.
 		blockBeforeStartDialog = new ProgressDialog(this);
 		blockBeforeStartDialog.setTitle("Please wait until creator starts the game.");
-		blockBeforeStartDialog.setCancelable(false);
+		blockBeforeStartDialog.setCancelable(true);	//TODO
 		blockBeforeStartDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		blockBeforeStartDialog.setIndeterminate(true);
 		blockBeforeStartDialog.show();
-		//TODO --> das irgendwo nutzen
-		//if(blockBeforeStartDialog.isShowing())
-		//	blockBeforeStartDialog.dismiss();
+	}
+	
+	
+	/**
+	 * 
+	 * @param button
+	 */
+	private void handleCardClick(ImageButton button) {
 		
-		// Show the Up button in the action bar.
-		setupActionBar();
+		// check which card was tapped and act depending on whether it has already been used
+		List<Integer> myUsedCards = mBackgroundServiceConnector.getBackgroundService().getGame().getPlayers()
+				.get(mBackgroundServiceConnector.getBackgroundService().getUserJid()).getUsedCards();
+		
+		int validCardId = -1;
+		
+		switch(button.getId()) {
+		case R.id.imageButton1 :
+			if(!myUsedCards.contains(1)) {
+				((ImageButton) findViewById(R.id.imageButton1)).setAlpha(25);
+				validCardId = 1;
+			}
+			break;
+		case R.id.imageButton2 :
+			if(!myUsedCards.contains(2)) {
+				((ImageButton) findViewById(R.id.imageButton2)).setAlpha(25);
+				validCardId = 2;
+			}
+			break;
+		case R.id.imageButton3 :
+			if(!myUsedCards.contains(3)) {
+				((ImageButton) findViewById(R.id.imageButton3)).setAlpha(25);
+				validCardId = 3;
+			}
+			break;
+		case R.id.imageButton4 :
+			if(!myUsedCards.contains(4)) {
+				((ImageButton) findViewById(R.id.imageButton4)).setAlpha(25);
+				validCardId = 4;
+			}
+			break;
+		case R.id.imageButton5 :
+			if(!myUsedCards.contains(5)) {
+				((ImageButton) findViewById(R.id.imageButton5)).setAlpha(25);
+				validCardId = 5;
+			}
+			break;
+		case R.id.imageButton6 :
+			if(!myUsedCards.contains(6)) {
+				((ImageButton) findViewById(R.id.imageButton6)).setAlpha(25);
+				validCardId = 6;
+			}
+			break;
+		case R.id.imageButton7 :
+			if(!myUsedCards.contains(7)) {
+				((ImageButton) findViewById(R.id.imageButton7)).setAlpha(25);
+				validCardId = 7;
+			}
+			break;
+		case R.id.imageButton8 :
+			if(!myUsedCards.contains(8)) {
+				((ImageButton) findViewById(R.id.imageButton8)).setAlpha(25);
+				validCardId = 8;
+			}
+			break;
+		case R.id.imageButton9 :
+			if(!myUsedCards.contains(9)) {
+				((ImageButton) findViewById(R.id.imageButton9)).setAlpha(25);
+				validCardId = 9;
+			}
+			break;
+		}
+		
+		// if the tapped card has not been used yet, disable all cards until next round begins
+		if(validCardId > -1) {
+			for (int i=1; i<=cardSet.size(); i++) {
+				cardSet.get(i).setClickable(false);
+
+				// "turn over" cards that have not been used yet
+				if((i != validCardId) && (!myUsedCards.contains(i)))
+					cardSet.get(i).setAlpha(0);
+			}
+			
+			//  inform server
+			PlayCardMessage playCardMesg = new PlayCardMessage(
+					mBackgroundServiceConnector.getBackgroundService().getGame().getPlayers().get(mBackgroundServiceConnector.getBackgroundService().getUserJid()).getName(),
+					mBackgroundServiceConnector.getBackgroundService().getUserJid(),
+					validCardId );
+					
+			MessageWrapper wrapper = new MessageWrapper(true, playCardMesg.toXML(), "PlayCard");
+			mBackgroundServiceConnector.getBackgroundService().getMXAProxy().getMucProxy().sendMessageToMuc(wrapper.toXML());
+		}
+		
+		else
+			Toast.makeText(this, "This card has already been used", Toast.LENGTH_LONG).show();
 	}
 	
 	
@@ -139,8 +276,7 @@ public class PlayActivity extends Activity {
 				mJoinGameHandler.sendEmptyMessage(0);
 			}
 
-			// if the player is the one who created the game, he'll be enabled
-			// to start it
+			// if the player is the one who created the game, he'll be enabled start it
 			boolean isOwnGame = bean.getCreatorJid().equals(mBackgroundServiceConnector.getBackgroundService().getUserJid());
 			if (isOwnGame)
 				mJoinGameHandler.sendEmptyMessage(1);
@@ -154,37 +290,34 @@ public class PlayActivity extends Activity {
 		@Override
 		public void handleMessage(Message msg) {
 			
+			// If joining failed, notify user and go back to open games view
+			if (msg.obj != null) {
+				Log.e(this.getClass().getSimpleName(), "Failed to join game (" + msg.obj.toString() + ")");
+				Toast.makeText(PlayActivity.this, "Failed to join game (" + msg.obj.toString() + ")", Toast.LENGTH_LONG).show();
+				PlayActivity.this.finish();
+			}
+			
 			// If joining game was successful, enter chatroom
-			if (msg.what == 0) {
-				if(!mMxaProxy.getMucProxy().hasJoinedRoom()) {
-		/*			try {
-						mMxaProxy.getMucProxy().connectToMUC(
-								mBackgroundServiceConnector.getBackgroundService().getMucRoomId(),
-								mBackgroundServiceConnector.getBackgroundService().getMucRoomPw());
+			else if (msg.what == 0) {
+				try {
+					mMxaProxy.getMucProxy().connectToMUC(
+							mBackgroundServiceConnector.getBackgroundService().getMucRoomId(),
+							mBackgroundServiceConnector.getBackgroundService().getMucRoomPw());
 
-						mMxaProxy.getMucProxy().registerIncomingMessageObserver(PlayActivity.this, mMucHandler);
-						
-	System.out.println("verbunden mit MUC!");
-	mMxaProxy.getMucProxy().sendMessageToMuc("Dies ist ein Test-Body! <>");
+					mMxaProxy.getMucProxy().registerIncomingMessageObserver(
+							PlayActivity.this, mMucHandler);
+					Log.i(this.getClass().getSimpleName(), "Connected to MUC");
 
-					} catch (RemoteException e) {
-						Log.e(this.getClass().getSimpleName(), "Failed to connect to MUC");
-						Toast.makeText(PlayActivity.this, "Failed to connect to chat", Toast.LENGTH_LONG).show();
-						PlayActivity.this.finish();
-					}*/
+				} catch (RemoteException e) {
+					Log.e(this.getClass().getSimpleName(), "Failed to connect to MUC");
+					Toast.makeText(PlayActivity.this, "Failed to connect to chat", Toast.LENGTH_LONG).show();
+					PlayActivity.this.finish();
 				}
 			}
 			
 			// only fired for creator of the game, enables him to start it
-			if (msg.what == 1) {
+			else if (msg.what == 1) {
 				enableStartButton();
-			}
-
-			// If joining failed, notify user and go back to open games view
-			else if (msg.obj != null) {
-				Log.e(this.getClass().getSimpleName(), "Failed to join game (" + msg.obj.toString() + ")");
-				Toast.makeText(PlayActivity.this, "Failed to join game (" + msg.obj.toString() + ")", Toast.LENGTH_LONG).show();
-				PlayActivity.this.finish();
 			}
 		}
 	};
@@ -210,10 +343,9 @@ public class PlayActivity extends Activity {
 	
 	
 	/**
-	 * The handler to update the players view if something changed, like new
-	 * player joined the game or the card infos after each round.
+	 * The handler to update the players view if something changed, like a player
+	 * joined/left the game or the card infos changed after finishing of a round.
 	 */
-	//TODO --> kann man vllt auch so irgendwie aufrufen
 	private Handler mUpdatePlayersHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
@@ -233,13 +365,35 @@ public class PlayActivity extends Activity {
 	};
 	
 	
-	private Handler mPlayerLeavingHandler = new Handler() {
-
+	/**
+	 * 
+	 */
+	private Handler mRoundCompleteHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
-			// TODO --> hier player-table updaten oder so
+			
+			if(msg.obj != null) {
+				String text = "Round " + (mBackgroundServiceConnector.getBackgroundService().getGame().getRound() -1) + " completed!"
+						+ " The point goes to " + msg.obj.toString();
+				Toast.makeText(PlayActivity.this, text, Toast.LENGTH_LONG).show();
+			}
+			
+			else {
+				String text = "The game has finished! Winner is "
+						+ mBackgroundServiceConnector.getBackgroundService().getGame().getWinner().getName()
+						+ " (" + mBackgroundServiceConnector.getBackgroundService().getGame().getWinner().getRoundsWon() + " wins)";
+				Toast.makeText(PlayActivity.this, text, Toast.LENGTH_LONG).show();
+				
+				// send leave message to muc and finish game
+				PlayerLeavingMessage leavingMesg = new PlayerLeavingMessage(mBackgroundServiceConnector.getBackgroundService().getUserJid());
+				MessageWrapper wrapper = new MessageWrapper(true, leavingMesg.toXML(), "PlayerLeaving");
+				mBackgroundServiceConnector.getBackgroundService().getMXAProxy().getMucProxy().sendMessageToMuc(wrapper.toXML());
+				
+				PlayActivity.this.finish();
+			}
 		}
 	};
+	
 	
 	
 	/**
@@ -259,13 +413,14 @@ public class PlayActivity extends Activity {
 
 		// Set the cards which the player already used
 		TextView tv_used_cards = new TextView(PlayActivity.this);
-		tv_used_cards.setText(player.getUsedCardsAsString());
+		boolean ownPlayer = player.getJid().equals(mBackgroundServiceConnector.getBackgroundService().getUserJid());
+		tv_used_cards.setText(player.getUsedCardsAsString(ownPlayer));
 		tv_used_cards.setGravity(Gravity.CENTER);
 		tv_used_cards.setPadding(3, 0, 0, 10);
 		
 		// Set the number of rounds which the player already won
 		TextView tv_rounds_won = new TextView(PlayActivity.this);
-		tv_rounds_won.setText(player.getRoundsWon());
+		tv_rounds_won.setText(player.getRoundsWon() + "");
 		tv_rounds_won.setGravity(Gravity.RIGHT);
 		tv_rounds_won.setPadding(3, 0, 0, 10);
 
@@ -290,26 +445,26 @@ public class PlayActivity extends Activity {
 		runOnUiThread(new Runnable() {
 			public void run() {
 				
-				Button btn_ready = (Button) findViewById(R.id.btn_ready);
+				final Button btn_ready = (Button) findViewById(R.id.btn_ready);
 				btn_ready.setText(getResources().getString(R.string.txt_btn_play_start_2));
 
 				btn_ready.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						//TODO --> StartGame senden
-						((ImageView) findViewById(R.id.imageButton1)).setClickable(true);
-						((ImageView) findViewById(R.id.imageButton2)).setClickable(true);
-						((ImageView) findViewById(R.id.imageButton3)).setClickable(true);
-						((ImageView) findViewById(R.id.imageButton4)).setClickable(true);
-						((ImageView) findViewById(R.id.imageButton5)).setClickable(true);
-						((ImageView) findViewById(R.id.imageButton6)).setClickable(true);
-						((ImageView) findViewById(R.id.imageButton7)).setClickable(true);
-						((ImageView) findViewById(R.id.imageButton8)).setClickable(true);
-						((ImageView) findViewById(R.id.imageButton9)).setClickable(true);
+						
+						// embed start message into message wrapper
+						StartGameMessage startMesg = new StartGameMessage();
+						MessageWrapper wrapper = new MessageWrapper(true, startMesg.toXML(), "StartGame");
+						mBackgroundServiceConnector.getBackgroundService().getMXAProxy().getMucProxy().sendMessageToMuc(wrapper.toXML());
+
+						btn_ready.setEnabled(false);
 					}
 				});
 
 				btn_ready.setEnabled(true);
+				
+				if(blockBeforeStartDialog.isShowing())
+					blockBeforeStartDialog.dismiss();
 			}
 		});
 	}
@@ -342,36 +497,138 @@ public class PlayActivity extends Activity {
 }
 	
 	
-	private class GameStatePlay extends GameState {
+	public class GameStatePlay extends GameState {
 
 		@Override
 		public void processPacket(XMPPBean inBean) {
-			
-			System.out.println("GameStatePlay received packet: " + inBean.toXML());
 
 			if (inBean.getType() == XMPPBean.TYPE_ERROR) {
 				Log.e(PlayActivity.class.getSimpleName(), "IQ Type ERROR: " + inBean.toXML());
 			}
-
-			// TODO --> ausarbeiten
 			
-			// Other Beans of type get or set will be responded with an ERROR
-			else if (inBean.getType() == XMPPBean.TYPE_GET || inBean.getType() == XMPPBean.TYPE_SET) {
+			// in this game state we only expect MUC messages
+			else {
 				inBean.errorType = "wait";
 				inBean.errorCondition = "unexpected-request";
-				inBean.errorText = "This request is not supportet at this game state(Lobby)";
+				inBean.errorText = "This request is not supportet at this game state(Play)";
 
 				mMxaProxy.getIqProxy().sendXMPPBeanError(inBean);
 			}
 		}
+		
+		
+		/**
+		 * 
+		 * @param message
+		 */
+		public void processMucMessage(XMPPInfo message) {
+			
+			if(message instanceof PlayerInfosMessage) {
+				List<PlayerInfo> infos = ((PlayerInfosMessage) message).getPlayers();
+				for(PlayerInfo info : infos) {
+					Player player = new Player(info.getPlayersJID(), info.getPlayersName());
+					player.setUsedCards(info.getPlayersUsedCards());
+					player.setRoundsWon(info.getPlayersWins());
+					
+					mBackgroundServiceConnector.getBackgroundService().getGame().getPlayers().put(player.getJid(), player);
+				}
+				mUpdatePlayersHandler.sendEmptyMessage(0);
+			}
+			
+			else if(message instanceof StartGameMessage) {
+				if(mBackgroundServiceConnector.getBackgroundService().getGame().getRound() == 0) {
 
+					// set initial round and enable card buttons 
+					mBackgroundServiceConnector.getBackgroundService().getGame().setRound(1);
+					for(ImageButton button : cardSet.values()) {
+						button.setAlpha(255);
+						button.setClickable(true);
+					}
+					
+					// display round in title bar
+					setTitle(
+							mBackgroundServiceConnector.getBackgroundService().getGame().getName()
+							+ " - Round "
+							+ mBackgroundServiceConnector.getBackgroundService().getGame().getRound());
+					
+					// disable waiting dialog for not-creator players
+					if(blockBeforeStartDialog.isShowing())
+						blockBeforeStartDialog.dismiss();
+				}
+			}
+			
+			else if(message instanceof PlayCardMessage) {
+				Player player = mBackgroundServiceConnector.getBackgroundService().getGame().getPlayers().get(
+						((PlayCardMessage) message).getPlayersJID());
+				
+				if(player == null)
+					return;
+				
+				// check if card has already been used
+				if (!player.getUsedCards().contains(((PlayCardMessage) message).getCardID()))
+					// check if player has already chosen a card in this round
+					if (player.getChosenCard() == -1)
+						player.setChosenCard(((PlayCardMessage) message).getCardID());
+
+				mUpdatePlayersHandler.sendEmptyMessage(0);
+			}
+			
+			else if(message instanceof RoundCompleteMessage) {
+				
+				// check if completed message corresponds to current round
+				if(((RoundCompleteMessage) message).getRoundID() == mBackgroundServiceConnector.getBackgroundService().getGame().getRound()) {		
+					mBackgroundServiceConnector.getBackgroundService().getGame().setRound(((RoundCompleteMessage) message).getRoundID() +1);
+					
+					// update all players
+					List<PlayerInfo> infos = ((RoundCompleteMessage) message).getPlayerInfos();
+					for (PlayerInfo info : infos) {
+						Player player = mBackgroundServiceConnector.getBackgroundService().getGame().getPlayers().get(info.getPlayersJID());
+						player.setUsedCards(info.getPlayersUsedCards());
+						player.setRoundsWon(info.getPlayersWins());
+						player.setChosenCard(-1);
+					}					
+					
+					// update players list on top of screen
+					mUpdatePlayersHandler.sendEmptyMessage(0);
+					
+					// update round in title bar
+					setTitle(
+							mBackgroundServiceConnector.getBackgroundService().getGame().getName()
+							+ " - Round "
+							+ mBackgroundServiceConnector.getBackgroundService().getGame().getRound());
+				
+					// display a Toast about the winner of the round
+					Message mesg = new Message();
+					mesg.obj = ((RoundCompleteMessage) message).getRoundWinnersName();
+					mRoundCompleteHandler.sendMessage(mesg);
+					
+					// check if the game is finished
+					if(((RoundCompleteMessage) message).getEndOfGame()) {
+						mRoundCompleteHandler.sendEmptyMessage(0);
+					}
+					
+					// if not, re-enable remaining cards
+					else {
+						List<Integer> myUsedCards = mBackgroundServiceConnector.getBackgroundService().getGame().getPlayers()
+							.get(mBackgroundServiceConnector.getBackgroundService().getUserJid()).getUsedCards();
+
+						for(Map.Entry<Integer, ImageButton> entry : cardSet.entrySet()) {
+							if(!myUsedCards.contains(entry.getKey())) {
+								entry.getValue().setClickable(true);
+								entry.getValue().setAlpha(255);
+							}
+						}
+					}
+				}
+			}
+			
+			else if(message instanceof PlayerLeavingMessage) {
+				String jid = ((PlayerLeavingMessage) message).getLeavingJID();
+				mBackgroundServiceConnector.getBackgroundService().getGame().getPlayers().remove(jid);
+				mUpdatePlayersHandler.sendEmptyMessage(0);
+			}
+		}
 	}
-	
-	
-	
-	
-	
-	
 	
 	
 

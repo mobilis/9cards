@@ -20,14 +20,5 @@
 		android:layout_gravity="left|center_vertical"
 		android:textSize="20dip"
 		android:layout_marginLeft="10dip" />
-		
-	<TextView
-		android:id="@+id/listitem_opengames_players"
-        android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_weight="1"
-		android:gravity="right"
-		android:textSize="20dip"
-		android:layout_marginLeft="10dip" />
   
 </LinearLayout>
