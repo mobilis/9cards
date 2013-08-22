@@ -1,44 +1,254 @@
-/* mobilis 9Cards
- * 
- */
+
+var ninecards = {
 
 
-var mobilisninecards = {
 
-	HTTPBIND : "http://mobilis-dev.inf.tu-dresden.de/http-bind/",
 
-	connect : function(uFullJid, uPassword, mBareJid) {
-		Mobilis.utils.trace("Trying to establish a connection to Mobilis");
+	connect : function(userJid, userPassword, serverURL) {
+
 		Mobilis.core.connect(
-			uFullJid, 
-			uPassword, 
-			mBareJid, 
-			mobilisninecards.HTTPBIND, 
-			function(success,message) {
-			
-				console.log('connect success:', success, message);
-				mobilisninecards.addHandlers();
-			},
-			function(error,message) {
-			
-				console.log('connect error:', error, message);
+			serverURL, 
+			userJid, 
+			userPassword, 
+			function(status) {
+				if (status == Mobilis.core.Status.CONNECTED) {
+					ninecards.queryGames();
+				}
 			}
 		);
 	},
 
+
+
+
+
+	queryGames : function() {
+
+		Mobilis.core.mobilisServiceDiscovery(
+			[Mobilis.ninecards.NS.SERVICE],
+			function(result) {
+				$('#game-list').empty().listview();
+
+				if ($(result).find('mobilisService').length){
+					$(result).find('mobilisService').each( function() {
+						Mobilis.core.SERVICES[$(this).attr('namespace')] = {
+							'version': $(this).attr('version'),
+							'jid': $(this).attr('jid'),
+							'servicename' : $(this).attr('serviceName')
+						};
+						$('#game-list').append(
+							'<li><a class="available-game" id="'
+							+ $(this).attr('jid')
+							+ '" href="#game" data-transition="slide">'
+							+ $(this).attr('serviceName')
+							+ ' (' + Strophe.getResourceFromJid($(this).attr('jid')) + ')'
+							+ '</a></li>');
+					});
+				} else {
+					$('#game-list').append('<li>No games found</li>');
+				}
+				$('#game-list').listview('refresh');
+			},
+			function(error) {
+				console.error('queryGames error:',error);
+			}
+		);
+
+	},
+
+
+
+
+
+	createGame : function(gameName, maxPlayers, numberOfRounds) {
+
+		Mobilis.ninecards.createServiceInstance(
+			gameName,
+			function(result){
+
+				var gameJid = ($(result).find('jidOfNewService').text());
+
+				Mobilis.ninecards.ConfigureGame(
+					gameJid, gameName, maxPlayers, numberOfRounds, 
+					function(result){
+						ninecards.joinGame(gameJid);
+						jQuery.mobile.changePage('#game', { transition: "slide"} );
+					},
+					function(error){
+						console.error('ConfigureGame error',error);
+					}
+				);
+			},
+			function(error){
+				console.error('createServiceInstance error',error);
+			}
+
+		);
+	},
+
+
+
+
+
+	joinGame : function(gameJid){
+
+		Mobilis.ninecards.joinGame(gameJid,
+			function(result){
+
+				ninecards.storeData({
+					'chatRoom':     ($(result).find('ChatRoom').text()),
+					'chatPassword':     ($(result).find('ChatPassword').text()),
+					'creatorJid':   ($(result).find('CreatorJid').text())
+				});
+
+				ninecards.joinMuc();
+
+			},
+			function(error){
+				console.error('joinGame error',error);
+			}
+		);
+	},
+
+
+
+
+
+	joinMuc : function() {
+
+		var chatRoom = ninecards.loadData(['chatRoom']).chatRoom; 
+		var userName = ninecards.loadData(['username']).username;
+		var chatPassword = ninecards.loadData(['chatPassword']).chatPassword;
+
+		Mobilis.connection.muc.join(
+			chatRoom,
+			userName,
+			ninecards.onMessage,
+			ninecards.onPresence,
+			ninecards.onRoster,
+			chatPassword,
+			null, null
+		);
+
+	},
+
+
+
+
+
+	processSystemMessage : function (message) {
+
+		console.log('system message:', message);
+
+		var messageType = $(message).find('MessageType');
+		var messageString = $(message).find('MessageString');
+
+		console.log(messageString, messageType);
+
+	},
+
+
+
+
+
+	processChatMessage : function (message) {
+
+		console.log('chat message:',message);
+
+	},
+
+
+
+
+
+	onMessage : function (message){
+
+		var messageBody = $(message).find('body').text();
+		var messageXml = $.parseXML('<xml>'+messageBody+'</xml>');
+
+		if ( $(messageXml).find('IsSystemMessage').length > 0 ) {
+			ninecards.processSystemMessage(messageXml);
+		} else {
+			ninecards.processChatMessage(messageBody);
+		}
+
+		return true;
+	},
+
+
+
+
+
+	onPresence : function (presence){
+		
+		var presenceJid = $(presence).find('item').attr('jid');
+
+		if ($(presence).attr('type') == 'unavailable') {
+			$('#'+ninecards.clearJid(presenceJid)).remove();
+			$('#players-list').listview('refresh');
+		} else {
+			$('#players-list').append(
+				'<li class="player" id="' + ninecards.clearJid(presenceJid) + '">'
+				+ presenceJid +
+				'<span class="ui-li-count">4</span></li>'
+			).listview('refresh');
+		}
+
+		return true;
+	},
+
+
+
+
+
+	onRoster : function (roster){
+		console.log('the roster:', roster);
+		return true;
+	},
+
+
+
+
+
+	sendMessage : function (message) {
+		Mobilis.connection.muc.message(
+			ninecards.loadData(['chatRoom']).chatRoom, 
+			null, // no private message
+			message, 
+			null, // no html markup
+			'groupchat');
+		return true;
+	},
+
+
+
+
+
+	clearJid : function(jid){
+		return jid = jid.replace(/@/g,'-').replace(/\./g,'-').replace(/\//g,'-');
+	},
+
+
+
+
+
 	loadData : function(data) {
 		var loadedObjects = {};
 		$.each(data, function(index,value){
-			loadedObjects[value] = localStorage.getItem('mobilis.9cards.'+value);
-			console.log('loaded from localStorage:', value, '=', loadedObjects[value]);
+			loadedObjects[value] = localStorage.getItem('mobilis.ninecards.'+value);
+			// console.log('loaded from localStorage:', value, '=', loadedObjects[value]);
 		});
 		return loadedObjects;
 	},
 
+
+
+
+
 	storeData : function(storedObjects) {
 
 		$.each(storedObjects, function(index,value){
-			localStorage.setItem('mobilis.9cards.'+index, value);
+			localStorage.setItem('mobilis.ninecards.'+index, value);
 			console.log('stored in localStorage:', index, '=', value);
 		});
 		return true;
@@ -51,11 +261,15 @@ var mobilisninecards = {
 
 
 
+
+
+
+
 /* jQuery Event Handlers */
 
-$(document).on('pageshow', '#settings-page', function() {
+$(document).on('pageshow', '#settings', function() {
 
-	var settingsData = mobilisninecards.loadData(['username','gameserver','jid','password']);
+	var settingsData = ninecards.loadData(['username','gameserver','jid','password']);
 
 	$('#settings-form #username').val(settingsData.username);
 	$('#settings-form #gameserver').val(settingsData.gameserver);
@@ -68,17 +282,17 @@ $(document).on('pageshow', '#settings-page', function() {
 
 
 
-$(document).on('pageshow', '#games-page', function(){
+$(document).on('pageshow', '#games', function(){
 	
-	var connData = mobilisninecards.loadData(['gameserver','jid','password']);
+	var connData = ninecards.loadData(['gameserver','jid','password']);
 
-	mobilisninecards.connect(
+	ninecards.connect(
 		connData.jid,
 		connData.password,
 		connData.gameserver
 		);
 
-	return true;
+	// return true;
 });
 
 
@@ -86,12 +300,56 @@ $(document).on('pageshow', '#games-page', function(){
 
 $(document).on('vclick', '#settings-form #submit', function() {
 
-	mobilisninecards.storeData({
-		'username': 	$('#settings-form #username').val(),
-		'gameserver': 	$('#settings-form #gameserver').val(),
-		'jid': 			$('#settings-form #jid').val(),
-		'password': 	$('#settings-form #password').val()
+	ninecards.storeData({
+		'username':     $('#settings-form #username').val(),
+		'gameserver':   $('#settings-form #gameserver').val(),
+		'jid':          $('#settings-form #jid').val(),
+		'password':     $('#settings-form #password').val()
 	});
 
 	return true;
 });
+
+
+
+
+$(document).on('vclick', '#create-game-form #submit', function() {
+
+	var gamename = $('#create-game-form #gamename').val();
+	var numplayers = $('#create-game-form #numplayers').val();
+	var numrounds = $('#create-game-form #numrounds').val();
+	
+	if (gamename && numplayers && numrounds) {
+	
+		ninecards.createGame(gamename, numplayers, numrounds);
+	}
+	return false;
+});
+
+
+$(document).on('vclick', '.available-game', function () {
+
+	ninecards.joinGame( $(this).attr('id') );
+	
+});
+
+
+$(document).on('vclick', '#message-button', function() {
+	$('#message-container').popup('open', {
+		positionTo: 'window',
+		theme: 'b',
+		corners: true
+	});
+});
+
+
+
+$(document).on('vclick', '#message-form #submit', function() {
+	var message = $('#message-form #message').val();
+	if (message) {
+		ninecards.sendMessage(message);
+	}
+	$('#message-container').popup('close');
+	return false;
+});
+

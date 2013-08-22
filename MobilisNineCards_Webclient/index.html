@@ -10,7 +10,8 @@
 	<link rel="stylesheet" href="css/mobilisninecards.css">
 
 	<script src="js/libs/jquery-2.0.3.min.js"></script>
-	<script src="js/libs/strophe.min.js"></script>
+	<script src="js/libs/strophe.js"></script>
+	<script src="js/libs/strophe.muc.js"></script>
 	<script src="js/libs/jquery.mobile-1.3.2.min.js"></script>
 
 	<script src="js/mobilis/mobilis.js"></script>
@@ -21,21 +22,134 @@
 	<script src="js/mobilisninecards.js"></script>
 </head>
 <body>
-<div data-role="page">
+
+
+
+<div id="start" data-role="page">
 
 	<div data-role="header">
-		<h1>mobilis 9Cards</h1>
+		<h1>Mobilis 9Cards</h1>
 	</div><!-- /header -->
 
 	<div data-role="content">	
 
 		<div>
-			<a href="games.html" data-role="button" data-theme="b">Play 9Cards</a>
-			<a href="settings.html" data-role="button">Settings</a>
+			<a href="#games" data-role="button" data-theme="b">Play 9Cards</a>
+			<a href="#settings" data-role="button">Settings</a>
 		</div>
 
 	</div><!-- /content -->
 	
-</div><!-- /page -->
+</div><!-- /start-page -->
+
+
+
+
+
+<div id="settings" data-role="page">
+
+	<div data-role="header">
+		<a href="#start" data-icon="back">Back</a>
+		<h1>Mobilis 9Cards: Settings</h1>
+	</div><!-- /header -->
+
+	<div data-role="content">	
+
+		<form id="settings-form" method="post">
+			<input type="text" name="username" id="username" placeholder="Username" value="">
+			<input type="text" name="gameserver" id="gameserver" placeholder="Game Server" value="">
+			<input type="text" name="jid" id="jid" placeholder="Jabber ID" value="">
+			<input type="password" name="password" id="password" placeholder="Password" value="" autocomplete="off">
+			<input type="submit" name"submit" id="submit" value="Save settings" data-theme="b">
+		</form>
+
+	</div><!-- /content -->
+	
+</div><!-- /settings-page -->
+
+
+
+
+
+<div id="games" data-role="page">
+
+	<div data-role="header">
+		<a href="#start" data-icon="back">Back</a>
+		<h1>Mobilis 9Cards: Games</h1>
+		<a href="#create-game-popup" id="create-game-button" data-rel="popup" data-position-to="window" data-icon="plus">Create</a>
+	</div><!-- /header -->
+
+	<div data-role="content">	
+
+	<ul id="game-list" data-role="listview">
+	</ul>
+
+	</div><!-- /content -->
+	<div data-role="popup" id="create-game-popup" data-theme="a" class="ui-corner-all">
+	    <form id="create-game-form" method="post">
+	        <div style="padding:10px">
+	            <h3>Create new game:</h3>
+	            <label for="gamename" class="ui-hidden-accessible">game name:</label>
+	            <input type="text" name="gamename" id="gamename" value="asdf" placeholder="game name" data-theme="a">
+	            <label for="numplayers" class="ui-hidden-accessible">number of players:</label>
+	            <input type="text" name="numplayers" id="numplayers" value="4" placeholder="number of players" data-theme="a">
+	            <label for="numrounds" class="ui-hidden-accessible">number of rounds:</label>
+	            <input type="text" name="numrounds" id="numrounds" value="4" placeholder="number of rounds" data-theme="a">
+	            <button type="submit" id="submit" data-theme="b" data-icon="check">Create</button>
+	        </div>
+	    </form>
+	</div>
+</div><!-- /games-page -->
+
+
+
+
+
+<div id="game" data-role="page">
+
+	<div data-role="header">
+		<a id="exitgame-button" href="#games" data-icon="back" data-transition="slide" data-direction="reverse">Quit</a>
+		<h1>Mobilis 9Cards: Game</h1>
+		<a id="message-button" href="#" data-icon="info">Message</a>
+	</div><!-- /header -->
+
+	<div data-role="content">	
+
+	<ul id="players-list" data-role="listview" data-count-theme="c" data-inset="true"></ul>
+
+	<table id="numpad">
+		<tr>
+			<td><a href="#" data-role="button" data-theme="b" data-inline="false">1</a></td>
+			<td><a href="#" data-role="button" data-theme="b" data-inline="false">2</a></td>
+			<td><a href="#" data-role="button" data-theme="b" data-inline="false">3</a></td>
+		</tr>
+		<tr>
+			<td><a href="#" data-role="button" data-theme="b" data-inline="false">4</a></td>
+			<td><a href="#" data-role="button" data-theme="b" data-inline="false">5</a></td>
+			<td><a href="#" data-role="button" data-theme="b" data-inline="false">6</a></td>
+		</tr>
+		<tr>
+			<td><a href="#" data-role="button" data-theme="b" data-inline="false">7</a></td>
+			<td><a href="#" data-role="button" data-theme="b" data-inline="false">8</a></td>
+			<td><a href="#" data-role="button" data-theme="b" data-inline="false">9</a></td>
+		</tr>
+	</table>
+
+	</div><!-- /content -->
+
+	<div data-role="popup" id="message-container" data-theme="a" class="ui-corner-all">
+	    <form id="message-form" method="post">
+	        <div style="padding:10px;">
+	            <label for="message" class="ui-hidden-accessible">Message:</label>
+	            <input type="text" name="message" id="message" value="testmessage" placeholder="message" data-theme="a">
+	            <button type="submit" id="submit" data-theme="b" data-icon="check">Send</button>
+	        </div>
+	    </form>
+	</div>
+
+</div><!-- /game-page -->
+
+
+
 </body>
 </html>
