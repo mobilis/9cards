@@ -60,7 +60,7 @@
 			<input type="text" name="gameserver" id="gameserver" placeholder="Game Server" value="">
 			<input type="text" name="jid" id="jid" placeholder="Jabber ID" value="">
 			<input type="password" name="password" id="password" placeholder="Password" value="" autocomplete="off">
-			<input type="submit" name"submit" id="submit" value="Save settings" data-theme="b">
+			<input type="submit" name="submit" id="settings-submit" value="Save settings" data-theme="b">
 		</form>
 
 	</div><!-- /content -->
@@ -95,7 +95,7 @@
 	            <input type="text" name="numplayers" id="numplayers" value="4" placeholder="number of players" data-theme="a">
 	            <label for="numrounds" class="ui-hidden-accessible">number of rounds:</label>
 	            <input type="text" name="numrounds" id="numrounds" value="4" placeholder="number of rounds" data-theme="a">
-	            <button type="submit" id="submit" data-theme="b" data-icon="check">Create</button>
+	            <button type="submit" id="create-game-submit" data-theme="b" data-icon="check">Create</button>
 	        </div>
 	    </form>
 	</div>
@@ -119,30 +119,30 @@
 
 	<table id="numpad">
 		<tr>
-			<td><a href="#" data-role="button" data-theme="b" data-inline="false">1</a></td>
-			<td><a href="#" data-role="button" data-theme="b" data-inline="false">2</a></td>
-			<td><a href="#" data-role="button" data-theme="b" data-inline="false">3</a></td>
+			<td><a href="#" data-id="1" data-role="button" data-theme="b" data-inline="false">1</a></td>
+			<td><a href="#" data-id="2" data-role="button" data-theme="b" data-inline="false">2</a></td>
+			<td><a href="#" data-id="3" data-role="button" data-theme="b" data-inline="false">3</a></td>
 		</tr>
 		<tr>
-			<td><a href="#" data-role="button" data-theme="b" data-inline="false">4</a></td>
-			<td><a href="#" data-role="button" data-theme="b" data-inline="false">5</a></td>
-			<td><a href="#" data-role="button" data-theme="b" data-inline="false">6</a></td>
+			<td><a href="#" data-id="4" data-role="button" data-theme="b" data-inline="false">4</a></td>
+			<td><a href="#" data-id="5" data-role="button" data-theme="b" data-inline="false">5</a></td>
+			<td><a href="#" data-id="6" data-role="button" data-theme="b" data-inline="false">6</a></td>
 		</tr>
 		<tr>
-			<td><a href="#" data-role="button" data-theme="b" data-inline="false">7</a></td>
-			<td><a href="#" data-role="button" data-theme="b" data-inline="false">8</a></td>
-			<td><a href="#" data-role="button" data-theme="b" data-inline="false">9</a></td>
+			<td><a href="#" data-id="7" data-role="button" data-theme="b" data-inline="false">7</a></td>
+			<td><a href="#" data-id="8" data-role="button" data-theme="b" data-inline="false">8</a></td>
+			<td><a href="#" data-id="9" data-role="button" data-theme="b" data-inline="false">9</a></td>
 		</tr>
 	</table>
 
 	</div><!-- /content -->
 
-	<div data-role="popup" id="message-container" data-theme="a" class="ui-corner-all">
+	<div data-role="popup" id="message-popup" data-theme="a" class="ui-corner-all">
 	    <form id="message-form" method="post">
 	        <div style="padding:10px;">
 	            <label for="message" class="ui-hidden-accessible">Message:</label>
 	            <input type="text" name="message" id="message" value="testmessage" placeholder="message" data-theme="a">
-	            <button type="submit" id="submit" data-theme="b" data-icon="check">Send</button>
+	            <button type="submit" id="message-submit" data-theme="b" data-icon="check">Send</button>
 	        </div>
 	    </form>
 	</div>

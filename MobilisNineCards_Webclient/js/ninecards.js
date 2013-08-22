@@ -1,4 +1,3 @@
-
 var ninecards = {
 
 
@@ -140,10 +139,9 @@ var ninecards = {
 
 		console.log('system message:', message);
 
-		var messageType = $(message).find('MessageType');
-		var messageString = $(message).find('MessageString');
-
-		console.log(messageString, messageType);
+		// var messageType = $(message).find('MessageType');
+		// var messageString = $(message).find('MessageString');
+		// console.log(messageString, messageType);
 
 	},
 
@@ -224,6 +222,31 @@ var ninecards = {
 
 
 
+	sendCard : function(card, disableButton){
+		console.log('card', card);
+
+		ninecards.makeSystemMessage(card,'myType',function(xml){
+			console.log(xml);
+			ninecards.sendMessage(xml);
+			disableButton();
+
+		} );
+
+	},
+
+
+	makeSystemMessage : function(message,type,returnXml) {
+
+		var xmlString = $build('MobilisMessage',{type:'PlayerInfo'})
+			.c('IsSystemMessage').t('true').up()
+			.c('MessageString').t(message).up()
+			.c('MessageType').t(type).up()
+			.toString();
+
+		returnXml(xmlString);
+	},
+
+
 	clearJid : function(jid){
 		return jid = jid.replace(/@/g,'-').replace(/\./g,'-').replace(/\//g,'-');
 	},
@@ -290,15 +313,14 @@ $(document).on('pageshow', '#games', function(){
 		connData.jid,
 		connData.password,
 		connData.gameserver
-		);
+	);
 
-	// return true;
 });
 
 
 
 
-$(document).on('vclick', '#settings-form #submit', function() {
+$(document).on('vclick', '#settings-submit', function() {
 
 	ninecards.storeData({
 		'username':     $('#settings-form #username').val(),
@@ -313,18 +335,19 @@ $(document).on('vclick', '#settings-form #submit', function() {
 
 
 
-$(document).on('vclick', '#create-game-form #submit', function() {
+$(document).on('vclick', '#create-game-submit', function() {
 
-	var gamename = $('#create-game-form #gamename').val();
-	var numplayers = $('#create-game-form #numplayers').val();
-	var numrounds = $('#create-game-form #numrounds').val();
+	var gameName = $('#create-game-form #gamename').val();
+	var numPlayers = $('#create-game-form #numplayers').val();
+	var numRounds = $('#create-game-form #numrounds').val();
 	
-	if (gamename && numplayers && numrounds) {
-	
-		ninecards.createGame(gamename, numplayers, numrounds);
+	if (gameName && numPlayers && numRounds) {
+		ninecards.createGame(gameName, numPlayers, numRounds);
 	}
+	$('#create-game-popup').popup('close');
 	return false;
 });
+
 
 
 $(document).on('vclick', '.available-game', function () {
@@ -334,8 +357,9 @@ $(document).on('vclick', '.available-game', function () {
 });
 
 
+
 $(document).on('vclick', '#message-button', function() {
-	$('#message-container').popup('open', {
+	$('#message-popup').popup('open', {
 		positionTo: 'window',
 		theme: 'b',
 		corners: true
@@ -344,12 +368,23 @@ $(document).on('vclick', '#message-button', function() {
 
 
 
-$(document).on('vclick', '#message-form #submit', function() {
+$(document).on('vclick', '#message-submit', function() {
 	var message = $('#message-form #message').val();
 	if (message) {
 		ninecards.sendMessage(message);
 	}
-	$('#message-container').popup('close');
+	$('#message-popup').popup('close');
 	return false;
 });
 
+
+
+$(document).on('vclick', '#numpad a', function(card) {
+	var card  = $(this).attr('data-id');
+	if (card) {
+		ninecards.sendCard(card, function(){
+			$('a[data-id='+card+']').addClass('ui-disabled');
+		});
+	}
+	return false;
+});
