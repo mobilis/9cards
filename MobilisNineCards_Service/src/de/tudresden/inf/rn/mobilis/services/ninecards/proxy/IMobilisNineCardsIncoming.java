@@ -6,6 +6,4 @@ public interface IMobilisNineCardsIncoming {
 
 	XMPPBean onConfigureGame( ConfigureGameRequest in );
 
-	XMPPBean onJoinGame( JoinGameRequest in );
-
 }

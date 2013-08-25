@@ -6,7 +6,15 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 
 public class StartGameMessage implements XMPPInfo {
 
-public StartGameMessage(){}
+	private int rounds = Integer.MIN_VALUE;
+
+
+	public StartGameMessage( int rounds ) {
+		super();
+		this.rounds = rounds;
+	}
+
+	public StartGameMessage(){}
 
 
 
@@ -21,6 +29,9 @@ public StartGameMessage(){}
 				
 				if (tagName.equals(getChildElement())) {
 					parser.next();
+				}
+				else if (tagName.equals( "rounds" ) ) {
+					this.rounds = Integer.parseInt( parser.nextText() );
 				}
 				else
 					parser.next();
@@ -58,9 +69,21 @@ public StartGameMessage(){}
 	public String toXML() {
 		StringBuilder sb = new StringBuilder();
 
+		sb.append( "<rounds>" )
+			.append( this.rounds )
+			.append( "</rounds>" );
+
 		return sb.toString();
 	}
 
 
+
+	public int getRounds() {
+		return this.rounds;
+	}
+
+	public void setRounds( int rounds ) {
+		this.rounds = rounds;
+	}
 
 }

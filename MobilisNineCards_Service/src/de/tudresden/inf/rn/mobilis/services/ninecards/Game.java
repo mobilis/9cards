@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
 
-import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.Card;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.PlayerInfo;
 
 /**
@@ -38,8 +37,6 @@ public class Game {
 	/** The control. */
 	private NineCardsService mServiceInstance;
 	
-	/** Whether players can already/still join or not. */
-	private boolean gameOpen;
 	/** The current round of the game. */
 	private int round;
 	/** The game players (JID, player) */
@@ -48,12 +45,14 @@ public class Game {
 	private String creator;
 	/** The winner of a round, needed for repeated calls of "getRoundWinner()". */
 	private Player winnerOfRound;
+	/** The winner of the game, needed for repeated calls of "getGameWinner()". */
+	private Player winnerOfGame;
 	
 	/** The state of the game. */
 	private State state;
 	/** The possible states of the game. */
 	public static enum State {
-		UNINITIALIZED, LOBBY, PLAY
+		UNINITIALIZED, READY, PLAYING
 	}
 
 	/** The class specific Logger object. */
@@ -68,10 +67,10 @@ public class Game {
 	public Game(NineCardsService serviceInstance) throws Exception {
 		this.mServiceInstance = serviceInstance;
 
-		this.gameOpen = false;
 		this.round = 0;
 		this.gamePlayers = new HashMap<String, Player>();
 		this.winnerOfRound = null;
+		winnerOfGame = null;
         
 		this.state = State.UNINITIALIZED;
 	}
@@ -82,12 +81,12 @@ public class Game {
 	 */
 	public void startNewRound() {
 		LOGGER.info("Starting round " + round+1 + "!");
-		round++;
 		
 		for(Player player : gamePlayers.values())
 			player.setChosenCard(-1);
 		
 		winnerOfRound = null;
+		round++;
 	}
 	
 	
@@ -141,6 +140,45 @@ public class Game {
 	
 	
 	/**
+	 * Returns the player that has reached the highest score.
+	 * If there are more than one players with the same highest score,
+	 * one is chosen by random. If the end of the game is not reached yet,
+	 * null will be returned.
+	 * @return
+	 */
+	public Player getGameWinner() {
+		if(round < mServiceInstance.getSettings().getRounds())
+			return null;
+		
+		if(winnerOfGame == null) {
+
+			List<Player> potentialWinners = new ArrayList<Player>();
+			for (Player plr : gamePlayers.values()) {
+				
+				// if list of potential winners is empty, add current player
+				if (potentialWinners.size() == 0)
+					potentialWinners.add(plr);
+				
+				// else if current player reached same score as potential winners, add him to them
+				else if (plr.getRoundsWon() == potentialWinners.get(0).getRoundsWon())
+					potentialWinners.add(plr);
+				
+				// else if current player has reached higher score than potential winners, remove them and add him
+				else if (plr.getRoundsWon() > potentialWinners.get(0).getRoundsWon()) {
+					potentialWinners.clear();
+					potentialWinners.add(plr);
+				}
+			}
+			
+			// return one of the potential winners by random
+			winnerOfGame = potentialWinners.get(new Random().nextInt(potentialWinners.size()));
+		}
+		
+		return winnerOfGame;
+	}
+	
+	
+	/**
 	 * Returns a list containing a PlayerInfo Object for each player.
 	 * @return
 	 */
@@ -149,17 +187,12 @@ public class Game {
 		
 		// create PlayerInfo for each player
 		for(Player plr : gamePlayers.values()) {
-			// convert the list of used cards
-			List<Card> usedCards = new ArrayList<Card>();
-			for(Integer cardId : plr.getUsedCards())
-				usedCards.add(new Card(cardId, true));
 			
 			// put information into new PlayerInfo
 			PlayerInfo info = new PlayerInfo();
-			info.setPlayersName(plr.getName());
-			info.setPlayersJID(plr.getJid());
-			info.setPlayersWins(plr.getRoundsWon());
-			info.setPlayersUsedCards(usedCards);
+			info.setJid(plr.getJid());
+			info.setScore(plr.getRoundsWon());
+			info.setUsedcards(plr.getUsedCards());
 			
 			// add PlayerInfo to list
 			infoList.add(info);
@@ -201,7 +234,7 @@ public class Game {
 	 * Removes a player by using his JID. Also removes him from the chat.
 	 * @param jid the JID of the player to be kicked
 	 */
-	public void removePlayerByJid(String jid){
+	public void removePlayer(String jid){
 		gamePlayers.remove(jid);
 		mServiceInstance.getMucConnection().removePlayerFromChat(jid);
 		LOGGER.info("Removed player " + jid);
@@ -236,23 +269,6 @@ public class Game {
 	 */
 	public int getRound() {
 		return round;
-	}
-	
-	/**
-	 * Sets the game to open or closed.
-	 * @param gameOpen true if the game is open
-	 */
-	public void setGameOpen(boolean gameOpen) {
-		this.gameOpen = gameOpen;
-		LOGGER.info("Game set to open=" + gameOpen);
-	}
-	
-	/**
-	 * Checks if game is open.
-	 * @return true, if game is open
-	 */
-	public boolean isGameOpen() {
-		return gameOpen;
 	}
 	
 	/**

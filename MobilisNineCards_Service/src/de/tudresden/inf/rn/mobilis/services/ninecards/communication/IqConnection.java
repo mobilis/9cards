@@ -31,8 +31,6 @@ import de.tudresden.inf.rn.mobilis.services.ninecards.NineCardsService;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.ConfigureGameRequest;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.ConfigureGameResponse;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.IMobilisNineCardsOutgoing;
-import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.JoinGameRequest;
-import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.JoinGameResponse;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.MobilisNineCardsProxy;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.IXMPPCallback;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.ProxyBean;
@@ -64,7 +62,7 @@ public class IqConnection implements PacketListener {
 	
 	/** The waiting callbacks which are invoked later */
 	private Map<String, IXMPPCallback<? extends XMPPBean>> _waitingCallbacks 
-		= new HashMap< String, IXMPPCallback<? extends XMPPBean>>();
+		= new HashMap<String, IXMPPCallback<? extends XMPPBean>>();
 	
 	/** The class specific Logger object. */
 	private final static Logger LOGGER = Logger.getLogger(IqConnection.class.getCanonicalName());
@@ -88,9 +86,10 @@ public class IqConnection implements PacketListener {
 		
 		// Check if the incoming Packet is of type IQ (BeanIQAdapter is just a wrapper)
 		if(packet instanceof BeanIQAdapter) {
+			
 			// Convert packet to @see XMPPBean
 			XMPPBean xmppBean = unpackBeanIQAdapter((BeanIQAdapter) packet);
-System.out.println("IqConnection.processPacket(): " + xmppBean.toXML());			
+			
 			// If Bean is of type ERROR it will be logged
 			if(xmppBean.getType() == XMPPBean.TYPE_ERROR)
 				LOGGER.severe("ERROR: Bean of Type ERROR received: " + beanToString(xmppBean));
@@ -110,7 +109,7 @@ System.out.println("IqConnection.processPacket(): " + xmppBean.toXML());
 	 * @param bean the XMPPBean
 	 * @return the XMPPBean as string
 	 */
-	public String beanToString(XMPPBean bean){
+	private String beanToString(XMPPBean bean){
 		String str = "XMPPBean: [NS="
 			+ bean.getNamespace()
 			+ " id=" + bean.getId()
@@ -132,7 +131,7 @@ System.out.println("IqConnection.processPacket(): " + xmppBean.toXML());
 	}
 	
 	
-	public MobilisNineCardsProxy getProxy(){
+	public MobilisNineCardsProxy getProxy() {
 		return _proxy;
 	}
 	
@@ -142,10 +141,10 @@ System.out.println("IqConnection.processPacket(): " + xmppBean.toXML());
 		@SuppressWarnings("rawtypes")
 		IXMPPCallback callback = _waitingCallbacks.get(inBean.getId());
 
-		if (null != callback)
+		if (callback != null)
 			callback.invoke( inBean );
 		
-		return null != callback;
+		return callback != null ? true : false;
 	}
 	
 	
@@ -166,9 +165,6 @@ System.out.println("IqConnection.processPacket(): " + xmppBean.toXML());
 	private void registerXMPPExtensions() {		
 		registerXMPPBean(new ConfigureGameRequest());
 		registerXMPPBean(new ConfigureGameResponse());
-		
-		registerXMPPBean(new JoinGameRequest());
-		registerXMPPBean(new JoinGameResponse());
 	}
 	
 	
@@ -205,7 +201,6 @@ System.out.println("IqConnection.processPacket(): " + xmppBean.toXML());
 		bean.setFrom(mServiceInstance.getAgent().getFullJid());
 		sendBean(bean);
 
-		LOGGER.info("sent IQ: " + beanToString(bean));
 		return true;
 	}
 	
@@ -227,7 +222,7 @@ System.out.println("IqConnection.processPacket(): " + xmppBean.toXML());
 			
 			// send XMPPBean
 			mServiceInstance.getAgent().getConnection().sendPacket(new BeanIQAdapter(bean));
-System.out.println("IqConnection.sendBean(): " + bean.toXML());
+			LOGGER.info("sent IQ: " + beanToString(bean));
 		}
 	}
 	

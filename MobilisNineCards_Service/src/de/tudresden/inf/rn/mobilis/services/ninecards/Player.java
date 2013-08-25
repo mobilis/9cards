@@ -30,8 +30,6 @@ public class Player {
 	
 	/** The player's jid. */
 	private String jid;
-	/** The player's name. */
-	private String name;
 	/** True if the player is the one who created the game. */
 	private boolean creator;
 
@@ -49,19 +47,14 @@ public class Player {
 	 * @param jid the jid of the player
 	 * @param name the name of the player
 	 */
-	public Player(String jid, String name, boolean isCreator) {
+	public Player(String jid, boolean isCreator) {
 		
 		this.jid = jid;
-		this.name = name;
 		this.creator = isCreator;
 		this.roundsWon = 0;
 		this.chosenCard = -1;
 		
 		this.usedCards = new ArrayList<Integer>(9);
-		
-		// assure that the name is set
-		if(this.name == null || this.name.length() == 0)
-			this.name = jid.substring(0, jid.indexOf("@"));
 	}
 	
 	
@@ -137,18 +130,11 @@ public class Player {
 	}
 	
 	
-	/**
-	 * Returns the player's nickname.
-	 * @return
-	 */
-	public String getName() {
-		return name;
-	}
-	
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString(){
 		String str = "";
 		

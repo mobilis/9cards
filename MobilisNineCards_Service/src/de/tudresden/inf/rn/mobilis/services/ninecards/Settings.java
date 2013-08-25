@@ -38,8 +38,6 @@ public class Settings {
 	
 	/** The chat id. */
 	private String chatID;
-	/** The chat password. */
-	private String chatPW;
 	
 	
 	/**
@@ -61,8 +59,6 @@ public class Settings {
 				+ "@conference."
 				+ agent.getConnection().getServiceName())
 				.toLowerCase();
-		
-		chatPW = "9Cards#" + System.currentTimeMillis();
 	}
 	
 	
@@ -138,21 +134,6 @@ public class Settings {
 		return chatID;
 	}
 	
-	/**
-	 * Sets the chat password.
-	 * @param chatPW the new chat password
-	 */
-	public void setChatPW(String chatPW) {
-		this.chatPW = chatPW;
-	}
-
-	/**
-	 * Gets the chat password.
-	 * @return the chat password
-	 */
-	public String getChatPW() {
-		return chatPW;
-	}
 
 	/**
 	 * Sets the rounds.

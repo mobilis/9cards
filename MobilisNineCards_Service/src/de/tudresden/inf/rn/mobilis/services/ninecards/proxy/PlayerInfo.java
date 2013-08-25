@@ -9,19 +9,17 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 
 public class PlayerInfo implements XMPPInfo {
 
-	private String PlayersName = null;
-	private String PlayersJID = null;
-	private int PlayersWins = Integer.MIN_VALUE;
-	private List< Card > PlayersUsedCards = new ArrayList< Card >();
+	private String jid = null;
+	private int score = Integer.MIN_VALUE;
+	private List< Integer > usedcards = new ArrayList< Integer >();
 
 
-	public PlayerInfo( String PlayersName, String PlayersJID, int PlayersWins, List< Card > PlayersUsedCards ) {
+	public PlayerInfo( String jid, int score, List< Integer > usedcards ) {
 		super();
-		this.PlayersName = PlayersName;
-		this.PlayersJID = PlayersJID;
-		this.PlayersWins = PlayersWins;
-		for ( Card entity : PlayersUsedCards ) {
-			this.PlayersUsedCards.add( entity );
+		this.jid = jid;
+		this.score = score;
+		for ( int entity : usedcards ) {
+			this.usedcards.add( entity );
 		}
 	}
 
@@ -41,22 +39,14 @@ public class PlayerInfo implements XMPPInfo {
 				if (tagName.equals(getChildElement())) {
 					parser.next();
 				}
-				else if (tagName.equals( "PlayersName" ) ) {
-					this.PlayersName = parser.nextText();
+				else if (tagName.equals( "jid" ) ) {
+					this.jid = parser.nextText();
 				}
-				else if (tagName.equals( "PlayersJID" ) ) {
-					this.PlayersJID = parser.nextText();
+				else if (tagName.equals( "score" ) ) {
+					this.score = Integer.parseInt( parser.nextText() );
 				}
-				else if (tagName.equals( "PlayersWins" ) ) {
-					this.PlayersWins = Integer.parseInt( parser.nextText() );
-				}
-				else if (tagName.equals( Card.CHILD_ELEMENT ) ) {
-					Card entity = new Card();
-
-					entity.fromXML( parser );
-					this.PlayersUsedCards.add( entity );
-					
-					parser.next();
+				else if (tagName.equals( "usedcards" ) ) {
+					usedcards.add( Integer.parseInt( parser.nextText() ) );
 				}
 				else
 					parser.next();
@@ -94,22 +84,18 @@ public class PlayerInfo implements XMPPInfo {
 	public String toXML() {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append( "<PlayersName>" )
-			.append( this.PlayersName )
-			.append( "</PlayersName>" );
+		sb.append( "<jid>" )
+			.append( this.jid )
+			.append( "</jid>" );
 
-		sb.append( "<PlayersJID>" )
-			.append( this.PlayersJID )
-			.append( "</PlayersJID>" );
+		sb.append( "<score>" )
+			.append( this.score )
+			.append( "</score>" );
 
-		sb.append( "<PlayersWins>" )
-			.append( this.PlayersWins )
-			.append( "</PlayersWins>" );
-
-		for( Card entry : PlayersUsedCards ) {
-			sb.append( "<" + Card.CHILD_ELEMENT + ">" );
-			sb.append( entry.toXML() );
-			sb.append( "</" + Card.CHILD_ELEMENT + ">" );
+		for( int entry : usedcards ) {
+			sb.append( "<usedcards>" );
+			sb.append( entry );
+			sb.append( "</usedcards>" );
 		}
 
 		return sb.toString();
@@ -117,36 +103,28 @@ public class PlayerInfo implements XMPPInfo {
 
 
 
-	public String getPlayersName() {
-		return this.PlayersName;
+	public String getJid() {
+		return this.jid;
 	}
 
-	public void setPlayersName( String PlayersName ) {
-		this.PlayersName = PlayersName;
+	public void setJid( String jid ) {
+		this.jid = jid;
 	}
 
-	public String getPlayersJID() {
-		return this.PlayersJID;
+	public int getScore() {
+		return this.score;
 	}
 
-	public void setPlayersJID( String PlayersJID ) {
-		this.PlayersJID = PlayersJID;
+	public void setScore( int score ) {
+		this.score = score;
 	}
 
-	public int getPlayersWins() {
-		return this.PlayersWins;
+	public List< Integer > getUsedcards() {
+		return this.usedcards;
 	}
 
-	public void setPlayersWins( int PlayersWins ) {
-		this.PlayersWins = PlayersWins;
-	}
-
-	public List< Card > getPlayersUsedCards() {
-		return this.PlayersUsedCards;
-	}
-
-	public void setPlayersUsedCards( List< Card > PlayersUsedCards ) {
-		this.PlayersUsedCards = PlayersUsedCards;
+	public void setUsedcards( List< Integer > usedcards ) {
+		this.usedcards = usedcards;
 	}
 
 }

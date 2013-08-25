@@ -29,17 +29,4 @@ public class MobilisNineCardsProxy {
 		return out;
 	}
 
-	public XMPPBean JoinGame( String toJid, String packetId, String ChatRoom, String ChatPassword, String CreatorJid ) {
-		if ( null == _bindingStub )
-			return null;
-
-		JoinGameResponse out = new JoinGameResponse( ChatRoom, ChatPassword, CreatorJid );
-		out.setTo( toJid );
-		out.setId( packetId );
-
-		_bindingStub.sendXMPPBean( out );
-
-		return out;
-	}
-
 }

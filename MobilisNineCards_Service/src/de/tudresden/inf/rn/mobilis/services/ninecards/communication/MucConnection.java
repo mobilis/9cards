@@ -7,13 +7,16 @@ import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smackx.Form;
 import org.jivesoftware.smackx.FormField;
+import org.jivesoftware.smackx.muc.Affiliate;
 import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.jivesoftware.smackx.muc.ParticipantStatusListener;
 
+import de.tudresden.inf.rn.mobilis.services.ninecards.Game;
 import de.tudresden.inf.rn.mobilis.services.ninecards.NineCardsService;
-import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.MessageWrapper;
-import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.PlayerInfosMessage;
-import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.RoundCompleteMessage;
+import de.tudresden.inf.rn.mobilis.services.ninecards.Player;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 
 public class MucConnection implements PacketListener {
 	
@@ -27,12 +30,6 @@ public class MucConnection implements PacketListener {
 	/** The class specific Logger object. */
 	private final static Logger LOGGER = Logger.getLogger(MucConnection.class.getCanonicalName());
 	
-	public static final String TYPE_PLAYERINFOS = "PlayerInfos";
-	public static final String TYPE_STARTGAME = "StartGame";
-	public static final String TYPE_ROUNDCOMPLETE = "RoundComplete";
-	public static final String TYPE_PLAYCARD = "PlayCard";
-	public static final String TYPE_PLAYERLEAVING = "PlayerLeaving";
-	
 	
 	/**
 	 * Standard Constructor, calls createMultiUserChat() and adds a listener for new users.
@@ -42,17 +39,6 @@ public class MucConnection implements PacketListener {
 	public MucConnection(NineCardsService serviceInstance) throws Exception {
 		this.mServiceInstance = serviceInstance;
 		this.packetProcessor = new MucPacketProcessor(mServiceInstance);
-		
-		muc = createMultiUserChat();
-		muc.addParticipantListener(new PacketListener() {
-
-			@Override
-			public void processPacket(Packet arg0) {
-				// notify all players about new player
-				mServiceInstance.getMucConnection().sendPlayerInfosMessage();
-			}
-			
-		});
 	}
 	
 	
@@ -61,37 +47,39 @@ public class MucConnection implements PacketListener {
 	 * 
 	 * @throws XMPPException
 	 */
-	private MultiUserChat createMultiUserChat() throws XMPPException {
+	public void createMultiUserChat() {
 		
-		if(!mServiceInstance.getAgent().getConnection().isConnected()) {
-			LOGGER.severe("Couldn't open MUC (no connection)!");
-			return null;
-		}
+		if(!mServiceInstance.getAgent().getConnection().isConnected())
+			LOGGER.severe("Couldn't create MUC (no connection)!");
 		
-		if(this.muc != null)
-			return this.muc;
-
-		MultiUserChat muc = new MultiUserChat(mServiceInstance.getAgent().getConnection(), mServiceInstance.getSettings().getChatID());
-		muc.create("Server");
-
-		org.jivesoftware.smackx.Form cnfgForm = muc.getConfigurationForm().createAnswerForm();
-	
-		for (Iterator<FormField> fields = cnfgForm.getFields(); fields.hasNext();) {
-		    FormField field = (FormField) fields.next();
-		    if (!FormField.TYPE_HIDDEN.equals(field.getType()) && field.getVariable() != null) {
-		    	cnfgForm.setDefaultAnswer(field.getVariable());
-		    }
+		if(this.muc != null) {
+			LOGGER.warning("Couldn't create MUC because it already existed!");
+			return;
 		}
 
-		cnfgForm.setAnswer("muc#roomconfig_passwordprotectedroom", true);
-		cnfgForm.setAnswer("muc#roomconfig_roomsecret", mServiceInstance.getSettings().getChatPW());
-		
-		muc.sendConfigurationForm(cnfgForm);
-		
-		LOGGER.info("Chatroom created (ID: " + mServiceInstance.getSettings().getChatID()
-				+ ", Pw: " + mServiceInstance.getSettings().getChatPW() +")");
-		
-		return muc;
+		try {
+			muc = new MultiUserChat(mServiceInstance.getAgent().getConnection(), mServiceInstance.getSettings().getChatID());
+			muc.create("9Cards-Service");
+
+			//TODO mal testen ob das hier überhaupt nötig ist
+			Form cnfgForm = muc.getConfigurationForm().createAnswerForm();
+			for (Iterator<FormField> fields = cnfgForm.getFields(); fields.hasNext();) {
+			    FormField field = fields.next();
+			    if (!FormField.TYPE_HIDDEN.equals(field.getType()) && field.getVariable() != null) {
+			    	cnfgForm.setDefaultAnswer(field.getVariable());
+			    }
+			}
+			
+			muc.sendConfigurationForm(cnfgForm);
+			muc.addParticipantListener(mParticipantListener);
+			muc.addParticipantStatusListener(mParticipantStatusListener);
+			
+			LOGGER.info("Chatroom created (ID: " + mServiceInstance.getSettings().getChatID());
+			
+		} catch (Exception e) {
+			LOGGER.severe("Failed to create MUC! (" + e.getMessage() + ")");
+			mServiceInstance.shutdown();
+		}
 	}
 	
 	
@@ -99,13 +87,18 @@ public class MucConnection implements PacketListener {
 	 * 
 	 * @param message
 	 */
-	public void sendMessagetoMuc(Message message) {
-System.out.println("sendMessagetoMuc() [body: " + message.getBody() + "]");
-
+	public void sendMessagetoMuc(XMPPInfo message) {
+		String body = "";
+		body += "<MobilisMessage type=" + message.getClass().getSimpleName() + ">";
+		body += message.toXML();
+		body += "</MobilisMessage>";
+		
 		try {
-			message.setTo(muc.getRoom());
-			message.setType(Message.Type.groupchat);
-			muc.sendMessage(message);
+			Message msg = new Message();
+			msg.setBody(body);
+			msg.setTo(muc.getRoom());
+			msg.setType(Message.Type.groupchat);
+			muc.sendMessage(msg);
 		} catch (Exception e) {
 			LOGGER.severe("failed to send message to muc! (" + e.getClass() + " - " + e.getMessage() + ")");
 		}
@@ -113,37 +106,30 @@ System.out.println("sendMessagetoMuc() [body: " + message.getBody() + "]");
 	
 	
 	/**
-	 * 
-	 * @param wasLastRound
+	 * Prevents new players from joining by setting a secret password for muc. This is necessary because for maxusers,
+	 * Smack only values out of { 10, 20, 30, 50, 100, None } (see http://xmpp.org/extensions/xep-0045.html#roomconfig)
 	 */
-	public void sendRoundCompleteMessage(boolean wasLastRound) {
-		RoundCompleteMessage roundMesg = new RoundCompleteMessage();
-		
-		roundMesg.setRoundID(mServiceInstance.getGame().getRound());
-		roundMesg.setRoundWinnersName(mServiceInstance.getGame().getRoundWinner().getName());
-		roundMesg.setRoundWinnersJID(mServiceInstance.getGame().getRoundWinner().getJid());
-		roundMesg.setPlayerInfos(mServiceInstance.getGame().getPlayerInfos());
-		roundMesg.setEndOfGame(wasLastRound);
-		
-		MessageWrapper wrapper = new MessageWrapper(true, roundMesg.toXML(), MucConnection.TYPE_ROUNDCOMPLETE);
-		Message finalMesg = new Message();
-		finalMesg.setBody(wrapper.toXML());
-		sendMessagetoMuc(finalMesg);
+	public void lockMuc() {
+		try {
+			Form cnfgForm = muc.getConfigurationForm().createAnswerForm();
+			
+			for (Iterator<FormField> fields = cnfgForm.getFields(); fields.hasNext();) {
+			    FormField field = fields.next();
+			    if (!FormField.TYPE_HIDDEN.equals(field.getType()) && field.getVariable() != null) {
+			    	cnfgForm.setDefaultAnswer(field.getVariable());
+			    }
+			    
+				cnfgForm.setAnswer("muc#roomconfig_passwordprotectedroom", true);
+				cnfgForm.setAnswer("muc#roomconfig_roomsecret", "9Cards#" + System.currentTimeMillis());
+
+				muc.sendConfigurationForm(cnfgForm);
+				LOGGER.info("MUC was locked with secret password");
+			}
+			
+		} catch (Exception e) { LOGGER.severe("Failed to lock MUC (" + e.getMessage() + ")"); }
 	}
 	
 	
-	public void sendPlayerInfosMessage() {
-		PlayerInfosMessage playersMsg = new PlayerInfosMessage();
-		playersMsg.setPlayers(mServiceInstance.getGame().getPlayerInfos());
-		
-		MessageWrapper wrapper = new MessageWrapper(true, playersMsg.toXML(), MucConnection.TYPE_PLAYERINFOS);
-		Message finalMesg = new Message();
-		finalMesg.setBody(wrapper.toXML());
-
-		sendMessagetoMuc(finalMesg);
-	}
-	
-
 	@Override
 	public void processPacket(Packet packet) {
 		
@@ -151,7 +137,6 @@ System.out.println("sendMessagetoMuc() [body: " + message.getBody() + "]");
 			Message mesg = (Message) packet;
 			
 			if(mesg.getBody() != null) {
-				System.out.println("Received MUC message from " + mesg.getFrom() + ": " + mesg.getBody());
 				try {
 					LOGGER.info("processing incoming chat packet: " + mesg.getFrom() + " - " + mesg.getBody());
 					packetProcessor.processPacket(mesg);
@@ -167,11 +152,13 @@ System.out.println("sendMessagetoMuc() [body: " + message.getBody() + "]");
 	 * Kicks a player from the chat.
 	 * @param jid The JabberID of the player.
 	 */
-	public void removePlayerFromChat(String jid){
-		try {
-			muc.kickParticipant(jid, "No reason");
-		} catch (XMPPException e) {
-			LOGGER.severe("failed to remove player " + jid + " from chat: " + e.getMessage());
+	public void removePlayerFromChat(String jid) {
+		//TODO das ist auch noch nicht so schön
+		String nick = jid.substring(0, jid.indexOf("@"));
+		if(muc.getOccupant(mServiceInstance.getSettings().getChatID() + "/" + nick) != null) {
+			
+			try { muc.kickParticipant(nick, "No reason"); }
+			catch (Exception e) { LOGGER.severe("failed to remove player " + jid + " from chat: " + e.getMessage()); }
 		}
 	}
 
@@ -185,4 +172,139 @@ System.out.println("sendMessagetoMuc() [body: " + message.getBody() + "]");
 			muc.destroy("", "");
 		}		
 	}
+	
+	
+	/**
+	 * 
+	 * @param jid
+	 * @return
+	 */
+	public boolean isAdmin(String jid) {
+		boolean res = false;
+		
+		try {
+			for(Affiliate a : muc.getAdmins())
+				if(a.getJid().equals(jid))
+					res = true;
+			
+		} catch(Exception e) { LOGGER.severe("Failed to determine whether " + jid + "is admin"); }
+		
+		return res;
+	}
+	
+	
+	/**
+	 * Handles new Players which join the Multi User Chat.
+	 */
+	private PacketListener mParticipantListener = new PacketListener() {
+
+		@Override
+		public void processPacket(Packet packet) {
+			//TODO prüfen was packet.getFrom() eigentlich liefert, könnte auch null oder raum-id sein
+			if(packet.getFrom() == null || !packet.getFrom().contains("@")) {
+				LOGGER.warning("ParticipantListener can't get JID of new player!");
+				return;
+			}
+			
+			// hab den rest nach mParticipantStatusListener.joined() verschoben
+		}			
+	};
+	
+	
+	/**
+	 * Handles players who leave the room on their own or are kicked.
+	 */
+	private ParticipantStatusListener mParticipantStatusListener = new ParticipantStatusListener() {
+
+		@Override
+		public void left(String participant) {
+			mServiceInstance.getGame().removePlayer(getJid(participant));
+		}
+
+		@Override
+		public void kicked(String participant, String actor, String reason) {
+			mServiceInstance.getGame().removePlayer(getJid(participant));
+		}
+		
+		@Override
+		public void banned(String participant, String actor, String reason) {
+			mServiceInstance.getGame().removePlayer(getJid(participant));
+		}
+
+		@Override
+		public void joined(String participant) {
+
+			// if game was not configured yet or has already begun, joining is not allowed
+			if(mServiceInstance.getGame().getGameState() != Game.State.READY) {
+				LOGGER.warning(participant + " tried to enter MUC in gamestate " + mServiceInstance.getGame().getGameState());
+				removePlayerFromChat(getJid(participant));
+			}
+			
+			else {
+				// add player if he's not already joined
+				if(!mServiceInstance.getGame().getPlayers().containsKey(getJid(participant))) {
+
+					// if he's the first one, he is the creator of the game and will be assigned admin affiliation
+					if (mServiceInstance.getGame().getPlayers().size() == 0) {
+						mServiceInstance.getGame().addPlayer(new Player(getJid(participant), true));
+						try { muc.grantAdmin(getJid(participant)); }
+						catch (Exception e) { LOGGER.severe("Failed to assign admin affiliation (" + e.getMessage() + ")"); };
+					}
+
+					// if he's a regular player, he'll be assigned membership affiliation which provides less rights
+					else {
+						mServiceInstance.getGame().addPlayer(new Player(getJid(participant), false));
+						try {muc.grantMembership(getJid(participant)); }
+						catch (Exception e) { LOGGER.severe("Failed to assign member affiliation (" + e.getMessage() + ")"); };
+					}
+					
+					// if max. number of players is reached, close MUC to prevent further joining
+					if(mServiceInstance.getGame().getPlayers().size() == mServiceInstance.getSettings().getMaxPlayers())
+						lockMuc();
+				}
+			}
+		}
+		
+		
+		// TODO das mal noch schöner machen.
+		// full hat das muster room@conference.jabber.org/nick
+		private String getJid(String full) {
+			return full.substring(full.indexOf("/") +1) + "@mobilis-dev.inf.tu-dresden.de";
+		}
+
+
+		@Override
+		public void nicknameChanged(String participant, String newNickname) {}
+		
+		@Override
+		public void adminGranted(String participant) {}
+
+		@Override
+		public void adminRevoked(String participant) {}
+		
+		@Override
+		public void membershipGranted(String participant) {}
+
+		@Override
+		public void membershipRevoked(String participant) {}
+
+		@Override
+		public void moderatorGranted(String participant) {}
+
+		@Override
+		public void moderatorRevoked(String participant) {}
+
+		@Override
+		public void ownershipGranted(String participant) {}
+
+		@Override
+		public void ownershipRevoked(String participant) {}
+
+		@Override
+		public void voiceGranted(String participant) {}
+
+		@Override
+		public void voiceRevoked(String participant) {}
+		
+	};
 }

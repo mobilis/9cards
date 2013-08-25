@@ -14,83 +14,56 @@
 			<xs:element name="ConfigureGameRequest">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="GameName" type="xs:string" />
-						<xs:element name="MaxPlayers" type="xs:int" />
-						<xs:element name="NumberOfRounds" type="xs:int" />
+						<xs:element name="gamename" type="xs:string" />
+						<xs:element name="players" type="xs:int" />
+						<xs:element name="rounds" type="xs:int" />
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="ConfigureGameResponse" />
-			
-			<xs:element name="JoinGameRequest" />
-			<xs:element name="JoinGameResponse">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="ChatRoom" type="xs:string" />
-						<xs:element name="ChatPassword" type="xs:string" />
-						<xs:element name="CreatorJid" type="xs:string" />
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			
 
-			<!-- Messages sent via Multi User Chat or private Chat -->
-			<xs:complexType name="PlayerInfosMessage">
-				<xs:sequence>
-					<xs:element name="Players" type="tns:PlayerInfo" minOccurs="0" maxOccurs="unbounded" />
-				</xs:sequence>
-			</xs:complexType>
-			
-			<xs:complexType name="MessageWrapper">
-				<xs:sequence>
-					<xs:element name="IsSystemMessage" type="xs:boolean" />
-					<xs:element name="MessageString" type="xs:string" />
-					<xs:element name="MessageType" type="xs:string" />
-				</xs:sequence>
-			</xs:complexType>
-			
+			<!-- Messages sent via Multi User Chat or private Chat -->			
 			<xs:complexType name="StartGameMessage">
-				<xs:sequence></xs:sequence>
+				<xs:sequence>
+					<xs:element name="rounds" type="xs:int" />
+				</xs:sequence>
 			</xs:complexType>
 			
 			<xs:complexType name="PlayCardMessage">
 				<xs:sequence>
-					<xs:element name="PlayersName" type="xs:string" />
-					<xs:element name="PlayersJID" type="xs:string" />
-					<xs:element name="CardID" type="xs:int" />
+					<xs:element name="round" type="xs:int" />
+					<xs:element name="card" type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			
+			<xs:complexType name="CardPlayedMessage">
+				<xs:sequence>
+					<xs:element name="round" type="xs:int" />
+					<xs:element name="player" type="xs:string" />
 				</xs:sequence>
 			</xs:complexType>
 			
 			<xs:complexType name="RoundCompleteMessage">
 				<xs:sequence>
-					<xs:element name="RoundID" type="xs:int" />
-					<xs:element name="RoundWinnersName" type="xs:string" />
-					<xs:element name="RoundWinnersJID" type="xs:string" />
+					<xs:element name="round" type="xs:int" />
+					<xs:element name="winner" type="xs:string" />
 					<xs:element name="PlayerInfos" type="tns:PlayerInfo" minOccurs="0" maxOccurs="unbounded" />
-					<xs:element name="EndOfGame" type="xs:boolean" />
 				</xs:sequence>
 			</xs:complexType>
 			
-			<xs:complexType name="PlayerLeavingMessage">
+			<xs:complexType name="GameOverMessage">
 				<xs:sequence>
-					<xs:element name="LeavingJID" type="xs:string" />
+					<xs:element name="winner" type="xs:string" />
+					<xs:element name="score" type="xs:int" />
 				</xs:sequence>
 			</xs:complexType>
 			
 			<!-- Custom data structures -->
 			<xs:complexType name="PlayerInfo">
 				<xs:sequence>
-					<xs:element name="PlayersName" type="xs:string" />
-					<xs:element name="PlayersJID" type="xs:string" />
-					<xs:element name="PlayersWins" type="xs:int" />
-					<xs:element name="PlayersUsedCards" type="tns:Card" minOccurs="0" maxOccurs="unbounded" />
-				</xs:sequence>
-			</xs:complexType>
-			
-			<xs:complexType name="Card">
-				<xs:sequence>
-					<xs:element name="Value" type="xs:int" />
-					<xs:element name="AlreadyUsed" type="xs:boolean" />
+					<xs:element name="jid" type="xs:string" />
+					<xs:element name="score" type="xs:int" />
+					<xs:element name="usedcards" type="xs:int" minOccurs="0" maxOccurs="unbounded" />
 				</xs:sequence>
 			</xs:complexType>		
 		</xs:schema>
@@ -98,10 +71,8 @@
 	
 	
 	<msdl:interface name="NineCardsInterface">
-		<msdl:fault name="PermissionFault" />
-		<msdl:fault name="ClosedGameFault" />
+	
 		<msdl:fault name="InputDataFault" />
-		<msdl:fault name="PlayerSynchronizationFault" />
 		
 		<msdl:operation name="ConfigureGame" pattern="http://www.w3.org/ns/wsdl/in-out">
 			<msdl:input element="tns:ConfigureGameRequest" />
@@ -109,35 +80,19 @@
 			<msdl:outfault ref="tns:InputDataFault" />
 		</msdl:operation>
 		
-		<msdl:operation name="JoinGame" pattern="http://www.w3.org/ns/wsdl/in-out">
-			<msdl:input element="tns:JoinGameRequest" />
-			<msdl:output element="tns:JoinGameResponse" />
-			<msdl:outfault ref="tns:ClosedGameFault" />
-		</msdl:operation>
 	</msdl:interface>
 	
 	
 	<msdl:binding name="NineCardsBinding" interface="tns:NineCardsInterface" type="http://mobilis.inf.tu-dresden.de/xmpp/">
-		<msdl:fault ref="tns:ClosedGameFault" xmpp:errortype="cancel"
-			xmpp:errorcondition="not-allowed"
-			xmpp:errortext="Maximum of Players Reached or Game is already running." />
-		<msdl:fault ref="tns:PermissionFault" xmpp:errortype="cancel"
-			xmpp:errorcondition="not-allowed" xmpp:errortext="You do not have the permission for this action." />
-		<msdl:fault ref="tns:InputDataFault" xmpp:errortype="modify"
-			xmpp:errorcondition="not-acceptable" xmpp:errortext="Unaccepted data input." />
-		<msdl:fault ref="tns:PlayerSynchronizationFault"
-			xmpp:errortype="cancel" xmpp:errorcondition="not-allowed"
-			xmpp:errortext="Your data is inconsistent with the servers data." />
+		<msdl:fault ref="tns:InputDataFault"
+			xmpp:errortype="modify"
+			xmpp:errorcondition="not-acceptable"
+			xmpp:errortext="Unaccepted data input." />
 			
 		<msdl:operation ref="tns:ConfigureGame" xmpp:ident="mobilisninecards:iq:configuregame">
 			<msdl:input xmpp:type="set" />
 			<msdl:output xmpp:type="result" />
 			<msdl:outfault ref="tns:InputDataFault" />
-		</msdl:operation>
-		<msdl:operation ref="tns:JoinGame" xmpp:ident="mobilisninecards:iq:joingame">
-			<msdl:input xmpp:type="set" />
-			<msdl:output xmpp:type="result" />
-			<msdl:outfault ref="tns:ClosedGameFault" />
 		</msdl:operation>
 	</msdl:binding>
 	

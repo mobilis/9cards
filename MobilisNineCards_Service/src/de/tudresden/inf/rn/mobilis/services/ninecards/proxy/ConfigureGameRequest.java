@@ -6,16 +6,16 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
 public class ConfigureGameRequest extends XMPPBean {
 
-	private String GameName = null;
-	private int MaxPlayers = Integer.MIN_VALUE;
-	private int NumberOfRounds = Integer.MIN_VALUE;
+	private String gamename = null;
+	private int players = Integer.MIN_VALUE;
+	private int rounds = Integer.MIN_VALUE;
 
 
-	public ConfigureGameRequest( String GameName, int MaxPlayers, int NumberOfRounds ) {
+	public ConfigureGameRequest( String gamename, int players, int rounds ) {
 		super();
-		this.GameName = GameName;
-		this.MaxPlayers = MaxPlayers;
-		this.NumberOfRounds = NumberOfRounds;
+		this.gamename = gamename;
+		this.players = players;
+		this.rounds = rounds;
 
 		this.setType( XMPPBean.TYPE_SET );
 	}
@@ -37,14 +37,14 @@ public class ConfigureGameRequest extends XMPPBean {
 				if (tagName.equals(getChildElement())) {
 					parser.next();
 				}
-				else if (tagName.equals( "GameName" ) ) {
-					this.GameName = parser.nextText();
+				else if (tagName.equals( "gamename" ) ) {
+					this.gamename = parser.nextText();
 				}
-				else if (tagName.equals( "MaxPlayers" ) ) {
-					this.MaxPlayers = Integer.parseInt( parser.nextText() );
+				else if (tagName.equals( "players" ) ) {
+					this.players = Integer.parseInt( parser.nextText() );
 				}
-				else if (tagName.equals( "NumberOfRounds" ) ) {
-					this.NumberOfRounds = Integer.parseInt( parser.nextText() );
+				else if (tagName.equals( "rounds" ) ) {
+					this.rounds = Integer.parseInt( parser.nextText() );
 				}
 				else if (tagName.equals("error")) {
 					parser = parseErrorAttributes(parser);
@@ -83,7 +83,7 @@ public class ConfigureGameRequest extends XMPPBean {
 
 	@Override
 	public XMPPBean clone() {
-		ConfigureGameRequest clone = new ConfigureGameRequest( GameName, MaxPlayers, NumberOfRounds );
+		ConfigureGameRequest clone = new ConfigureGameRequest( gamename, players, rounds );
 		this.cloneBasicAttributes( clone );
 
 		return clone;
@@ -93,17 +93,17 @@ public class ConfigureGameRequest extends XMPPBean {
 	public String payloadToXML() {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append( "<GameName>" )
-			.append( this.GameName )
-			.append( "</GameName>" );
+		sb.append( "<gamename>" )
+			.append( this.gamename )
+			.append( "</gamename>" );
 
-		sb.append( "<MaxPlayers>" )
-			.append( this.MaxPlayers )
-			.append( "</MaxPlayers>" );
+		sb.append( "<players>" )
+			.append( this.players )
+			.append( "</players>" );
 
-		sb.append( "<NumberOfRounds>" )
-			.append( this.NumberOfRounds )
-			.append( "</NumberOfRounds>" );
+		sb.append( "<rounds>" )
+			.append( this.rounds )
+			.append( "</rounds>" );
 
 		sb = appendErrorPayload(sb);
 
@@ -131,28 +131,28 @@ public class ConfigureGameRequest extends XMPPBean {
 
 
 
-	public String getGameName() {
-		return this.GameName;
+	public String getGamename() {
+		return this.gamename;
 	}
 
-	public void setGameName( String GameName ) {
-		this.GameName = GameName;
+	public void setGamename( String gamename ) {
+		this.gamename = gamename;
 	}
 
-	public int getMaxPlayers() {
-		return this.MaxPlayers;
+	public int getPlayers() {
+		return this.players;
 	}
 
-	public void setMaxPlayers( int MaxPlayers ) {
-		this.MaxPlayers = MaxPlayers;
+	public void setPlayers( int players ) {
+		this.players = players;
 	}
 
-	public int getNumberOfRounds() {
-		return this.NumberOfRounds;
+	public int getRounds() {
+		return this.rounds;
 	}
 
-	public void setNumberOfRounds( int NumberOfRounds ) {
-		this.NumberOfRounds = NumberOfRounds;
+	public void setRounds( int rounds ) {
+		this.rounds = rounds;
 	}
 
 }

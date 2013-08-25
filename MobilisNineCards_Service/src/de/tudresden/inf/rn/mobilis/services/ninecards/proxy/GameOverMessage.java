@@ -4,17 +4,19 @@ import org.xmlpull.v1.XmlPullParser;
 
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 
-public class PlayerLeavingMessage implements XMPPInfo {
+public class GameOverMessage implements XMPPInfo {
 
-	private String LeavingJID = null;
+	private String winner = null;
+	private int score = Integer.MIN_VALUE;
 
 
-	public PlayerLeavingMessage( String LeavingJID ) {
+	public GameOverMessage( String winner, int score ) {
 		super();
-		this.LeavingJID = LeavingJID;
+		this.winner = winner;
+		this.score = score;
 	}
 
-	public PlayerLeavingMessage(){}
+	public GameOverMessage(){}
 
 
 
@@ -30,8 +32,11 @@ public class PlayerLeavingMessage implements XMPPInfo {
 				if (tagName.equals(getChildElement())) {
 					parser.next();
 				}
-				else if (tagName.equals( "LeavingJID" ) ) {
-					this.LeavingJID = parser.nextText();
+				else if (tagName.equals( "winner" ) ) {
+					this.winner = parser.nextText();
+				}
+				else if (tagName.equals( "score" ) ) {
+					this.score = Integer.parseInt( parser.nextText() );
 				}
 				else
 					parser.next();
@@ -51,14 +56,14 @@ public class PlayerLeavingMessage implements XMPPInfo {
 		} while (!done);
 	}
 
-	public static final String CHILD_ELEMENT = "PlayerLeavingMessage";
+	public static final String CHILD_ELEMENT = "GameOverMessage";
 
 	@Override
 	public String getChildElement() {
 		return CHILD_ELEMENT;
 	}
 
-	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService#type:PlayerLeavingMessage";
+	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService#type:GameOverMessage";
 
 	@Override
 	public String getNamespace() {
@@ -69,21 +74,33 @@ public class PlayerLeavingMessage implements XMPPInfo {
 	public String toXML() {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append( "<LeavingJID>" )
-			.append( this.LeavingJID )
-			.append( "</LeavingJID>" );
+		sb.append( "<winner>" )
+			.append( this.winner )
+			.append( "</winner>" );
+
+		sb.append( "<score>" )
+			.append( this.score )
+			.append( "</score>" );
 
 		return sb.toString();
 	}
 
 
 
-	public String getLeavingJID() {
-		return this.LeavingJID;
+	public String getWinner() {
+		return this.winner;
 	}
 
-	public void setLeavingJID( String LeavingJID ) {
-		this.LeavingJID = LeavingJID;
+	public void setWinner( String winner ) {
+		this.winner = winner;
+	}
+
+	public int getScore() {
+		return this.score;
+	}
+
+	public void setScore( int score ) {
+		this.score = score;
 	}
 
 }

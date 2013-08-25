@@ -6,16 +6,14 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 
 public class PlayCardMessage implements XMPPInfo {
 
-	private String PlayersName = null;
-	private String PlayersJID = null;
-	private int CardID = Integer.MIN_VALUE;
+	private int round = Integer.MIN_VALUE;
+	private int card = Integer.MIN_VALUE;
 
 
-	public PlayCardMessage( String PlayersName, String PlayersJID, int CardID ) {
+	public PlayCardMessage( int round, int card ) {
 		super();
-		this.PlayersName = PlayersName;
-		this.PlayersJID = PlayersJID;
-		this.CardID = CardID;
+		this.round = round;
+		this.card = card;
 	}
 
 	public PlayCardMessage(){}
@@ -34,14 +32,11 @@ public class PlayCardMessage implements XMPPInfo {
 				if (tagName.equals(getChildElement())) {
 					parser.next();
 				}
-				else if (tagName.equals( "PlayersName" ) ) {
-					this.PlayersName = parser.nextText();
+				else if (tagName.equals( "round" ) ) {
+					this.round = Integer.parseInt( parser.nextText() );
 				}
-				else if (tagName.equals( "PlayersJID" ) ) {
-					this.PlayersJID = parser.nextText();
-				}
-				else if (tagName.equals( "CardID" ) ) {
-					this.CardID = Integer.parseInt( parser.nextText() );
+				else if (tagName.equals( "card" ) ) {
+					this.card = Integer.parseInt( parser.nextText() );
 				}
 				else
 					parser.next();
@@ -79,45 +74,33 @@ public class PlayCardMessage implements XMPPInfo {
 	public String toXML() {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append( "<PlayersName>" )
-			.append( this.PlayersName )
-			.append( "</PlayersName>" );
+		sb.append( "<round>" )
+			.append( this.round )
+			.append( "</round>" );
 
-		sb.append( "<PlayersJID>" )
-			.append( this.PlayersJID )
-			.append( "</PlayersJID>" );
-
-		sb.append( "<CardID>" )
-			.append( this.CardID )
-			.append( "</CardID>" );
+		sb.append( "<card>" )
+			.append( this.card )
+			.append( "</card>" );
 
 		return sb.toString();
 	}
 
 
 
-	public String getPlayersName() {
-		return this.PlayersName;
+	public int getRound() {
+		return this.round;
 	}
 
-	public void setPlayersName( String PlayersName ) {
-		this.PlayersName = PlayersName;
+	public void setRound( int round ) {
+		this.round = round;
 	}
 
-	public String getPlayersJID() {
-		return this.PlayersJID;
+	public int getCard() {
+		return this.card;
 	}
 
-	public void setPlayersJID( String PlayersJID ) {
-		this.PlayersJID = PlayersJID;
-	}
-
-	public int getCardID() {
-		return this.CardID;
-	}
-
-	public void setCardID( int CardID ) {
-		this.CardID = CardID;
+	public void setCard( int card ) {
+		this.card = card;
 	}
 
 }

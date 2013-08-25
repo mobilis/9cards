@@ -86,7 +86,7 @@ public class NineCardsService extends MobilisService {
 		try {
 			if (mGame != null)
 				for (String playerJID : mGame.getPlayers().keySet())
-					mGame.removePlayerByJid(playerJID);
+					mGame.removePlayer(playerJID);
 			mMucConnection.closeMultiUserChat();
 			LOGGER.info("Closed multi user chat");
 		} catch (Exception e) {

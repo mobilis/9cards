@@ -9,22 +9,18 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 
 public class RoundCompleteMessage implements XMPPInfo {
 
-	private int RoundID = Integer.MIN_VALUE;
-	private String RoundWinnersName = null;
-	private String RoundWinnersJID = null;
+	private int round = Integer.MIN_VALUE;
+	private String winner = null;
 	private List< PlayerInfo > PlayerInfos = new ArrayList< PlayerInfo >();
-	private boolean EndOfGame = false;
 
 
-	public RoundCompleteMessage( int RoundID, String RoundWinnersName, String RoundWinnersJID, List< PlayerInfo > PlayerInfos, boolean EndOfGame ) {
+	public RoundCompleteMessage( int round, String winner, List< PlayerInfo > PlayerInfos ) {
 		super();
-		this.RoundID = RoundID;
-		this.RoundWinnersName = RoundWinnersName;
-		this.RoundWinnersJID = RoundWinnersJID;
+		this.round = round;
+		this.winner = winner;
 		for ( PlayerInfo entity : PlayerInfos ) {
 			this.PlayerInfos.add( entity );
 		}
-		this.EndOfGame = EndOfGame;
 	}
 
 	public RoundCompleteMessage(){}
@@ -43,14 +39,11 @@ public class RoundCompleteMessage implements XMPPInfo {
 				if (tagName.equals(getChildElement())) {
 					parser.next();
 				}
-				else if (tagName.equals( "RoundID" ) ) {
-					this.RoundID = Integer.parseInt( parser.nextText() );
+				else if (tagName.equals( "round" ) ) {
+					this.round = Integer.parseInt( parser.nextText() );
 				}
-				else if (tagName.equals( "RoundWinnersName" ) ) {
-					this.RoundWinnersName = parser.nextText();
-				}
-				else if (tagName.equals( "RoundWinnersJID" ) ) {
-					this.RoundWinnersJID = parser.nextText();
+				else if (tagName.equals( "winner" ) ) {
+					this.winner = parser.nextText();
 				}
 				else if (tagName.equals( PlayerInfo.CHILD_ELEMENT ) ) {
 					PlayerInfo entity = new PlayerInfo();
@@ -59,9 +52,6 @@ public class RoundCompleteMessage implements XMPPInfo {
 					this.PlayerInfos.add( entity );
 					
 					parser.next();
-				}
-				else if (tagName.equals( "EndOfGame" ) ) {
-					this.EndOfGame = Boolean.parseBoolean( parser.nextText() );
 				}
 				else
 					parser.next();
@@ -99,17 +89,13 @@ public class RoundCompleteMessage implements XMPPInfo {
 	public String toXML() {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append( "<RoundID>" )
-			.append( this.RoundID )
-			.append( "</RoundID>" );
+		sb.append( "<round>" )
+			.append( this.round )
+			.append( "</round>" );
 
-		sb.append( "<RoundWinnersName>" )
-			.append( this.RoundWinnersName )
-			.append( "</RoundWinnersName>" );
-
-		sb.append( "<RoundWinnersJID>" )
-			.append( this.RoundWinnersJID )
-			.append( "</RoundWinnersJID>" );
+		sb.append( "<winner>" )
+			.append( this.winner )
+			.append( "</winner>" );
 
 		for( PlayerInfo entry : PlayerInfos ) {
 			sb.append( "<" + PlayerInfo.CHILD_ELEMENT + ">" );
@@ -117,37 +103,25 @@ public class RoundCompleteMessage implements XMPPInfo {
 			sb.append( "</" + PlayerInfo.CHILD_ELEMENT + ">" );
 		}
 
-		sb.append( "<EndOfGame>" )
-			.append( this.EndOfGame )
-			.append( "</EndOfGame>" );
-
 		return sb.toString();
 	}
 
 
 
-	public int getRoundID() {
-		return this.RoundID;
+	public int getRound() {
+		return this.round;
 	}
 
-	public void setRoundID( int RoundID ) {
-		this.RoundID = RoundID;
+	public void setRound( int round ) {
+		this.round = round;
 	}
 
-	public String getRoundWinnersName() {
-		return this.RoundWinnersName;
+	public String getWinner() {
+		return this.winner;
 	}
 
-	public void setRoundWinnersName( String RoundWinnersName ) {
-		this.RoundWinnersName = RoundWinnersName;
-	}
-
-	public String getRoundWinnersJID() {
-		return this.RoundWinnersJID;
-	}
-
-	public void setRoundWinnersJID( String RoundWinnersJID ) {
-		this.RoundWinnersJID = RoundWinnersJID;
+	public void setWinner( String winner ) {
+		this.winner = winner;
 	}
 
 	public List< PlayerInfo > getPlayerInfos() {
@@ -156,14 +130,6 @@ public class RoundCompleteMessage implements XMPPInfo {
 
 	public void setPlayerInfos( List< PlayerInfo > PlayerInfos ) {
 		this.PlayerInfos = PlayerInfos;
-	}
-
-	public boolean getEndOfGame() {
-		return this.EndOfGame;
-	}
-
-	public void setEndOfGame( boolean EndOfGame ) {
-		this.EndOfGame = EndOfGame;
 	}
 
 }

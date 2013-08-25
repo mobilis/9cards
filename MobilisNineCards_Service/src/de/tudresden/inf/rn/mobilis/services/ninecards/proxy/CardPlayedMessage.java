@@ -4,19 +4,19 @@ import org.xmlpull.v1.XmlPullParser;
 
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 
-public class Card implements XMPPInfo {
+public class CardPlayedMessage implements XMPPInfo {
 
-	private int Value = Integer.MIN_VALUE;
-	private boolean AlreadyUsed = false;
+	private int round = Integer.MIN_VALUE;
+	private String player = null;
 
 
-	public Card( int Value, boolean AlreadyUsed ) {
+	public CardPlayedMessage( int round, String player ) {
 		super();
-		this.Value = Value;
-		this.AlreadyUsed = AlreadyUsed;
+		this.round = round;
+		this.player = player;
 	}
 
-	public Card(){}
+	public CardPlayedMessage(){}
 
 
 
@@ -32,11 +32,11 @@ public class Card implements XMPPInfo {
 				if (tagName.equals(getChildElement())) {
 					parser.next();
 				}
-				else if (tagName.equals( "Value" ) ) {
-					this.Value = Integer.parseInt( parser.nextText() );
+				else if (tagName.equals( "round" ) ) {
+					this.round = Integer.parseInt( parser.nextText() );
 				}
-				else if (tagName.equals( "AlreadyUsed" ) ) {
-					this.AlreadyUsed = Boolean.parseBoolean( parser.nextText() );
+				else if (tagName.equals( "player" ) ) {
+					this.player = parser.nextText();
 				}
 				else
 					parser.next();
@@ -56,14 +56,14 @@ public class Card implements XMPPInfo {
 		} while (!done);
 	}
 
-	public static final String CHILD_ELEMENT = "Card";
+	public static final String CHILD_ELEMENT = "CardPlayedMessage";
 
 	@Override
 	public String getChildElement() {
 		return CHILD_ELEMENT;
 	}
 
-	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService#type:Card";
+	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService#type:CardPlayedMessage";
 
 	@Override
 	public String getNamespace() {
@@ -74,33 +74,33 @@ public class Card implements XMPPInfo {
 	public String toXML() {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append( "<Value>" )
-			.append( this.Value )
-			.append( "</Value>" );
+		sb.append( "<round>" )
+			.append( this.round )
+			.append( "</round>" );
 
-		sb.append( "<AlreadyUsed>" )
-			.append( this.AlreadyUsed )
-			.append( "</AlreadyUsed>" );
+		sb.append( "<player>" )
+			.append( this.player )
+			.append( "</player>" );
 
 		return sb.toString();
 	}
 
 
 
-	public int getValue() {
-		return this.Value;
+	public int getRound() {
+		return this.round;
 	}
 
-	public void setValue( int Value ) {
-		this.Value = Value;
+	public void setRound( int round ) {
+		this.round = round;
 	}
 
-	public boolean getAlreadyUsed() {
-		return this.AlreadyUsed;
+	public String getPlayer() {
+		return this.player;
 	}
 
-	public void setAlreadyUsed( boolean AlreadyUsed ) {
-		this.AlreadyUsed = AlreadyUsed;
+	public void setPlayer( String player ) {
+		this.player = player;
 	}
 
 }
