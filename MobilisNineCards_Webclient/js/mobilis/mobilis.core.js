@@ -79,6 +79,12 @@
 					} else if (status == Mobilis.core.Status.CONNECTED) {
 						console.log('connected');
 
+						connection.addHandler(
+							Mobilis.core.onChatMessage,
+							null,
+							'message',
+							'chat'
+						);
 						connection.send($pres());
 
 						var discoiq = $iq({
@@ -122,6 +128,9 @@
 		},
 
 
+		onChatMessage : function(message){
+			console.log('private message:',message);
+		},
 
 
 		disconnect : function(reason) {
