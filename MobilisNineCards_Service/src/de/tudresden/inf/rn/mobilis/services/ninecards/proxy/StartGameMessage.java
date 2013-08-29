@@ -7,11 +7,13 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 public class StartGameMessage implements XMPPInfo {
 
 	private int rounds = Integer.MIN_VALUE;
+	private String password = null;
 
 
-	public StartGameMessage( int rounds ) {
+	public StartGameMessage( int rounds, String password ) {
 		super();
 		this.rounds = rounds;
+		this.password = password;
 	}
 
 	public StartGameMessage(){}
@@ -32,6 +34,9 @@ public class StartGameMessage implements XMPPInfo {
 				}
 				else if (tagName.equals( "rounds" ) ) {
 					this.rounds = Integer.parseInt( parser.nextText() );
+				}
+				else if (tagName.equals( "password" ) ) {
+					this.password = parser.nextText();
 				}
 				else
 					parser.next();
@@ -73,6 +78,10 @@ public class StartGameMessage implements XMPPInfo {
 			.append( this.rounds )
 			.append( "</rounds>" );
 
+		sb.append( "<password>" )
+			.append( this.password )
+			.append( "</password>" );
+
 		return sb.toString();
 	}
 
@@ -84,6 +93,14 @@ public class StartGameMessage implements XMPPInfo {
 
 	public void setRounds( int rounds ) {
 		this.rounds = rounds;
+	}
+
+	public String getPassword() {
+		return this.password;
+	}
+
+	public void setPassword( String password ) {
+		this.password = password;
 	}
 
 }

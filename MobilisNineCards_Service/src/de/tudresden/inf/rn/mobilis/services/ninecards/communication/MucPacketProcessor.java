@@ -93,7 +93,9 @@ public class MucPacketProcessor {
 				
 				// inform all players about start of game
 				mServiceInstance.getMucConnection().sendMessagetoMuc(
-						new StartGameMessage(mServiceInstance.getSettings().getRounds()));
+						new StartGameMessage(
+								mServiceInstance.getSettings().getRounds(),
+								mServiceInstance.getMucConnection().getMucPw()));
 			}
 		}
 	}

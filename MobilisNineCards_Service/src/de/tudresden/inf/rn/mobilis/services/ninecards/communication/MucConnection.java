@@ -26,6 +26,8 @@ public class MucConnection implements PacketListener {
 	private MucPacketProcessor packetProcessor;
 	/** The Multi User Chat Instance */
 	private MultiUserChat muc;
+	/** The password for re-entering the muc room after it was locked. */
+	private String mucPw;
 
 	/** The class specific Logger object. */
 	private final static Logger LOGGER = Logger.getLogger(MucConnection.class.getCanonicalName());
@@ -120,13 +122,24 @@ public class MucConnection implements PacketListener {
 			    }
 			    
 				cnfgForm.setAnswer("muc#roomconfig_passwordprotectedroom", true);
-				cnfgForm.setAnswer("muc#roomconfig_roomsecret", "9Cards#" + System.currentTimeMillis());
+				cnfgForm.setAnswer("muc#roomconfig_roomsecret", getMucPw());
 
 				muc.sendConfigurationForm(cnfgForm);
 				LOGGER.info("MUC was locked with secret password");
 			}
 			
 		} catch (Exception e) { LOGGER.severe("Failed to lock MUC (" + e.getMessage() + ")"); }
+	}
+	
+	
+	/**
+	 * Returns the password for re-entering the muc room after it was locked.
+	 * @return
+	 */
+	public String getMucPw() {
+		if(mucPw == null)
+			mucPw = "9Cards#" + System.currentTimeMillis();
+		return mucPw;
 	}
 	
 	

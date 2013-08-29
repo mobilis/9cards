@@ -26,6 +26,7 @@
 			<xs:complexType name="StartGameMessage">
 				<xs:sequence>
 					<xs:element name="rounds" type="xs:int" />
+					<xs:element name="password" type="xs:string" />
 				</xs:sequence>
 			</xs:complexType>
 			
