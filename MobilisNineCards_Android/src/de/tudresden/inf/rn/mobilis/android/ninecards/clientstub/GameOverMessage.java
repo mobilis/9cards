@@ -4,19 +4,19 @@ import org.xmlpull.v1.XmlPullParser;
 
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 
-public class Card implements XMPPInfo {
+public class GameOverMessage implements XMPPInfo {
 
-	private int Value = Integer.MIN_VALUE;
-	private boolean AlreadyUsed = false;
+	private String winner = null;
+	private int score = Integer.MIN_VALUE;
 
 
-	public Card( int Value, boolean AlreadyUsed ) {
+	public GameOverMessage( String winner, int score ) {
 		super();
-		this.Value = Value;
-		this.AlreadyUsed = AlreadyUsed;
+		this.winner = winner;
+		this.score = score;
 	}
 
-	public Card(){}
+	public GameOverMessage(){}
 
 
 
@@ -32,11 +32,11 @@ public class Card implements XMPPInfo {
 				if (tagName.equals(getChildElement())) {
 					parser.next();
 				}
-				else if (tagName.equals( "Value" ) ) {
-					this.Value = Integer.parseInt( parser.nextText() );
+				else if (tagName.equals( "winner" ) ) {
+					this.winner = parser.nextText();
 				}
-				else if (tagName.equals( "AlreadyUsed" ) ) {
-					this.AlreadyUsed = Boolean.parseBoolean( parser.nextText() );
+				else if (tagName.equals( "score" ) ) {
+					this.score = Integer.parseInt( parser.nextText() );
 				}
 				else
 					parser.next();
@@ -56,14 +56,14 @@ public class Card implements XMPPInfo {
 		} while (!done);
 	}
 
-	public static final String CHILD_ELEMENT = "Card";
+	public static final String CHILD_ELEMENT = "GameOverMessage";
 
 	@Override
 	public String getChildElement() {
 		return CHILD_ELEMENT;
 	}
 
-	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService#type:Card";
+	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService#type:GameOverMessage";
 
 	@Override
 	public String getNamespace() {
@@ -74,33 +74,33 @@ public class Card implements XMPPInfo {
 	public String toXML() {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append( "<Value>" )
-			.append( this.Value )
-			.append( "</Value>" );
+		sb.append( "<winner>" )
+			.append( this.winner )
+			.append( "</winner>" );
 
-		sb.append( "<AlreadyUsed>" )
-			.append( this.AlreadyUsed )
-			.append( "</AlreadyUsed>" );
+		sb.append( "<score>" )
+			.append( this.score )
+			.append( "</score>" );
 
 		return sb.toString();
 	}
 
 
 
-	public int getValue() {
-		return this.Value;
+	public String getWinner() {
+		return this.winner;
 	}
 
-	public void setValue( int Value ) {
-		this.Value = Value;
+	public void setWinner( String winner ) {
+		this.winner = winner;
 	}
 
-	public boolean getAlreadyUsed() {
-		return this.AlreadyUsed;
+	public int getScore() {
+		return this.score;
 	}
 
-	public void setAlreadyUsed( boolean AlreadyUsed ) {
-		this.AlreadyUsed = AlreadyUsed;
+	public void setScore( int score ) {
+		this.score = score;
 	}
 
 }

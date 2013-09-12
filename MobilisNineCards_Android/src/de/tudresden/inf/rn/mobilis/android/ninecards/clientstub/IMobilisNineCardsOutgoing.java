@@ -1,6 +1,8 @@
 package de.tudresden.inf.rn.mobilis.android.ninecards.clientstub;
 
+import de.tudresden.inf.rn.mobilis.xmpp.beans.IXMPPCallback;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
+
 
 public interface IMobilisNineCardsOutgoing {
 

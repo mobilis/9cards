@@ -1,20 +1,29 @@
 package de.tudresden.inf.rn.mobilis.android.ninecards.activity;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
-import android.widget.TextView;
+import android.preference.EditTextPreference;
+import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.PreferenceActivity;
 import de.tudresden.inf.rn.mobilis.android.ninecards.R;
 
-public class InstructionsActivity extends Activity
+public class SettingsActivity extends PreferenceActivity
 {
-
+	
+	/*
+	 * (non-Javadoc)
+	 * @see android.preference.PreferenceActivity#onCreate(android.os.Bundle)
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_instructions);
+		setContentView(R.layout.activity_settings);
+
+		addPreferencesFromResource(R.xml.layout_settings);
+		setContentView(R.layout.activity_settings);
 		
 		initComponents();
 		
@@ -23,26 +32,31 @@ public class InstructionsActivity extends Activity
 	}
 	
 	
+	/**
+	 * 
+	 */
 	private void initComponents()
 	{
-		TextView tv_instructions = (TextView)findViewById(R.id.instructions_tv_text);
-		
-		tv_instructions.setText("This game is a simple multiplayer card game as part of the mobilis project.\n\n");
-		
-		tv_instructions.setText(tv_instructions.getText() 
-				+ "Each player starts with nine cards representing values from 1-9. "
-				+ "In each round the players choose a card, the one who played the highest card"
-				+ " wins the round. The player who wins the most rounds, wins the game.\n\n");
-		
-		tv_instructions.setText(tv_instructions.getText() 
-				+ "Once you joined a game, you have to wait until its creator decides to start it."
-				+ " Only games which haven't been started yet can be joined!\n\n");
-		
-		tv_instructions.setText(tv_instructions.getText()
-				+ "Visit us at http://github.com/mobilis for further information!");
+		EditTextPreference mobilisServerJid = (EditTextPreference) getPreferenceScreen().findPreference(getResources().getString(R.string.edit_text_pref_server_mobilis_jid));
+		mobilisServerJid.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+					@Override
+					public boolean onPreferenceChange(Preference preference, Object newValue) {
+						String serverJid = (String) newValue;
+						
+						if (serverJid != null && !serverJid.equals("")) {
+							String[] arr = serverJid.split("/");
+							if (arr.length < 2)
+								((EditTextPreference) preference).setText(arr[0].toLowerCase() + "/Coordinator");
+						}
+						
+						return false;
+					}
+				});
 	}
 	
-
+	
+	
 	/**
 	 * Set up the {@link android.app.ActionBar}, if the API is available.
 	 */
@@ -60,7 +74,7 @@ public class InstructionsActivity extends Activity
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.instructions, menu);
+		getMenuInflater().inflate(R.menu.settings, menu);
 		return true;
 	}
 

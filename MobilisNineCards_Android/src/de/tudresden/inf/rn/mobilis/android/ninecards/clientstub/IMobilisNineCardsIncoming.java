@@ -6,8 +6,4 @@ public interface IMobilisNineCardsIncoming {
 
 	void onConfigureGameError( ConfigureGameRequest in);
 
-	void onJoinGame( JoinGameResponse in );
-
-	void onJoinGameError( JoinGameRequest in);
-
 }

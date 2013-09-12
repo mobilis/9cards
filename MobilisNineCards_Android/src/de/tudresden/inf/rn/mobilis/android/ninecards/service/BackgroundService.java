@@ -2,16 +2,14 @@ package de.tudresden.inf.rn.mobilis.android.ninecards.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.util.Log;
-import de.tudresden.inf.rn.mobilis.android.ninecards.activity.PlayActivity.GameStatePlay;
-import de.tudresden.inf.rn.mobilis.android.ninecards.communication.MXAProxy;
+import de.tudresden.inf.rn.mobilis.android.ninecards.R;
+import de.tudresden.inf.rn.mobilis.android.ninecards.communication.ServerConnection;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.Game;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 
 /*******************************************************************************
  * Copyright (C) 2013 Technische Universität Dresden
@@ -32,48 +30,53 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
  * Computer Networks Group: http://www.rn.inf.tu-dresden.de
  * mobilis project: https://github.com/mobilis
  ******************************************************************************/
-public class BackgroundService extends Service {
+public class BackgroundService extends Service
+{
 
-	/** The MXAProxy instance. */
-	private MXAProxy mMxaProxy;
+	/** The connection to the XMPP Server. */
+	private ServerConnection mServerConnection;
+	/** The JID of the current Mobilis9Cards game service (running on server) */
+	private String gameServiceJid;
 
 	/** The Game instance. */
 	private Game mGame;
-	
-	/** The JID of the current Mobilis9Cards game service (running on server) */
-	private String gameServiceJid;
-	
-	/** The JID of the Coordinator Service of the Mobilis Server. */
-	private String coordinatorServiceJid;
-	
-	/** The ID of the chat room. */
-	private String mucRoomID;
-
-	/** The password of the chat room. */
-	private String mucRoomPw;
-	
 	/** The state of the game. */
 	private GameState gameState;
 	
-	/** Whether the player is the one who created the game. */
-	private boolean isCreator;
-	
-	private int serviceVersion;
+	/** Defines path to shared preferences for 9Cards. */
+	public static final String SHARED_PREF_KEY_FILENAME = "de.tudresden.inf.rn.mobilis.android.ninecards_prefs";
 	
 
-	// =====================================================================================
-	// Service specific methods
-	// -------------------------------------------------------------------------------------
+	/** Is used if Mobilis Server supports 9Cards Service. */
+	public static final int CODE_SERVICE_SUPPORTED = 0;
+	/** Is used if Mobilis Server doesn't supports 9Cards Service. */
+	public static final int CODE_SERVICE_NOT_AVAILABLE = 1;
+	/** Is used if contacting the Mobilis Server fails. */
+	public static final int CODE_SERVER_RESPONSE_ERROR = 2;
+
+	/** Is used if there are games available. */
+	public static final int CODE_GAMES_AVAILABLE = 3;
+	/** Is used if there are no games available. */
+	public static final int CODE_NO_GAMES_AVAILABLE = 4;
+	/** Is used if contacting the Mobilis Server fails. */
+	public static final int CODE_DISCOVER_GAMES_FAILURE = 5;
+	
+	/** The code used by mUpdateUIHandler to signalize that the start button shall be enabled. */
+	public static final int CODE_ENABLE_START_GAME_BUTTON = 6;
+	/** The code used by mUpdateUIHandler to signalize that theplayers list shall be updated. */
+	public static final int CODE_UPDATE_GAME_PLAYERS_LIST = 7;
+	
+
     /*
      * (non-Javadoc)
      * @see android.app.Service#onCreate()
      */
     @Override
-    public void onCreate() {
+    public void onCreate()
+    {
     	super.onCreate();
 
-		mMxaProxy = new MXAProxy(this);
-	
+		mServerConnection = new ServerConnection(this);		
 		Log.v(this.getClass().getName(), this.getClass().getName() + " started");
     }
     
@@ -83,7 +86,8 @@ public class BackgroundService extends Service {
 	 * @see android.app.Service#onBind(android.content.Intent)
 	 */
 	@Override
-	public IBinder onBind(Intent intent) {
+	public IBinder onBind(Intent intent)
+	{
 		return new LocalBinder();
 	}
 	
@@ -91,8 +95,10 @@ public class BackgroundService extends Service {
 	/**
 	 * 
 	 */
-	public class LocalBinder extends Binder {
-		public BackgroundService getService() {
+	public class LocalBinder extends Binder
+	{
+		public BackgroundService getService()
+		{
 			return BackgroundService.this;
 		}
 	}
@@ -103,53 +109,35 @@ public class BackgroundService extends Service {
 	 * @see android.app.Service#onDestroy()
 	 */
 	@Override
-	public void onDestroy() {
+	public void onDestroy()
+	{
 		super.onDestroy();
 		
-		mMxaProxy.disconnectFromXMPPServer();
+		mServerConnection.disconnectFromXmppServer();
 		Log.v(this.getClass().getName(), this.getClass().getName() + " stopped");
 	}
 	
+// -------------------------------------------------------------------------------------------------------------------------------
 	
-	// =====================================================================================
-	// Message processing methods
-	// -------------------------------------------------------------------------------------
 	/**
-	 * 
-	 * @param inBean
+	 * Gets the own XMPP JID.
+	 * @return the own XMPP JID
 	 */
-	public void processIq(XMPPBean inBean) {
-		Log.i(this.getClass().getSimpleName(), "Incoming IQ from " + inBean.getFrom() + ": " + inBean.toXML());
-		
-		if(gameState != null)
-			gameState.processPacket(inBean);
-		
-		else Log.e(this.getClass().getSimpleName(), "Couldn't pass IQ to GameState because GameState was null!");
+	public String getUserJid()
+	{
+		SharedPreferences prefs = getSharedPreferences("de.tudresden.inf.rn.mobilis.android.ninecards_preferences", MODE_PRIVATE);
+		return prefs.getString(getResources().getString(R.string.edit_text_pref_user_jid), null);
 	}
 	
 	
 	/**
-	 * 
-	 * @param message
+	 * Gets the own XMPP password.
+	 * @return the own XMPP password
 	 */
-	public void processMucMessage(XMPPInfo xmppInfo) {
-		
-		if(!(gameState instanceof GameStatePlay))
-			Log.e(this.getClass().getSimpleName(), "MUC Messages only allowed in GameStatePlay!");
-		
-		else
-			((GameStatePlay) gameState).processMucMessage(xmppInfo);
-	}
-	
-	
-	// =====================================================================================
-	// Getter/Setter and other simple methods
-	// -------------------------------------------------------------------------------------
-		/**
-	 * 
-	 */
-	public void createGame(String name) {
-		mGame = new Game(name);
+	public String getUserPassword()
+	{
+		SharedPreferences prefs = getSharedPreferences("de.tudresden.inf.rn.mobilis.android.ninecards_preferences", MODE_PRIVATE);
+		return prefs.getString(getResources().getString(R.string.edit_text_pref_user_password), null);
 	}
 	
 	
@@ -157,57 +145,41 @@ public class BackgroundService extends Service {
 	 * 
 	 * @return
 	 */
-	public Game getGame() {
-		return mGame;
+	public String getUserNick()
+	{
+		SharedPreferences prefs = getSharedPreferences("de.tudresden.inf.rn.mobilis.android.ninecards_preferences", MODE_PRIVATE);
+		return prefs.getString(getResources().getString(R.string.edit_text_pref_user_nick), null);
 	}
 	
 	
-	public void setGameState(GameState state) {
-		this.gameState = state;
-	}
-	
-	
-	public void setServiceVersion(int version) {
-		this.serviceVersion = version;
-	}
-	
-	
-    /**
-     * Gets the MXAProxy.
-     * @return the MXAProxy
-     */
-    public MXAProxy getMXAProxy(){
-    	return mMxaProxy;
-    }
-    
-    
 	/**
-	 * Gets the own XMPP JID.
-	 * @return the own XMPP JID
+	 * 
+	 * @return
 	 */
-	public String getUserJid() {
-		try {
-			if (mMxaProxy.isConnectedToXMPPServer())
-				return mMxaProxy.getXMPPService().getUsername();
-			else
-				return "";
-				// TODO hier auch eine gespeicherte JID aus den Shared Preferences holen
-		} catch (RemoteException e) {
-			return "";
-		}
-
+	public String getXmppServerAddress()
+	{
+		SharedPreferences prefs = getSharedPreferences("de.tudresden.inf.rn.mobilis.android.ninecards_preferences", MODE_PRIVATE);
+		return prefs.getString(getResources().getString(R.string.edit_text_pref_server_xmpp), null);
 	}
+	
+    
+    /**
+     * 
+     * @return
+     */
+    public String getMobilisServerJID()
+    {
+    	SharedPreferences prefs = getSharedPreferences("de.tudresden.inf.rn.mobilis.android.ninecards_preferences", MODE_PRIVATE);
+		return prefs.getString(getResources().getString(R.string.edit_text_pref_server_mobilis_jid), null);
+    }
     
     
     /**
      * 
      * @return
      */
-    public String getGameServiceJid() {
-    	if(gameServiceJid == null) {
-    		Log.w(this.getClass().getName(), "GameServiceJid was not set!");
-    		return "";
-    	}
+    public String getGameServiceJid()
+    {
     	return gameServiceJid;
     }
     
@@ -216,51 +188,58 @@ public class BackgroundService extends Service {
      * 
      * @param gameServiceJid
      */
-    public void setGameServiceJid(String gameServiceJid) {
+    public void setGameServiceJid(String gameServiceJid)
+    {
     	this.gameServiceJid = gameServiceJid;
     }
-    
-    
-    public String getCoordinatorServiceJID() {
-    	if(coordinatorServiceJid == null) {
-    		String node = "mobilis";
-    		String domain = getUserJid().substring(getUserJid().indexOf("@"), getUserJid().indexOf("/"));
-    		String ressource = "/Coordinator";
-    		
-    		Log.w(this.getClass().getName(),
-    				"CoordinatorServiceJid was not set! Using generated JID " + node + domain + ressource);
-    		
-    		return node + domain + ressource;
-    	}
-    	
-    	return coordinatorServiceJid;
+
+ // -------------------------------------------------------------------------------------------------------------------------------
+	
+    /**
+     * Returns the connection to the XMPP server.
+     * @return
+     */
+    public ServerConnection getServerConnection()
+    {
+    	return mServerConnection;
     }
-    
-    
-    public void setMucRoomId(String mucRoomId) {
-    	this.mucRoomID = mucRoomId;
-    }
-    
-    
-    public String getMucRoomId() {
-    	return mucRoomID;
-    }
-    
-    
-    public void setMucRoomPw(String mucRoomPw) {
-    	this.mucRoomPw = mucRoomPw;
-    }
-    
-    
-    public String getMucRoomPw() {
-    	return mucRoomPw;
-    }
+
     
 	/**
-	 * Returns true if the player is the one who created the game, else if not.
+	 * 
 	 * @return
 	 */
-	public boolean isCreator() {
-		return isCreator;
+	public Game getGame()
+	{
+		return mGame;
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public void createGame(String name)
+	{
+		mGame = new Game(name);
+	}
+	
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public GameState getGameState()
+	{
+		return gameState;
+	}
+	
+	
+	/**
+	 * 
+	 * @param state
+	 */
+	public void setGameState(GameState state)
+	{
+		this.gameState = state;
 	}
 }

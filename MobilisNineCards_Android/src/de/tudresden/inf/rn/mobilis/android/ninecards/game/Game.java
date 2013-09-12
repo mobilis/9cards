@@ -21,7 +21,8 @@ import java.util.HashMap;
  * Networks Group: http://www.rn.inf.tu-dresden.de mobilis project:
  * https://github.com/mobilis
  ******************************************************************************/
-public class Game {
+public class Game
+{
 
 	/** The game's name. */
 	private String name;
@@ -29,14 +30,18 @@ public class Game {
 	/** The current round of the game. */
 	private int round;
 	
-	/** The game players (JID, player) */
+	/** The total number of rounds. */
+	private int maxRounds;
+	
+	/** The game players (Nickname : Player) */
 	private HashMap<String, Player> gamePlayers;
 	
 
 	/**
 	 * 
 	 */
-	public Game(String name) {
+	public Game(String name)
+	{
 		this.name = name;
 
 		round = 0;
@@ -44,12 +49,14 @@ public class Game {
 	}
 	
 	
-	public HashMap<String, Player> getPlayers() {
+	public HashMap<String, Player> getPlayers()
+	{
 		return gamePlayers;
 	}
 	
 	
-	public Player getWinner() {
+	public Player getWinner()
+	{
 		Player winner = null;
 		
 		for(Player plr : gamePlayers.values()) {
@@ -61,15 +68,28 @@ public class Game {
 	}
 	
 	
-	public String getName() {
+	public String getName()
+	{
 		return name != null ? name : "name not set";
 	}
 	
-	public void setRound(int round) {
+	public void setRound(int round)
+	{
 		this.round = round;
 	}
 	
-	public int getRound() {
+	public int getRound()
+	{
 		return round;
+	}
+	
+	public void setMaxRounds(int maxRounds)
+	{
+		this.maxRounds = maxRounds;
+	}
+	
+	public int getMaxRounds()
+	{
+		return maxRounds;
 	}
 }

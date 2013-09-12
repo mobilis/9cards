@@ -16,7 +16,7 @@
   
   Dresden, University of Technology, Faculty of Computer Science
   Computer Networks Group: http://www.rn.inf.tu-dresden.de
-  mobilis project: https://github.com/mobilis
+  mobilis project: https://github.com/mobilis
 -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
@@ -28,7 +28,7 @@
         android:minSdkVersion="8"
         android:targetSdkVersion="17" />
 
-    <!-- MXA permissions -->
+    <!-- TODO: Test what became unnecessary -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -58,53 +58,6 @@
             android:name="de.tudresden.inf.rn.mobilis.android.ninecards.service.BackgroundService"
             android:exported="false" />
 
-        <!-- MXA activities, services and providers -->
-        <activity
-            android:name="de.tudresden.inf.rn.mobilis.mxa.activities.PreferencesClient"
-            android:enabled="true"
-            android:exported="false"
-            android:screenOrientation="portrait" >
-            <intent-filter>
-                <action android:name="de.tudresden.inf.rn.mobilis.mxa.PREFERENCES" />
-
-                <category android:name="android.intent.category.PREFERENCE" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name="de.tudresden.inf.rn.mobilis.mxa.activities.FileChooserActivity"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name="de.tudresden.inf.rn.mobilis.mxa.activities.Setup"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name="de.tudresden.inf.rn.mobilis.mxa.activities.SetupBasics"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name="de.tudresden.inf.rn.mobilis.mxa.activities.SetupComplete"
-            android:screenOrientation="portrait" >
-        </activity>
-
-        <service
-            android:name="de.tudresden.inf.rn.mobilis.mxa.XMPPRemoteService"
-            android:enabled="true"
-            android:exported="false" >
-        </service>
-
-        <provider
-            android:name="de.tudresden.inf.rn.mobilis.mxa.provider.RosterProvider"
-            android:authorities="de.tudresden.inf.rn.mobilis.mxa.provider.roster.ninecards"
-            android:exported="false" >
-        </provider>
-        <provider
-            android:name="de.tudresden.inf.rn.mobilis.mxa.provider.MessageProvider"
-            android:authorities="de.tudresden.inf.rn.mobilis.mxa.provider.messages.ninecards"
-            android:exported="false" >
-        </provider>
-
         <activity
             android:name="de.tudresden.inf.rn.mobilis.android.ninecards.activity.OpenGamesActivity"
             android:label="@string/title_activity_open_games"
@@ -117,8 +70,8 @@
         <activity
             android:name="de.tudresden.inf.rn.mobilis.android.ninecards.activity.CreateGameActivity"
             android:label="@string/title_activity_create_game"
-            android:screenOrientation="portrait"
-            android:parentActivityName="de.tudresden.inf.rn.mobilis.android.ninecards.activity.OpenGamesActivity" >
+            android:parentActivityName="de.tudresden.inf.rn.mobilis.android.ninecards.activity.OpenGamesActivity"
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.tudresden.inf.rn.mobilis.android.ninecards.activity.OpenGamesActivity" />
@@ -126,8 +79,8 @@
         <activity
             android:name="de.tudresden.inf.rn.mobilis.android.ninecards.activity.PlayActivity"
             android:label="@string/title_activity_play"
-            android:screenOrientation="portrait"
-            android:parentActivityName="de.tudresden.inf.rn.mobilis.android.ninecards.activity.OpenGamesActivity" >
+            android:parentActivityName="de.tudresden.inf.rn.mobilis.android.ninecards.activity.OpenGamesActivity"
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.tudresden.inf.rn.mobilis.android.ninecards.activity.OpenGamesActivity" />
@@ -135,7 +88,15 @@
         <activity
             android:name="de.tudresden.inf.rn.mobilis.android.ninecards.activity.InstructionsActivity"
             android:label="@string/title_activity_instructions"
-            android:screenOrientation="portrait"
+            android:parentActivityName="de.tudresden.inf.rn.mobilis.android.ninecards.activity.StartActivity"
+            android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.tudresden.inf.rn.mobilis.android.ninecards.activity.StartActivity" />
+        </activity>
+        <activity
+            android:name="de.tudresden.inf.rn.mobilis.android.ninecards.activity.SettingsActivity"
+            android:label="@string/title_activity_settings"
             android:parentActivityName="de.tudresden.inf.rn.mobilis.android.ninecards.activity.StartActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

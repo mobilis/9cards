@@ -20,6 +20,7 @@
 package de.tudresden.inf.rn.mobilis.android.ninecards.game;
 
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 
 
 /**
@@ -34,5 +35,6 @@ public abstract class GameState {
 	 *
 	 * @param bean the bean which should be processed
 	 */
-	public abstract void processPacket(XMPPBean bean);
+	public abstract void processPacket(XMPPBean xmppBean);
+	public abstract void processChatMessage(XMPPInfo xmppInfo);
 }

@@ -22,19 +22,15 @@ package de.tudresden.inf.rn.mobilis.android.ninecards.game;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.Card;
-
 
 /**
  * The Class for representing a specific player.
  */
-public class Player {
+public class Player
+{
 	
-	/** The player's jid. */
-	private String jid;
-	
-	/** The player's name. */
-	private String name;
+	/** The player's nickname. */
+	private String nick;
 
 	/** The cards which were already used. */
 	private List<Integer> usedCards;
@@ -49,21 +45,15 @@ public class Player {
 	/**
 	 * Initializes a new 9Cards Player.
 	 * 
-	 * @param jid the jid of the player
+	 * @param nick the nickname of the player
 	 * @param name the name of the player
 	 */
-	public Player(String jid, String name) {
-		
-		this.jid = jid;
-		this.name = name;
-		
+	public Player(String nick)
+	{
+		this.nick = nick;
 		this.roundsWon = 0;
 		this.chosenCard = -1;
 		this.usedCards = new ArrayList<Integer>(9);
-		
-		// assure that the name is set
-		if(this.name == null || this.name.length() == 0)
-			this.name = jid.substring(0, jid.indexOf("@"));
 	}
 	
 	
@@ -72,7 +62,8 @@ public class Player {
 	 * and to the ID of the chosen card after the player chose one.
 	 * @param chosenCard
 	 */
-	public void setChosenCard(int chosenCard) {
+	public void setChosenCard(int chosenCard)
+	{
 		this.chosenCard = chosenCard;
 	}
 	
@@ -81,16 +72,9 @@ public class Player {
 	 * Returns the ID of the card which was chosen for this round, or -1 if there isn't any yet.
 	 * @return
 	 */
-	public int getChosenCard() {
+	public int getChosenCard()
+	{
 		return chosenCard;
-	}
-	
-	
-	/**
-	 * Increments the number of rounds won by this player by 1.
-	 */
-	public void incrementRoundsWon() {
-		roundsWon++;
 	}
 	
 	
@@ -98,12 +82,14 @@ public class Player {
 	 * Returns the number of rounds of this game which this player has already won.
 	 * @return the number of rounds the player won
 	 */
-	public int getRoundsWon() {
+	public int getRoundsWon()
+	{
 		return roundsWon;
 	}
 	
 	
-	public void setRoundsWon(int roundsWon) {
+	public void setRoundsWon(int roundsWon)
+	{
 		this.roundsWon = roundsWon;
 	}
 	
@@ -112,27 +98,55 @@ public class Player {
 	 * 
 	 * @return
 	 */
-	public List<Integer> getUsedCards() {
+	public List<Integer> getUsedCards()
+	{
 		return usedCards;
 	}
 	
 	
-	public void setUsedCards(List<Card> cards) {
-		usedCards.clear();
-		for(Card card : cards)
-			if(card.getAlreadyUsed())
-				usedCards.add(card.getValue());
+	/**
+	 * 
+	 * @param cards
+	 */
+	public void setUsedCards(List<Integer> cards)
+	{
+		usedCards = cards;
 	}
 	
 	
-	public String getUsedCardsAsString(boolean ownPlayer) {
+	/**
+	 * Gets the nickname of the player.
+	 * @return the nick of the player
+	 */
+	public String getNickname()
+	{
+		return nick;
+	}
+	
+	
+	/**
+	 * 
+	 * @param newNick
+	 */
+	public void changeNickname(String newNick)
+	{
+		this.nick = newNick;
+	}
+	
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public String getUsedCardsAsString()
+	{
 		String str = "";
 		
 		for(int i=usedCards.size() -1; i>=0; i--)
 			str += usedCards.get(i) + ", ";
 		
 		if(chosenCard > -1)
-			str = ownPlayer ? chosenCard + ", " + str : "?, " + str; 
+			str = chosenCard > 0 ? chosenCard + ", " + str : "?, " + str; 
 		
 		if(str.length() > 0)
 			str = str.substring(0, str.lastIndexOf(","));
@@ -141,23 +155,5 @@ public class Player {
 			str = " - ";
 		
 		return str;
-	}
-	
-
-	/**
-	 * Gets the jid of the player.
-	 * @return the jid of the player
-	 */
-	public String getJid() {
-		return jid;
-	}
-	
-	
-	/**
-	 * Returns the player's nickname.
-	 * @return
-	 */
-	public String getName() {
-		return name;
 	}
 }

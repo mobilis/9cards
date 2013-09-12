@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.ServiceConnection;
 import android.os.Handler;
 import android.os.IBinder;
@@ -29,11 +28,10 @@ import android.util.Log;
  * Computer Networks Group: http://www.rn.inf.tu-dresden.de
  * mobilis project: https://github.com/mobilis
  ******************************************************************************/
-public class ServiceConnector implements ServiceConnection {
-	
+public class ServiceConnector implements ServiceConnection
+{
 	/** The application's android service running in the background. */
 	private BackgroundService mBackgroundService;
-	
 	/** The handlers bound to the background service. */
 	private List<Handler> mServiceBoundHandlers;
 	
@@ -41,7 +39,8 @@ public class ServiceConnector implements ServiceConnection {
 	/**
 	 * 
 	 */
-	public ServiceConnector() {
+	public ServiceConnector()
+	{
 		mServiceBoundHandlers = new ArrayList<Handler>();
 	}
 	
@@ -51,7 +50,8 @@ public class ServiceConnector implements ServiceConnection {
 	 * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
 	 */
 	@Override
-	public void onServiceConnected(ComponentName className, IBinder service) {
+	public void onServiceConnected(ComponentName className, IBinder service)
+	{
 		mBackgroundService = ((BackgroundService.LocalBinder)service).getService();
         Log.v(this.getClass().getName(), "BackgroundService bound");
         
@@ -67,7 +67,8 @@ public class ServiceConnector implements ServiceConnection {
 	 * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
 	 */
 	@Override
-    public void onServiceDisconnected(ComponentName className) {
+    public void onServiceDisconnected(ComponentName className)
+	{
         mBackgroundService = null;
         Log.v(this.getClass().getName(), "BackgroundService unbound");
     }
@@ -77,7 +78,8 @@ public class ServiceConnector implements ServiceConnection {
 	 * 
 	 * @param handler
 	 */
-	public void addHandlerToList(Handler handler) {
+	public void addHandlerToList(Handler handler)
+	{
 		mServiceBoundHandlers.add(handler);
 	}
 	
@@ -86,7 +88,8 @@ public class ServiceConnector implements ServiceConnection {
      * Gets the BackgroundService.
      * @return the BackgroundService
      */
-    public BackgroundService getBackgroundService(){
+    public BackgroundService getBackgroundService()
+    {
     	return mBackgroundService;
     }
 }

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jivesoftware.smack.util.StringUtils;
+
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -14,8 +16,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.RemoteException;
-import android.os.Vibrator;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -27,16 +27,14 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 import de.tudresden.inf.rn.mobilis.android.ninecards.R;
-import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.IXMPPCallback;
-import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.JoinGameResponse;
-import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.MessageWrapper;
+import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.CardPlayedMessage;
+import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.GameOverMessage;
 import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.PlayCardMessage;
 import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.PlayerInfo;
-import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.PlayerInfosMessage;
-import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.PlayerLeavingMessage;
 import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.RoundCompleteMessage;
 import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.StartGameMessage;
-import de.tudresden.inf.rn.mobilis.android.ninecards.communication.MXAProxy;
+import de.tudresden.inf.rn.mobilis.android.ninecards.communication.ServerConnection;
+import de.tudresden.inf.rn.mobilis.android.ninecards.game.Game;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.Player;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.BackgroundService;
@@ -63,12 +61,12 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
  * Computer Networks Group: http://www.rn.inf.tu-dresden.de
  * mobilis project: https://github.com/mobilis
  ******************************************************************************/
-public class PlayActivity extends Activity {
-
+public class PlayActivity extends Activity
+{
 	/** The connection to the background service. */
 	private ServiceConnector mBackgroundServiceConnector;
-	/** The MXAProxy. */
-	private MXAProxy mMxaProxy;
+	/** The connection to the XMPP server. */
+	private ServerConnection serverConnection;
 	
 	/** The TableLayout showing the players. */
 	private TableLayout tbl_players;
@@ -77,6 +75,9 @@ public class PlayActivity extends Activity {
 	
 	/** A Map containing all Cards/ImageButtons, with their value as key. */
 	private Map<Integer, ImageButton> cardSet;
+	/** The game instance. */
+	private Game game;
+	
 	
 	/**
 	 * 
@@ -98,6 +99,7 @@ public class PlayActivity extends Activity {
 	 * 
 	 */
 	private void initComponents() {
+		game = mBackgroundServiceConnector.getBackgroundService().getGame();
 		tbl_players = (TableLayout) findViewById(R.id.tbl_players);
 		cardSet = new HashMap<Integer, ImageButton>(9);
 		
@@ -141,8 +143,7 @@ public class PlayActivity extends Activity {
 	private void handleCardClick(ImageButton button) {
 		
 		// check which card was tapped and act depending on whether it has already been used
-		List<Integer> myUsedCards = mBackgroundServiceConnector.getBackgroundService().getGame().getPlayers()
-				.get(mBackgroundServiceConnector.getBackgroundService().getUserJid()).getUsedCards();
+		List<Integer> myUsedCards = game.getPlayers().get(serverConnection.getMyChatNick()).getUsedCards();
 		
 		int validCardId = -1;
 		
@@ -214,13 +215,8 @@ public class PlayActivity extends Activity {
 			}
 			
 			//  inform server
-			PlayCardMessage playCardMesg = new PlayCardMessage(
-					mBackgroundServiceConnector.getBackgroundService().getGame().getPlayers().get(mBackgroundServiceConnector.getBackgroundService().getUserJid()).getName(),
-					mBackgroundServiceConnector.getBackgroundService().getUserJid(),
-					validCardId );
-					
-			MessageWrapper wrapper = new MessageWrapper(true, playCardMesg.toXML(), "PlayCard");
-			mBackgroundServiceConnector.getBackgroundService().getMXAProxy().getMucProxy().sendMessageToMuc(wrapper.toXML());
+			PlayCardMessage playCardMesg = new PlayCardMessage(game.getRound(), validCardId );
+			serverConnection.sendPrivateToService(playCardMesg);
 		}
 		
 		else
@@ -246,98 +242,10 @@ public class PlayActivity extends Activity {
 	private Handler mBackgroundServiceBoundHandler = new Handler() {
 		@Override
 		public void handleMessage(Message messg) {
-			setTitle(mBackgroundServiceConnector.getBackgroundService().getGame().getName());
+			setTitle(game.getName());
 			mBackgroundServiceConnector.getBackgroundService().setGameState(new GameStatePlay());
-			mMxaProxy = mBackgroundServiceConnector.getBackgroundService().getMXAProxy();
-			
-			mMxaProxy.getIqProxy().joinGame(
-					mBackgroundServiceConnector.getBackgroundService().getGameServiceJid(),
-					_joinGameCallback );
-		}
-	};
-	
-	
-	private IXMPPCallback<JoinGameResponse> _joinGameCallback = new IXMPPCallback<JoinGameResponse>() {
-
-		@Override
-		public void invoke(JoinGameResponse bean) {
-			
-			if (bean.getType() == XMPPBean.TYPE_ERROR) {
-				Message msg = new Message();
-				msg.what = -1;
-				msg.obj = bean.errorText;
-				mJoinGameHandler.sendMessage(msg);
-			}
-
-			else {
-				mBackgroundServiceConnector.getBackgroundService().setMucRoomId(bean.getChatRoom().toLowerCase());
-				mBackgroundServiceConnector.getBackgroundService().setMucRoomPw(bean.getChatPassword());
-
-				mJoinGameHandler.sendEmptyMessage(0);
-			}
-
-			// if the player is the one who created the game, he'll be enabled start it
-			boolean isOwnGame = bean.getCreatorJid().equals(mBackgroundServiceConnector.getBackgroundService().getUserJid());
-			if (isOwnGame)
-				mJoinGameHandler.sendEmptyMessage(1);
-
-		}
-	};
-	
-	
-	/** The handler for JoinGameBeans. */
-	private Handler mJoinGameHandler = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-			
-			// If joining failed, notify user and go back to open games view
-			if (msg.obj != null) {
-				Log.e(this.getClass().getSimpleName(), "Failed to join game (" + msg.obj.toString() + ")");
-				Toast.makeText(PlayActivity.this, "Failed to join game (" + msg.obj.toString() + ")", Toast.LENGTH_LONG).show();
-				PlayActivity.this.finish();
-			}
-			
-			// If joining game was successful, enter chatroom
-			else if (msg.what == 0) {
-				try {
-					mMxaProxy.getMucProxy().connectToMUC(
-							mBackgroundServiceConnector.getBackgroundService().getMucRoomId(),
-							mBackgroundServiceConnector.getBackgroundService().getMucRoomPw());
-
-					mMxaProxy.getMucProxy().registerIncomingMessageObserver(
-							PlayActivity.this, mMucHandler);
-					Log.i(this.getClass().getSimpleName(), "Connected to MUC");
-
-				} catch (RemoteException e) {
-					Log.e(this.getClass().getSimpleName(), "Failed to connect to MUC");
-					Toast.makeText(PlayActivity.this, "Failed to connect to chat", Toast.LENGTH_LONG).show();
-					PlayActivity.this.finish();
-				}
-			}
-			
-			// only fired for creator of the game, enables him to start it
-			else if (msg.what == 1) {
-				enableStartButton();
-			}
-		}
-	};
-	
-	
-	/**
-	 * The handler for chat messages. The message will be displayed using a Toast and the device will vibrate.
-	 */
-	private Handler mMucHandler = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-			if (msg.obj != null) {
-				Toast.makeText(PlayActivity.this, msg.obj.toString(), Toast.LENGTH_LONG).show();
-				
-				Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-				// start in 0ms, vibrate for 500ms, pause for 300ms, vibrate for 500ms
-		    	long[] vibratePattern = {0, 500, 300, 500 };
-		    	// -1 prevents from repeating the pattern
-		    	vibrator.vibrate(vibratePattern, -1);
-			}
+			serverConnection = mBackgroundServiceConnector.getBackgroundService().getServerConnection();
+			serverConnection.initializeMucAndChat(mUpdateUIHandler);
 		}
 	};
 	
@@ -346,20 +254,33 @@ public class PlayActivity extends Activity {
 	 * The handler to update the players view if something changed, like a player
 	 * joined/left the game or the card infos changed after finishing of a round.
 	 */
-	private Handler mUpdatePlayersHandler = new Handler() {
+	private Handler mUpdateUIHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
-			// Remove all player views
-			tbl_players.removeAllViews();
-
-			// For each player insert a row in the players list
-			for (Player player : mBackgroundServiceConnector.getBackgroundService().getGame().getPlayers().values()) {
-				insertNewPlayerRow(player);
-			}
-
-			// Display a message shipped by the Bean
-			if (msg.obj != null) {
-				Toast.makeText(PlayActivity.this, msg.obj.toString(), Toast.LENGTH_LONG).show();
+			
+			switch (msg.what) {
+				case BackgroundService.CODE_ENABLE_START_GAME_BUTTON : {
+					Button btn_ready = (Button) findViewById(R.id.btn_ready);
+					btn_ready.setText(getResources().getString(R.string.txt_btn_play_start_2));
+					btn_ready.setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							StartGameMessage startMesg = new StartGameMessage();
+							serverConnection.sendPrivateToService(startMesg);
+						}
+					});
+	
+					btn_ready.setEnabled(true);
+					break;
+				}
+				case BackgroundService.CODE_UPDATE_GAME_PLAYERS_LIST : {
+					tbl_players.removeAllViews();
+					for (Player player : game.getPlayers().values())
+						insertNewPlayerRow(player);
+					break;
+				}
+				default :
+					Log.w(getClass().getSimpleName(), "Unexpected handler event code (" + msg.what + ")");
 			}
 		}
 	};
@@ -368,29 +289,12 @@ public class PlayActivity extends Activity {
 	/**
 	 * 
 	 */
-	private Handler mRoundCompleteHandler = new Handler() {
+	private Handler mDisplayToastHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
 			
-			if(msg.obj != null) {
-				String text = "Round " + (mBackgroundServiceConnector.getBackgroundService().getGame().getRound() -1) + " completed!"
-						+ " The point goes to " + msg.obj.toString();
-				Toast.makeText(PlayActivity.this, text, Toast.LENGTH_LONG).show();
-			}
-			
-			else {
-				String text = "The game has finished! Winner is "
-						+ mBackgroundServiceConnector.getBackgroundService().getGame().getWinner().getName()
-						+ " (" + mBackgroundServiceConnector.getBackgroundService().getGame().getWinner().getRoundsWon() + " wins)";
-				Toast.makeText(PlayActivity.this, text, Toast.LENGTH_LONG).show();
-				
-				// send leave message to muc and finish game
-				PlayerLeavingMessage leavingMesg = new PlayerLeavingMessage(mBackgroundServiceConnector.getBackgroundService().getUserJid());
-				MessageWrapper wrapper = new MessageWrapper(true, leavingMesg.toXML(), "PlayerLeaving");
-				mBackgroundServiceConnector.getBackgroundService().getMXAProxy().getMucProxy().sendMessageToMuc(wrapper.toXML());
-				
-				PlayActivity.this.finish();
-			}
+			if(msg.obj != null)
+				Toast.makeText(PlayActivity.this, msg.obj.toString(), Toast.LENGTH_LONG).show();
 		}
 	};
 	
@@ -406,15 +310,14 @@ public class PlayActivity extends Activity {
 
 		// Set name of player
 		TextView tv_player = new TextView(PlayActivity.this);
-		tv_player.setText(player.getName());
+		tv_player.setText(StringUtils.parseResource(player.getNickname()));
 		tv_player.setTextSize(20);
 		tv_player.setTypeface(Typeface.DEFAULT_BOLD);
 		tv_player.setPadding(3, 0, 0, 10);
 
 		// Set the cards which the player already used
 		TextView tv_used_cards = new TextView(PlayActivity.this);
-		boolean ownPlayer = player.getJid().equals(mBackgroundServiceConnector.getBackgroundService().getUserJid());
-		tv_used_cards.setText(player.getUsedCardsAsString(ownPlayer));
+		tv_used_cards.setText(player.getUsedCardsAsString());
 		tv_used_cards.setGravity(Gravity.CENTER);
 		tv_used_cards.setPadding(3, 0, 0, 10);
 		
@@ -426,7 +329,7 @@ public class PlayActivity extends Activity {
 
 		// TableRow which contains the data of the player
 		TableRow row = new TableRow(PlayActivity.this);
-		row.setTag(player.getJid());
+		row.setTag(player.getNickname());
 		row.addView(tv_player);
 		row.addView(tv_used_cards);
 		row.addView(tv_rounds_won);
@@ -437,44 +340,22 @@ public class PlayActivity extends Activity {
 	}
 	
 	
-	/**
-	 * The start button will only be enabled for the creator of the game
-	 */
-	private void enableStartButton() {
-		
-		runOnUiThread(new Runnable() {
-			public void run() {
-				
-				final Button btn_ready = (Button) findViewById(R.id.btn_ready);
-				btn_ready.setText(getResources().getString(R.string.txt_btn_play_start_2));
-
-				btn_ready.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						
-						// embed start message into message wrapper
-						StartGameMessage startMesg = new StartGameMessage();
-						MessageWrapper wrapper = new MessageWrapper(true, startMesg.toXML(), "StartGame");
-						mBackgroundServiceConnector.getBackgroundService().getMXAProxy().getMucProxy().sendMessageToMuc(wrapper.toXML());
-
-						btn_ready.setEnabled(false);
-					}
-				});
-
-				btn_ready.setEnabled(true);
-				
-				if(blockBeforeStartDialog.isShowing())
-					blockBeforeStartDialog.dismiss();
-			}
+	/*private void doSomethingOnUIThread()
+	{	
+		runOnUiThread(new Runnable()
+		{
+			public void run()
+			{}
 		});
-	}
+	}*/
 	
 	
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onResume()
 	 */
 	@Override
-	protected void onResume() {
+	protected void onResume()
+	{
 		if(mBackgroundServiceConnector.getBackgroundService() != null)
 			mBackgroundServiceConnector.getBackgroundService().setGameState(new GameStatePlay());
 		
@@ -482,26 +363,31 @@ public class PlayActivity extends Activity {
 	}
 	
 	
-	
-	
-	
 	/*
 	 * (non-Javadoc)
 	 * @see android.app.Activity#finish()
 	 */
 	@Override
-	public void finish() {
-		unbindService(mBackgroundServiceConnector);
-		
+	public void finish()
+	{
+		serverConnection.leavePublicChat();
+		unbindService(mBackgroundServiceConnector);	
 		super.finish();
-}
+	}
 	
 	
-	public class GameStatePlay extends GameState {
-
+	/**
+	 * 
+	 */
+	public class GameStatePlay extends GameState
+	{
+		/*
+		 * (non-Javadoc)
+		 * @see de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState#processPacket(de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean)
+		 */
 		@Override
-		public void processPacket(XMPPBean inBean) {
-
+		public void processPacket(XMPPBean inBean)
+		{
 			if (inBean.getType() == XMPPBean.TYPE_ERROR) {
 				Log.e(PlayActivity.class.getSimpleName(), "IQ Type ERROR: " + inBean.toXML());
 			}
@@ -512,7 +398,7 @@ public class PlayActivity extends Activity {
 				inBean.errorCondition = "unexpected-request";
 				inBean.errorText = "This request is not supportet at this game state(Play)";
 
-				mMxaProxy.getIqProxy().sendXMPPBeanError(inBean);
+				serverConnection.sendXMPPBeanError(inBean);
 			}
 		}
 		
@@ -521,35 +407,29 @@ public class PlayActivity extends Activity {
 		 * 
 		 * @param message
 		 */
-		public void processMucMessage(XMPPInfo message) {
-			
-			if(message instanceof PlayerInfosMessage) {
-				List<PlayerInfo> infos = ((PlayerInfosMessage) message).getPlayers();
-				for(PlayerInfo info : infos) {
-					Player player = new Player(info.getPlayersJID(), info.getPlayersName());
-					player.setUsedCards(info.getPlayersUsedCards());
-					player.setRoundsWon(info.getPlayersWins());
+		public void processChatMessage(XMPPInfo xmppInfo)
+		{
+			// StartGameMessage
+			if(xmppInfo instanceof StartGameMessage) {
+				
+				if(game.getRound() == 0) {
+					// set round to 1 to prevent more start messages from being accepted
+					game.setRound(1);
+					game.setMaxRounds(((StartGameMessage) xmppInfo).getRounds());
 					
-					mBackgroundServiceConnector.getBackgroundService().getGame().getPlayers().put(player.getJid(), player);
-				}
-				mUpdatePlayersHandler.sendEmptyMessage(0);
-			}
-			
-			else if(message instanceof StartGameMessage) {
-				if(mBackgroundServiceConnector.getBackgroundService().getGame().getRound() == 0) {
+					// disable start button for admin users
+					final Button startBtn = (Button) findViewById(R.id.btn_ready);
+					if(startBtn.isEnabled())
+						startBtn.setEnabled(false);
 
-					// set initial round and enable card buttons 
-					mBackgroundServiceConnector.getBackgroundService().getGame().setRound(1);
+					// enable card buttons 
 					for(ImageButton button : cardSet.values()) {
 						button.setAlpha(255);
 						button.setClickable(true);
 					}
 					
 					// display round in title bar
-					setTitle(
-							mBackgroundServiceConnector.getBackgroundService().getGame().getName()
-							+ " - Round "
-							+ mBackgroundServiceConnector.getBackgroundService().getGame().getRound());
+					setTitle(game.getName() + " - Round " + game.getRound() + "/" + game.getMaxRounds());
 					
 					// disable waiting dialog for not-creator players
 					if(blockBeforeStartDialog.isShowing())
@@ -557,75 +437,72 @@ public class PlayActivity extends Activity {
 				}
 			}
 			
-			else if(message instanceof PlayCardMessage) {
-				Player player = mBackgroundServiceConnector.getBackgroundService().getGame().getPlayers().get(
-						((PlayCardMessage) message).getPlayersJID());
-				
-				if(player == null)
-					return;
-				
-				// check if card has already been used
-				if (!player.getUsedCards().contains(((PlayCardMessage) message).getCardID()))
-					// check if player has already chosen a card in this round
-					if (player.getChosenCard() == -1)
-						player.setChosenCard(((PlayCardMessage) message).getCardID());
+			// CardPlayedMessage
+			else if(xmppInfo instanceof CardPlayedMessage) {
 
-				mUpdatePlayersHandler.sendEmptyMessage(0);
+				// check if message corresponds to current round
+				if (((CardPlayedMessage) xmppInfo).getRound() == game.getRound()) {
+					Player player = game.getPlayers().get(((CardPlayedMessage) xmppInfo).getPlayer());
+
+					// if player.getChosenCard() returns a value bigger than 0, then it is our own player
+					if (player != null && player.getChosenCard() == -1) {
+						player.setChosenCard(0);
+						mUpdateUIHandler.sendEmptyMessage(BackgroundService.CODE_UPDATE_GAME_PLAYERS_LIST);
+					}
+				}
 			}
 			
-			else if(message instanceof RoundCompleteMessage) {
+			// RoundCompleteMessage
+			else if(xmppInfo instanceof RoundCompleteMessage) {
 				
-				// check if completed message corresponds to current round
-				if(((RoundCompleteMessage) message).getRoundID() == mBackgroundServiceConnector.getBackgroundService().getGame().getRound()) {		
-					mBackgroundServiceConnector.getBackgroundService().getGame().setRound(((RoundCompleteMessage) message).getRoundID() +1);
+				// check if message corresponds to current round
+				if (((RoundCompleteMessage) xmppInfo).getRound() == game.getRound()) {
 					
+					game.setRound(game.getRound() + 1);
+
 					// update all players
-					List<PlayerInfo> infos = ((RoundCompleteMessage) message).getPlayerInfos();
+					List<PlayerInfo> infos = ((RoundCompleteMessage) xmppInfo).getPlayerInfos();
 					for (PlayerInfo info : infos) {
-						Player player = mBackgroundServiceConnector.getBackgroundService().getGame().getPlayers().get(info.getPlayersJID());
-						player.setUsedCards(info.getPlayersUsedCards());
-						player.setRoundsWon(info.getPlayersWins());
+						Player player = game.getPlayers().get(info.getJid());
+						player.setUsedCards(info.getUsedcards());
+						player.setRoundsWon(info.getScore());
 						player.setChosenCard(-1);
-					}					
-					
+					}
+
 					// update players list on top of screen
-					mUpdatePlayersHandler.sendEmptyMessage(0);
-					
+					mUpdateUIHandler.sendEmptyMessage(BackgroundService.CODE_UPDATE_GAME_PLAYERS_LIST);
+
 					// update round in title bar
-					setTitle(
-							mBackgroundServiceConnector.getBackgroundService().getGame().getName()
-							+ " - Round "
-							+ mBackgroundServiceConnector.getBackgroundService().getGame().getRound());
-				
+					setTitle(game.getName() + " - Round " + game.getRound() + "/" + game.getMaxRounds());
+
 					// display a Toast about the winner of the round
 					Message mesg = new Message();
-					mesg.obj = ((RoundCompleteMessage) message).getRoundWinnersName();
-					mRoundCompleteHandler.sendMessage(mesg);
-					
-					// check if the game is finished
-					if(((RoundCompleteMessage) message).getEndOfGame()) {
-						mRoundCompleteHandler.sendEmptyMessage(0);
-					}
-					
-					// if not, re-enable remaining cards
-					else {
-						List<Integer> myUsedCards = mBackgroundServiceConnector.getBackgroundService().getGame().getPlayers()
-							.get(mBackgroundServiceConnector.getBackgroundService().getUserJid()).getUsedCards();
+					mesg.obj =  "Round " + (game.getRound() -1) + " completed!"
+							+ "\nThe point goes to " + ((RoundCompleteMessage) xmppInfo).getWinner();		
+					mDisplayToastHandler.sendMessage(mesg);
 
-						for(Map.Entry<Integer, ImageButton> entry : cardSet.entrySet()) {
-							if(!myUsedCards.contains(entry.getKey())) {
-								entry.getValue().setClickable(true);
-								entry.getValue().setAlpha(255);
-							}
+					// re-enable remaining cards
+					List<Integer> myUsedCards = game.getPlayers().get(serverConnection.getMyChatNick()).getUsedCards();
+
+					for (Map.Entry<Integer, ImageButton> entry : cardSet.entrySet()) {
+						if (!myUsedCards.contains(entry.getKey())) {
+							entry.getValue().setClickable(true);
+							entry.getValue().setAlpha(255);
 						}
 					}
 				}
 			}
 			
-			else if(message instanceof PlayerLeavingMessage) {
-				String jid = ((PlayerLeavingMessage) message).getLeavingJID();
-				mBackgroundServiceConnector.getBackgroundService().getGame().getPlayers().remove(jid);
-				mUpdatePlayersHandler.sendEmptyMessage(0);
+			// GameOverMessage
+			else if(xmppInfo instanceof GameOverMessage) {
+				Message mesg = new Message();
+				mesg.obj = "The game has finished! Winner is "
+						+ StringUtils.parseResource(game.getWinner().getNickname())
+						+ " (score: " + game.getWinner().getRoundsWon() + ")";
+				
+				// finish game
+				serverConnection.leavePublicChat();
+				PlayActivity.this.finish();
 			}
 		}
 	}
@@ -643,14 +520,16 @@ public class PlayActivity extends Activity {
 	}
 
 	/*@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.play, menu);
 		return true;
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			// This ID represents the Home or Up button. In the case of this

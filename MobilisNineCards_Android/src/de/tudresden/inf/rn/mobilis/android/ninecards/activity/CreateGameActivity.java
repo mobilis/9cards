@@ -13,16 +13,13 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.Toast;
 import de.tudresden.inf.rn.mobilis.android.ninecards.R;
-import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.ConfigureGameResponse;
-import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.IXMPPCallback;
-import de.tudresden.inf.rn.mobilis.android.ninecards.communication.MXAProxy;
+import de.tudresden.inf.rn.mobilis.android.ninecards.communication.ServerConnection;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.BackgroundService;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.ServiceConnector;
-import de.tudresden.inf.rn.mobilis.mxa.parcelable.XMPPIQ;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.CreateNewServiceInstanceBean;
 
 /*******************************************************************************
@@ -44,21 +41,16 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.CreateNewServiceInsta
  * Computer Networks Group: http://www.rn.inf.tu-dresden.de
  * mobilis project: https://github.com/mobilis
  ******************************************************************************/
-public class CreateGameActivity extends PreferenceActivity {
-	
+public class CreateGameActivity extends PreferenceActivity
+{
 	/** The connection to the background service. */
 	private ServiceConnector mBackgroundServiceConnector;
+	/** The connection to the XMPP server. */
+	private ServerConnection serverConnection;
 	
-	/** The MXAProxy. */
-	private MXAProxy mMxaProxy;
-	
-	/** The textfield to define the name of the new game. */
+	/** The textfields to enter and safe the settings for a new game. */
 	private EditTextPreference mEditGameName;
-	
-	/** The textfield to configure the max. count of players. */
 	private EditTextPreference mEditMaxPlayers;
-	
-	/** The textfield to configure the count of rounds to play. */
 	private EditTextPreference mEditRounds;
 	
 
@@ -66,10 +58,11 @@ public class CreateGameActivity extends PreferenceActivity {
 	 * 
 	 */
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
 		
-		addPreferencesFromResource(R.layout.layout_creategame);
+		addPreferencesFromResource(R.xml.layout_creategame);
 		this.setDefaultKeyMode(MODE_PRIVATE);
 		setContentView(R.layout.activity_create_game);
 		
@@ -84,7 +77,8 @@ public class CreateGameActivity extends PreferenceActivity {
 	/**
 	 * Bind background service using the mBackgroundServiceBoundHandler.
 	 */
-	private void bindBackgroundService() {
+	private void bindBackgroundService()
+	{
 		mBackgroundServiceConnector = new ServiceConnector();
 		mBackgroundServiceConnector.addHandlerToList(mBackgroundServiceBoundHandler);
 		
@@ -96,11 +90,12 @@ public class CreateGameActivity extends PreferenceActivity {
 	
 	
 	/** The handler which is called if the XHuntService was bound. */
-	private Handler mBackgroundServiceBoundHandler = new Handler() {
+	private Handler mBackgroundServiceBoundHandler = new Handler()
+	{
 		@Override
 		public void handleMessage(Message messg) {
 			mBackgroundServiceConnector.getBackgroundService().setGameState(new GameStateCreateGame());
-			mMxaProxy = mBackgroundServiceConnector.getBackgroundService().getMXAProxy();
+			serverConnection = mBackgroundServiceConnector.getBackgroundService().getServerConnection();
 			
 			// enable button for creating a new game service instance
 			Button btn_Create = (Button)findViewById(R.id.creategame_btn_create);
@@ -112,8 +107,8 @@ public class CreateGameActivity extends PreferenceActivity {
 	/**
 	 * Initialize all UI elements from resources.
 	 */
-	private void initComponents() {
-
+	private void initComponents()
+	{
 		// The parameters for the new game 
 		mEditGameName = (EditTextPreference) getPreferenceScreen().findPreference(
 				getResources().getString(R.string.key_newgame_gamename));
@@ -131,11 +126,12 @@ public class CreateGameActivity extends PreferenceActivity {
 		btn_Create.setOnClickListener(new OnClickListener() {
 			
 			@Override
-			public void onClick(View v) {
+			public void onClick(View v)
+			{
 				if(v instanceof Button)
 					((Button) v).setEnabled(false);
 				
-				mMxaProxy.getIqProxy().sendCreateNewServiceInstanceIQ(
+				serverConnection.sendCreateNewServiceInstance(
 						"http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService",
 						mEditGameName.getText(),
 						null);
@@ -148,8 +144,8 @@ public class CreateGameActivity extends PreferenceActivity {
 	 * Update summaries of all preference entries.
 	 * A summary displays the current value of a preference.
 	 */
-	private void updateSummaries() {
-		
+	private void updateSummaries()
+	{
 		if (mEditGameName != null)
 			mEditGameName.setSummary(mEditGameName.getText());
 		
@@ -158,71 +154,41 @@ public class CreateGameActivity extends PreferenceActivity {
 		
 		if (mEditRounds != null)
 			mEditRounds.setSummary(mEditRounds.getText());
-			
 	}
 	
 	
 	/**
 	 * Creates the game using the configurable parameters.
 	 */
-	private void configureGame() {
+	private void configureGame()
+	{
 		mBackgroundServiceConnector.getBackgroundService().createGame(mEditGameName.getText());
 		
 		int rounds = 9;
 		int maxplayers = 6;
 
-		try{
+		try {
 			rounds = Integer.valueOf(mEditRounds.getText());
 			maxplayers = Integer.valueOf(mEditMaxPlayers.getText());
 		} catch (Exception e) { Log.e(this.getClass().toString(), e.getMessage()); }
 		
-		mMxaProxy.getIqProxy().configureGame(
-				mBackgroundServiceConnector.getBackgroundService().getGameServiceJid(),
+		serverConnection.sendGameConfiguration(
 				mBackgroundServiceConnector.getBackgroundService().getGame().getName(),
 				maxplayers,
-				rounds,
-				_configureGameCallback );
+				rounds);
+		
+		startActivity(new Intent(CreateGameActivity.this, PlayActivity.class));
+		CreateGameActivity.this.finish();
 	}
 	
-	
-	private IXMPPCallback<ConfigureGameResponse> _configureGameCallback = new IXMPPCallback<ConfigureGameResponse>() {
-		
-		@Override
-		public void invoke(ConfigureGameResponse bean) {
-			
-			if((bean.getType() == XMPPIQ.TYPE_ERROR) && (bean.errorText != null)) {
-				Message msg = new Message();
-				msg.what = -1;
-				msg.obj = bean.errorText;
-				mGameConfiguredHandler.sendMessage(msg);
-			}
-			
-			else if((bean != null) && (bean.getType() != XMPPBean.TYPE_ERROR)) {
-				mGameConfiguredHandler.sendEmptyMessage(0);
-			}
-		}
-	};
-	
-    /** The handler for the ConfigureGameBean to switch to the LobbyActivity, if game was created successfully. */
-    private Handler mGameConfiguredHandler = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-			
-			if(msg.what == -1)
-				Toast.makeText(CreateGameActivity.this, "Couldn't create game. Reasons: " + msg.obj.toString(), Toast.LENGTH_LONG).show();
-			else{
-				startActivity(new Intent(CreateGameActivity.this, PlayActivity.class));
-				CreateGameActivity.this.finish();
-			}
-		}
-	};
 	
 	
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onWindowFocusChanged(boolean)
 	 */
 	@Override
-	public void onWindowFocusChanged(boolean hasFocus) {
+	public void onWindowFocusChanged(boolean hasFocus)
+	{
 		updateSummaries();
 		super.onWindowFocusChanged(hasFocus);
 	}
@@ -232,7 +198,8 @@ public class CreateGameActivity extends PreferenceActivity {
 	 * @see android.app.Activity#onResume()
 	 */
 	@Override
-	protected void onResume() {
+	protected void onResume()
+	{
 		if(mBackgroundServiceConnector.getBackgroundService() != null)
 			mBackgroundServiceConnector.getBackgroundService().setGameState(new GameStateCreateGame());
 		
@@ -245,7 +212,8 @@ public class CreateGameActivity extends PreferenceActivity {
 	 * @see android.app.Activity#finish()
 	 */
 	@Override
-	public void finish() {
+	public void finish()
+	{
 		unbindService(mBackgroundServiceConnector);
 		super.finish();
 	}
@@ -254,11 +222,15 @@ public class CreateGameActivity extends PreferenceActivity {
 	/**
 	 *
 	 */
-	private class GameStateCreateGame extends GameState {
-
+	private class GameStateCreateGame extends GameState
+	{
+		/*
+		 * (non-Javadoc)
+		 * @see de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState#processPacket(de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean)
+		 */
 		@Override
-		public void processPacket(XMPPBean inBean) {
-			
+		public void processPacket(XMPPBean inBean)
+		{
 			// Handle error bean
 			if(inBean.getType() == XMPPBean.TYPE_ERROR) {
 				Log.e(this.getClass().getSimpleName(), "IQ Type ERROR: " + inBean.toXML());
@@ -273,7 +245,6 @@ public class CreateGameActivity extends PreferenceActivity {
 				
 				if((bean != null) && (bean.getType() != XMPPBean.TYPE_ERROR)) {
 					mBackgroundServiceConnector.getBackgroundService().setGameServiceJid(bean.jidOfNewService);
-					mBackgroundServiceConnector.getBackgroundService().setServiceVersion(bean.serviceVersion);	
 					mCreateNewInstanceHandler.sendEmptyMessage(0);
 				}
 			}
@@ -284,16 +255,20 @@ public class CreateGameActivity extends PreferenceActivity {
 				inBean.errorCondition = "unexpected-request";
 				inBean.errorText = "This request is not supportet at this game state(create)";
 				
-				mMxaProxy.getIqProxy().sendXMPPBeanError(inBean);
+				serverConnection.sendXMPPBeanError(inBean);
 			}			
 		}
 		
+		@Override
+		public void processChatMessage(XMPPInfo xmppInfo)
+		{}
 	}
 	
 	
     /** The handler for the CreateNewServiceInstanceBean to create a new Game instance if
      * the new service instance was successfully created. */
-    private Handler mCreateNewInstanceHandler = new Handler() {
+    private Handler mCreateNewInstanceHandler = new Handler()
+    {
 		@Override
 		public void handleMessage(Message msg) {
 			configureGame();
@@ -306,21 +281,24 @@ public class CreateGameActivity extends PreferenceActivity {
 	 * Set up the {@link android.app.ActionBar}, if the API is available.
 	 */
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	private void setupActionBar() {
+	private void setupActionBar()
+	{
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
 	}
 
 	/*@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.create_game, menu);
 		return true;
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			// This ID represents the Home or Up button. In the case of this

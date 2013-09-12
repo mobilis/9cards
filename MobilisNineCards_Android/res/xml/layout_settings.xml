@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+	xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <PreferenceCategory
+        android:title="Server Settings" >
+        
+		<EditTextPreference
+			android:key="@string/edit_text_pref_server_xmpp"
+			android:title="XMPP Server Address"
+			android:dialogTitle="XMPP Server Address"
+			android:summary="Please enter address of XMPP server."
+			android:defaultValue="mobilis-dev.inf.tu-dresden.de" />
+			
+		<EditTextPreference
+			android:key="@string/edit_text_pref_server_mobilis_jid"
+			android:title="Mobilis Server JID"
+			android:dialogTitle="Mobilis Server JID"
+			android:summary="Please enter JID of Mobilis server."
+			android:defaultValue="mobilis@mobilis-dev.inf.tu-dresden.de/Coordinator" />
+	</PreferenceCategory>
+	
+    <PreferenceCategory
+        android:title="User Settings" >
+			
+		<EditTextPreference
+			android:key="@string/edit_text_pref_user_jid"
+			android:title="User JID"
+			android:dialogTitle="User JID"
+			android:summary="Please enter your user JID."
+			android:defaultValue="xhunt03@mobilis-dev.inf.tu-dresden.de" />
+				
+		<EditTextPreference
+			android:key="@string/edit_text_pref_user_password"
+			android:title="User Password"
+			android:dialogTitle="User Password"
+			android:summary="Please enter your user password."
+			android:defaultValue="xhunt03" />	
+			
+		<EditTextPreference
+			android:key="@string/edit_text_pref_user_nick"
+			android:title="Nickname"
+			android:dialogTitle="Nickname"
+			android:summary="Please enter your desired nickname."
+			android:defaultValue="xhunt03" />
+        
+    </PreferenceCategory>
+    
+</PreferenceScreen>

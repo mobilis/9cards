@@ -13,15 +13,12 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 import de.tudresden.inf.rn.mobilis.android.ninecards.R;
-import de.tudresden.inf.rn.mobilis.android.ninecards.communication.MXAProxy;
+import de.tudresden.inf.rn.mobilis.android.ninecards.communication.ServerConnection;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.BackgroundService;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.ServiceConnector;
-import de.tudresden.inf.rn.mobilis.mxa.ConstMXA.MessageItems;
-import de.tudresden.inf.rn.mobilis.mxa.MXAController;
-import de.tudresden.inf.rn.mobilis.mxa.activities.PreferencesClient;
-import de.tudresden.inf.rn.mobilis.mxa.activities.Setup;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscoveryBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceInfo;
 
@@ -44,19 +41,13 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceInfo;
  * Computer Networks Group: http://www.rn.inf.tu-dresden.de
  * mobilis project: https://github.com/mobilis
  ******************************************************************************/
-public class StartActivity extends Activity {
+public class StartActivity extends Activity
+{
 	
 	/** The connection to the background service. */
 	private ServiceConnector mBackgroundServiceConnector;
-	/** The MXAProxy. */
-	private MXAProxy mMxaProxy;
-	
-	/** Is used if Mobilis Server supports 9Cards Service. */
-	private static final int CODE_SERVICES_SUPPORTED = 1;
-	/** Is used if Mobilis Server doesn't supports 9Cards Service. */
-	private static final int CODE_SERVICE_NOT_AVAILABLE = -1;
-	/** Is used if contacting the Mobilis Server fails. */
-	private static final int CODE_SERVER_RESPONSE_ERROR = -2;
+	/** The connection to the XMPP server. */
+	private ServerConnection serverConnection;
 
 	
 	/*
@@ -64,33 +55,25 @@ public class StartActivity extends Activity {
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
 	 */
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_start);
 		
-		MXAController.get().setSharedPreferencesName(this, "de.tudresden.inf.rn.mobilis.android.ninecards.mxa");
-		
-		initComponents();
 		bindBackgroundService();
-		
-		/*try {
-			// delete old MUC messages from internal database
-			getContentResolver().delete(MessageItems.contentUri, null, null);
-		} catch (Exception ignore) {}*/
+		initComponents();
 	}
-	
-	
+
+
 	/**
 	 * 
 	 */
-	private void bindBackgroundService() {
+	private void bindBackgroundService()
+	{
 		mBackgroundServiceConnector = new ServiceConnector();
-		
-		getApplicationContext().startService(
-				new Intent(getApplicationContext(), BackgroundService.class));
+		getApplicationContext().startService(new Intent(getApplicationContext(), BackgroundService.class));
 		
 		mBackgroundServiceConnector.addHandlerToList(mBackgroundServiceBoundHandler);
-		
 		bindService(
 				new Intent(this, BackgroundService.class),
 				mBackgroundServiceConnector,
@@ -98,32 +81,22 @@ public class StartActivity extends Activity {
 	}
 	
 	
-	/**
-	 * 
-	 */
-	private void connectToXMPP() {
-		if((mMxaProxy != null) && mMxaProxy.isConnectedToXMPPServer())
-			requestOpenGames();
-		
-		else {
-			Toast.makeText(this, "Setting up XMPP connection...", Toast.LENGTH_LONG).show();
-
-			mMxaProxy.addXMPPConnectedHandler(mXmppConnectedHandler);
-			try {
-				mMxaProxy.connectMXA();
-			} catch (Exception e) {
-				Log.e(this.getClass().getName(), e.getMessage());
-				Toast.makeText(this, "Failed to connect to MXA!\n(" + e.getMessage() + ")", Toast.LENGTH_LONG).show();
-			}
+	/** The handler which is called if the XHuntService was bound. */
+	private Handler mBackgroundServiceBoundHandler = new Handler()
+	{
+		@Override
+		public void handleMessage(Message messg) {
+			serverConnection = mBackgroundServiceConnector.getBackgroundService().getServerConnection();
+			mBackgroundServiceConnector.getBackgroundService().setGameState(new GameStateStart());
 		}
-	}
+	};
 
 	
 	/**
 	 * 
 	 */
-	private void initComponents() {
-		
+	private void initComponents()
+	{
 		// 'Start' button
 		Button btn_Play = (Button) findViewById(R.id.act_start_btn_play);
 		btn_Play.setOnClickListener(new OnClickListener() {
@@ -131,25 +104,24 @@ public class StartActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				
-				// check if user already configured XMPP
-				if (!MXAController.get().checkSetupDone()) {
-					Toast.makeText(StartActivity.this,
-							StartActivity.this.getResources().getString(R.string.act_start_toast_xmppsetup_needed),
-							Toast.LENGTH_SHORT).show();
+				// connect to XMPP server if not done yet
+				if (!serverConnection.isConnected()) {
+					String server = mBackgroundServiceConnector.getBackgroundService().getXmppServerAddress();
+					String userJid = mBackgroundServiceConnector.getBackgroundService().getUserJid();
+					String userPw = mBackgroundServiceConnector.getBackgroundService().getUserPassword();
 					
-					Intent quickSetupIntent = new Intent(StartActivity.this, Setup.class);
-					startActivity(quickSetupIntent);
-					
-					return;
+					// if it fails, notify user
+					if(!serverConnection.connectToXmppServer(server, userJid, userPw)) {
+						Toast.makeText(StartActivity.this,
+								"Failed to connect to XMPP server.\nPlease check your settings!",
+								Toast.LENGTH_LONG).show();
+						
+						return;
+					}
 				}
 				
-				// connect to XMPP if not done yet
-				if ((mMxaProxy != null) && (mMxaProxy.isConnectedToXMPPServer()))
-					requestOpenGames();
-				
-				else
-					connectToXMPP();
-				
+				// if successfully connected, request open games
+				serverConnection.sendServiceDiscovery(null);
 			}
 		});
 		
@@ -159,7 +131,7 @@ public class StartActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(StartActivity.this, PreferencesClient.class);
+				Intent intent = new Intent(StartActivity.this, SettingsActivity.class);
 				startActivity(intent);
 			}
 		});
@@ -187,50 +159,26 @@ public class StartActivity extends Activity {
 	}
 	
 	
-    /**
-     * Start the game. A MobilisServiceDiscoveryBean with null as namespace returns all services,
-     * a proper service namespace would let the server send information about all instances of the specified service.
-     */
-    private void requestOpenGames() {
-		mMxaProxy.getIqProxy().sendServiceDiscoveryIQ(null);
-    }
-	
-	
-	/** The handler which is called if the XHuntService was bound. */
-	private Handler mBackgroundServiceBoundHandler = new Handler() {
-		@Override
-		public void handleMessage(Message messg) {
-			mBackgroundServiceConnector.getBackgroundService().setGameState(new GameStateStart());
-			
-			mMxaProxy = mBackgroundServiceConnector.getBackgroundService().getMXAProxy();
-		}
-	};
-	
-	
-    /** The handler which is called when the XMPP connection was established successfully. */
-    private Handler mXmppConnectedHandler = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-			Toast.makeText(StartActivity.this, "XMPP connection established", Toast.LENGTH_SHORT).show();
-			mMxaProxy.getIqProxy().registerCallbacks();
-			
-			requestOpenGames();
-		}
-	};
-	
-	
     /** Handler to handle MobilisServiceDiscoveryBeans. */
-    private Handler mServiceDiscoveryResultHandler = new Handler() {
+    private Handler mServiceDiscoveryResultHandler = new Handler()
+    {
 		@Override
 		public void handleMessage(Message msg) {
-			if(msg.what == CODE_SERVICES_SUPPORTED)
-				startActivity(new Intent(StartActivity.this, OpenGamesActivity.class));
-			
-			else if(msg.what == CODE_SERVICE_NOT_AVAILABLE)
-				Toast.makeText(StartActivity.this.getApplicationContext(), "No 9Cards Service installed on Server", Toast.LENGTH_SHORT).show();
-			
-			else if(msg.what == CODE_SERVER_RESPONSE_ERROR){
-				Toast.makeText(StartActivity.this, "Server not found. Please check your settings!", Toast.LENGTH_SHORT).show();	
+			switch (msg.what) {
+				case BackgroundService.CODE_SERVICE_SUPPORTED : {
+					startActivity(new Intent(StartActivity.this, OpenGamesActivity.class));
+					break;
+				}
+				case BackgroundService.CODE_SERVICE_NOT_AVAILABLE : {
+					Toast.makeText(StartActivity.this.getApplicationContext(), "No 9Cards Service installed on Server", Toast.LENGTH_SHORT).show();
+					break;
+				}
+				case BackgroundService.CODE_SERVER_RESPONSE_ERROR : {
+					Toast.makeText(StartActivity.this, "Server not found. Please check your settings!", Toast.LENGTH_SHORT).show();
+					break;
+				}
+				default :
+					Log.w(getClass().getSimpleName(), "Unexpected handler event code (" + msg.what + ")");
 			}
 		}
 	};
@@ -241,7 +189,8 @@ public class StartActivity extends Activity {
 	 * @see android.app.Activity#onKeyDown(int, android.view.KeyEvent)
 	 */
 	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
+	public boolean onKeyDown(int keyCode, KeyEvent event)
+	{
 		// if the back-button of the device was pressed, finish the application 
 	    if ((keyCode == KeyEvent.KEYCODE_BACK))
 	    	this.finish();
@@ -254,7 +203,8 @@ public class StartActivity extends Activity {
 	 * @see android.app.Activity#onResume()
 	 */
 	@Override
-	protected void onResume() {
+	protected void onResume()
+	{
 		if(mBackgroundServiceConnector.getBackgroundService() != null)
 			mBackgroundServiceConnector.getBackgroundService().setGameState(new GameStateStart());
 		
@@ -267,36 +217,36 @@ public class StartActivity extends Activity {
 	 * @see android.app.Activity#finish()
 	 */
 	@Override
-	public void finish() {
-		// if the background service is up, unregister all IQ-Listeners and stop the background service
-		if((mBackgroundServiceConnector != null)
-				&& (mBackgroundServiceConnector.getBackgroundService() != null)
-				&& (mMxaProxy != null)
-				&& (mMxaProxy.getIqProxy() != null)) {
-			mMxaProxy.getIqProxy().unregisterCallbacks();
-			
+	public void finish()
+	{
+		if(serverConnection != null)
+			serverConnection.disconnectFromXmppServer();
+		
+		if ((mBackgroundServiceConnector != null) && (mBackgroundServiceConnector.getBackgroundService() != null)) {
 			mBackgroundServiceConnector.getBackgroundService().stopSelf();
 			unbindService(mBackgroundServiceConnector);
 		}
-		
-		try {
-			// delete old MUC messages from internal database
-			getContentResolver().delete(MessageItems.contentUri, null, null);
-		} catch (Exception ignore) {}
-		
+
 		super.finish();
 	}
 	
 	
-	private class GameStateStart extends GameState {
-
+	/**
+	 * 
+	 */
+	private class GameStateStart extends GameState
+	{
+		/*
+		 * (non-Javadoc)
+		 * @see de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState#processPacket(de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean)
+		 */
 		@Override
-		public void processPacket(XMPPBean inBean) {
+		public void processPacket(XMPPBean inBean)
+		{
 		
 			if(inBean.getType() == XMPPBean.TYPE_ERROR)
 				Log.e(this.getClass().getSimpleName(), "IQ Type ERROR: " + inBean.toXML());
 		
-
 			if(inBean instanceof MobilisServiceDiscoveryBean) {		
 				MobilisServiceDiscoveryBean bean = (MobilisServiceDiscoveryBean) inBean;
 				
@@ -314,20 +264,20 @@ public class StartActivity extends Activity {
 
 						// if it's supported, go to open games view
 						if(serverSupportsNineCards) {
-							mServiceDiscoveryResultHandler.sendEmptyMessage(CODE_SERVICES_SUPPORTED);
+							mServiceDiscoveryResultHandler.sendEmptyMessage(BackgroundService.CODE_SERVICE_SUPPORTED);
 						}
 						
 						// else notify user
 						else {
 							Log.w(StartActivity.class.getSimpleName(), "No 9Cards Service installed on Server");
-							mServiceDiscoveryResultHandler.sendEmptyMessage(CODE_SERVICE_NOT_AVAILABLE);
+							mServiceDiscoveryResultHandler.sendEmptyMessage(BackgroundService.CODE_SERVICE_NOT_AVAILABLE);
 						}
 					}
 				}
 				
 				// If Mobilis Server doesn't respond, notify user
 				else if(bean.getType() == XMPPBean.TYPE_ERROR)
-					mServiceDiscoveryResultHandler.sendEmptyMessage(CODE_SERVER_RESPONSE_ERROR);		
+					mServiceDiscoveryResultHandler.sendEmptyMessage(BackgroundService.CODE_SERVER_RESPONSE_ERROR);		
 			}
 			
 			// Other Beans of type get or set will be responded with an ERROR
@@ -336,10 +286,13 @@ public class StartActivity extends Activity {
 				inBean.errorCondition = "unexpected-request";
 				inBean.errorText = "This request is not supportet at this game state(main)";
 				
-				mMxaProxy.getIqProxy().sendXMPPBeanError(inBean);
+				serverConnection.sendXMPPBeanError(inBean);
 			}
 		}
 		
+		@Override
+		public void processChatMessage(XMPPInfo xmppInfo)
+		{}
 	}
 	
 	

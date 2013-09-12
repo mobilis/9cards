@@ -26,11 +26,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import de.tudresden.inf.rn.mobilis.android.ninecards.R;
-import de.tudresden.inf.rn.mobilis.android.ninecards.communication.MXAProxy;
+import de.tudresden.inf.rn.mobilis.android.ninecards.communication.ServerConnection;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.BackgroundService;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.ServiceConnector;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscoveryBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceInfo;
 
@@ -53,32 +54,26 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceInfo;
  * Computer Networks Group: http://www.rn.inf.tu-dresden.de
  * mobilis project: https://github.com/mobilis
  ******************************************************************************/
-public class OpenGamesActivity extends Activity {
+public class OpenGamesActivity extends Activity
+{
 	
 	/** The connection to the background service. */
 	private ServiceConnector mBackgroundServiceConnector;
-	/** The MXAProxy. */
-	private MXAProxy mMxaProxy;
+	/** The connection to the XMPP server. */
+	private ServerConnection serverConnection;
 	
 	/** The list adapter for the list of the open games. */
 	private OpenGamesListAdapter mOpenGamesListAdapter;
 	/** The layout inflater. */
 	private LayoutInflater mLayoutInflater;
 	
-	/** Is used if Mobilis Server supports 9Cards Service. */
-	private static final int CODE_SERVICE_GAMES_AVAILABLE = 1;
-	/** Is used if Mobilis Server doesn't supports 9Cards Service. */
-	private static final int CODE_SERVICE_NO_GAMES_AVAILABLE = 0;
-	/** Is used if contacting the Mobilis Server fails. */
-	private static final int CODE_SERVICE_GAMES_FAILURE = -1;
-
-	
 	
 	/**
 	 * 
 	 */
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_open_games);
 
@@ -96,7 +91,8 @@ public class OpenGamesActivity extends Activity {
 	/**
 	 * Bind background service using the mBackgroundServiceBoundHandler.
 	 */
-	private void bindBackgroundService() {
+	private void bindBackgroundService()
+	{
 		mBackgroundServiceConnector = new ServiceConnector();
 		mBackgroundServiceConnector.addHandlerToList(mBackgroundServiceBoundHandler);
 		
@@ -108,11 +104,12 @@ public class OpenGamesActivity extends Activity {
 	
 	
 	/** The handler which is called if the XHuntService was bound. */
-	private Handler mBackgroundServiceBoundHandler = new Handler() {
+	private Handler mBackgroundServiceBoundHandler = new Handler() 
+	{
 		@Override
 		public void handleMessage(Message messg) {
 			mBackgroundServiceConnector.getBackgroundService().setGameState(new GameStateOpenGames());
-			mMxaProxy = mBackgroundServiceConnector.getBackgroundService().getMXAProxy();
+			serverConnection = mBackgroundServiceConnector.getBackgroundService().getServerConnection();
 			
 			discoverOpenGames();
 		}
@@ -122,7 +119,8 @@ public class OpenGamesActivity extends Activity {
 	/**
 	 * Initialize all UI elements from resources.
 	 */
-    private void initComponents() {
+    private void initComponents()
+    {
     	mOpenGamesListAdapter = new OpenGamesListAdapter();    	
     	
     	ListView lv_Games = (ListView)findViewById(R.id.opengames_list);
@@ -132,25 +130,25 @@ public class OpenGamesActivity extends Activity {
     	lv_Games.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
+			public void onItemClick(AdapterView<?> adapter, View view, int position, long id)
+			{
 				// If user click on a game in the list, load the game details
 				OpenGameItem openGameItem = mOpenGamesListAdapter.getItem(position);
 				Log.v(OpenGamesActivity.class.getSimpleName(), "Game item tapped (itemId: " + openGameItem.GameId + ")");
 				
 				mBackgroundServiceConnector.getBackgroundService().setGameServiceJid(openGameItem.Jid);
 				mBackgroundServiceConnector.getBackgroundService().createGame(openGameItem.Name);
-				mBackgroundServiceConnector.getBackgroundService().setServiceVersion(openGameItem.ServiceVersion);
 
 	        	startActivity(new Intent(OpenGamesActivity.this, PlayActivity.class));
 			}
-    		
 		});
     	
     	Button btn_CreateGame = (Button)findViewById(R.id.opengames_btn_newgame);
     	btn_CreateGame.setOnClickListener(new OnClickListener() {
 			
 			@Override
-			public void onClick(View v) {
+			public void onClick(View v)
+			{
 				startActivity(new Intent(OpenGamesActivity.this, CreateGameActivity.class));
 			}
 		});
@@ -159,7 +157,8 @@ public class OpenGamesActivity extends Activity {
     	btn_ReloadGames.setOnClickListener(new OnClickListener() {
 			
 			@Override
-			public void onClick(View v) {
+			public void onClick(View v)
+			{
 				discoverOpenGames();
 			}
 		});
@@ -169,33 +168,40 @@ public class OpenGamesActivity extends Activity {
     /**
      * Discover open games
      */
-    private void discoverOpenGames() {
+    private void discoverOpenGames()
+    {
 		// Clear game list 
 		if(mOpenGamesListAdapter != null)
 			mOpenGamesListAdapter.List.clear();
     	
 		// Send a ServiceDiscovery to the Mobilis-Server to ask for running 9Cards-Services
-    	mMxaProxy.getIqProxy().sendServiceDiscoveryIQ("http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService");
+    	serverConnection.sendServiceDiscovery("http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService");
     }
     
     
     /** The handler for response of the MobilisServiceDiscoveryBean. */
-    private Handler mDiscoverGamesHandler = new Handler() {
+    private Handler mDiscoverGamesHandler = new Handler()
+    {
 		@Override
-		public void handleMessage(Message msg) {
-			
+		public void handleMessage(Message msg)
+		{
 			// Update list of the open games
 			mOpenGamesListAdapter.notifyDataSetChanged();
 			
-			switch(msg.what){
-				case CODE_SERVICE_GAMES_AVAILABLE:					
+			switch(msg.what) {
+				case BackgroundService.CODE_GAMES_AVAILABLE : {					
 					break;
-				case CODE_SERVICE_NO_GAMES_AVAILABLE:
+				}
+				case BackgroundService.CODE_NO_GAMES_AVAILABLE : {
 					Toast.makeText(OpenGamesActivity.this, "There are no games available right now!", Toast.LENGTH_LONG).show();
 					break;
-				case CODE_SERVICE_GAMES_FAILURE:
+				}
+				case BackgroundService.CODE_DISCOVER_GAMES_FAILURE : {
 					Toast.makeText(OpenGamesActivity.this, "Failed to load open games!", Toast.LENGTH_LONG).show();
 					break;
+				}
+				default :
+					Log.w(getClass().getSimpleName(), "Unexpected handler event code (" + msg.what + ")");
 			}
 		}
 	};
@@ -204,15 +210,16 @@ public class OpenGamesActivity extends Activity {
     /**
      * The Class OpenGamesListAdapter used to display and manage the list of games.
      */
-    private class OpenGamesListAdapter extends BaseAdapter {
-    	
+    private class OpenGamesListAdapter extends BaseAdapter
+    {
     	/** The List of games. */
 	    public List<OpenGameItem> List;
     	
     	/**
 	     * Instantiates a new OpenGamesListAdapter.
 	     */
-	    public OpenGamesListAdapter() {
+	    public OpenGamesListAdapter()
+	    {
 			this.List = new ArrayList<OpenGamesActivity.OpenGameItem>();
 		}
 
@@ -220,7 +227,8 @@ public class OpenGamesActivity extends Activity {
 		 * @see android.widget.Adapter#getCount()
 		 */
 		@Override
-		public int getCount() {
+		public int getCount()
+		{
 			return List.size();
 		}
 
@@ -228,7 +236,8 @@ public class OpenGamesActivity extends Activity {
 		 * @see android.widget.Adapter#getItem(int)
 		 */
 		@Override
-		public OpenGameItem getItem(int position) {
+		public OpenGameItem getItem(int position)
+		{
 			return List.get(position);
 		}
 
@@ -236,17 +245,17 @@ public class OpenGamesActivity extends Activity {
 		 * @see android.widget.Adapter#getItemId(int)
 		 */
 		@Override
-		public long getItemId(int position) {
-			return List.size() > 0
-				? List.get(position).GameId
-				: 0;
+		public long getItemId(int position)
+		{
+			return List.size() > 0 ? List.get(position).GameId : 0;
 		}
 
 		/* (non-Javadoc)
 		 * @see android.widget.Adapter#getView(int, android.view.View, android.view.ViewGroup)
 		 */
 		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
+		public View getView(int position, View convertView, ViewGroup parent)
+		{
 	        View view = null;
 
 	        if(convertView != null) {
@@ -263,9 +272,7 @@ public class OpenGamesActivity extends Activity {
         	view.setTag(img_image);
         	
         	TextView tv_name = (TextView)view.findViewById(R.id.listitem_opengames_name);
-        	tv_name.setText(List.get(position).Name != null
-        			? List.get(position).Name
-        			: List.get(position).Jid);
+        	tv_name.setText(List.get(position).Name != null ? List.get(position).Name : List.get(position).Jid);
         	view.setTag(tv_name);
 	        
 	        return view;
@@ -276,8 +283,8 @@ public class OpenGamesActivity extends Activity {
     /**
      * The Class OpenGameItem is used to handle complex structure in list adapter for games.
      */
-    private class OpenGameItem {
-    	
+    private class OpenGameItem
+    {
     	/** The Game id. */
 	    public long GameId;
     	
@@ -287,6 +294,7 @@ public class OpenGamesActivity extends Activity {
 	    /** The Jid. */
 	    public String Jid;
 
+	    /** The service version (currently not used). */
 	    public int ServiceVersion;
 
 	    /** The Drawable id. */
@@ -300,7 +308,8 @@ public class OpenGamesActivity extends Activity {
 	     * @param name the name of the game
 	     * @param players the players which are currently in the game
 	     */
-	    public OpenGameItem(long gameId, String jid, int serviceVersion, String name) {
+	    public OpenGameItem(long gameId, String jid, int serviceVersion, String name)
+	    {
     		this.GameId = gameId;
 			this.Jid = jid;
 			this.ServiceVersion = serviceVersion;
@@ -315,12 +324,12 @@ public class OpenGamesActivity extends Activity {
 	 * @see android.app.Activity#onResume()
 	 */
 	@Override
-	protected void onResume() {
-
+	protected void onResume()
+	{
 		if(mBackgroundServiceConnector.getBackgroundService() != null)
 			mBackgroundServiceConnector.getBackgroundService().setGameState(new GameStateOpenGames());
 		
-		if(mMxaProxy != null)
+		if(serverConnection != null && serverConnection.isConnected())
 			discoverOpenGames();
 		
 		super.onResume();
@@ -332,7 +341,8 @@ public class OpenGamesActivity extends Activity {
 	 * @see android.app.Activity#finish()
 	 */
 	@Override
-	public void finish() {
+	public void finish()
+	{
 		unbindService(mBackgroundServiceConnector);
 		super.finish();
 	}
@@ -341,12 +351,16 @@ public class OpenGamesActivity extends Activity {
 	/**
 	 * 
 	 */
-	private class GameStateOpenGames extends GameState {
-
+	private class GameStateOpenGames extends GameState
+	{
+		/*
+		 * (non-Javadoc)
+		 * @see de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState#processPacket(de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean)
+		 */
 		@Override
-		public void processPacket(XMPPBean inBean) {
-			
-			if(inBean.getType() == XMPPBean.TYPE_ERROR){
+		public void processPacket(XMPPBean inBean)
+		{
+			if(inBean.getType() == XMPPBean.TYPE_ERROR) {
 				Log.e(this.getClass().getSimpleName(), "IQ Type ERROR: " + inBean.toXML());
 			}
 			
@@ -377,27 +391,32 @@ public class OpenGamesActivity extends Activity {
 										info.getJid(), Integer.parseInt(info.getVersion()), info.getServiceName()));
 							}
 							
-							mDiscoverGamesHandler.sendEmptyMessage(CODE_SERVICE_GAMES_AVAILABLE);
+							mDiscoverGamesHandler.sendEmptyMessage(BackgroundService.CODE_GAMES_AVAILABLE);
 						}
 						
 						else {
-							mDiscoverGamesHandler.sendEmptyMessage(CODE_SERVICE_NO_GAMES_AVAILABLE);
+							mDiscoverGamesHandler.sendEmptyMessage(BackgroundService.CODE_NO_GAMES_AVAILABLE);
 						}
 
 					} else {
-						mDiscoverGamesHandler.sendEmptyMessage(CODE_SERVICE_NO_GAMES_AVAILABLE);
+						mDiscoverGamesHandler.sendEmptyMessage(BackgroundService.CODE_NO_GAMES_AVAILABLE);
 					}
 				}
 			}
+			
 			// Other Beans of type get or set will be responded with an ERROR
 			else if(inBean.getType() == XMPPBean.TYPE_GET || inBean.getType() == XMPPBean.TYPE_SET) {
 				inBean.errorType = "wait";
 				inBean.errorCondition = "unexpected-request";
 				inBean.errorText = "This request is not supportet at this game state(opengames)";
 				
-				mMxaProxy.getIqProxy().sendXMPPBeanError(inBean);
+				serverConnection.sendXMPPBeanError(inBean);
 			}		
 		}
+		
+		@Override
+		public void processChatMessage(XMPPInfo xmppInfo)
+		{}
 	}
 	
 	
@@ -405,21 +424,24 @@ public class OpenGamesActivity extends Activity {
 	 * Set up the {@link android.app.ActionBar}, if the API is available.
 	 */
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	private void setupActionBar() {
+	private void setupActionBar()
+	{
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
 	}
 
 	/*@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.open_games, menu);
 		return true;
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			// This ID represents the Home or Up button. In the case of this

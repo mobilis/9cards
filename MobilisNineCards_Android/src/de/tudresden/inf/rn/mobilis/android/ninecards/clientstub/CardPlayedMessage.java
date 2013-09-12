@@ -4,17 +4,19 @@ import org.xmlpull.v1.XmlPullParser;
 
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 
-public class PlayerLeavingMessage implements XMPPInfo {
+public class CardPlayedMessage implements XMPPInfo {
 
-	private String LeavingJID = null;
+	private int round = Integer.MIN_VALUE;
+	private String player = null;
 
 
-	public PlayerLeavingMessage( String LeavingJID ) {
+	public CardPlayedMessage( int round, String player ) {
 		super();
-		this.LeavingJID = LeavingJID;
+		this.round = round;
+		this.player = player;
 	}
 
-	public PlayerLeavingMessage(){}
+	public CardPlayedMessage(){}
 
 
 
@@ -30,8 +32,11 @@ public class PlayerLeavingMessage implements XMPPInfo {
 				if (tagName.equals(getChildElement())) {
 					parser.next();
 				}
-				else if (tagName.equals( "LeavingJID" ) ) {
-					this.LeavingJID = parser.nextText();
+				else if (tagName.equals( "round" ) ) {
+					this.round = Integer.parseInt( parser.nextText() );
+				}
+				else if (tagName.equals( "player" ) ) {
+					this.player = parser.nextText();
 				}
 				else
 					parser.next();
@@ -51,14 +56,14 @@ public class PlayerLeavingMessage implements XMPPInfo {
 		} while (!done);
 	}
 
-	public static final String CHILD_ELEMENT = "PlayerLeavingMessage";
+	public static final String CHILD_ELEMENT = "CardPlayedMessage";
 
 	@Override
 	public String getChildElement() {
 		return CHILD_ELEMENT;
 	}
 
-	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService#type:PlayerLeavingMessage";
+	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService#type:CardPlayedMessage";
 
 	@Override
 	public String getNamespace() {
@@ -69,21 +74,33 @@ public class PlayerLeavingMessage implements XMPPInfo {
 	public String toXML() {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append( "<LeavingJID>" )
-			.append( this.LeavingJID )
-			.append( "</LeavingJID>" );
+		sb.append( "<round>" )
+			.append( this.round )
+			.append( "</round>" );
+
+		sb.append( "<player>" )
+			.append( this.player )
+			.append( "</player>" );
 
 		return sb.toString();
 	}
 
 
 
-	public String getLeavingJID() {
-		return this.LeavingJID;
+	public int getRound() {
+		return this.round;
 	}
 
-	public void setLeavingJID( String LeavingJID ) {
-		this.LeavingJID = LeavingJID;
+	public void setRound( int round ) {
+		this.round = round;
+	}
+
+	public String getPlayer() {
+		return this.player;
+	}
+
+	public void setPlayer( String player ) {
+		this.player = player;
 	}
 
 }
