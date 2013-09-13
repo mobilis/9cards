@@ -3,6 +3,11 @@ var ninecards = {
 
 
 
+	players : {},
+
+
+
+
 	connect : function(userJid, userPassword, serverURL) {
 
 		Mobilis.core.connect(
@@ -70,8 +75,17 @@ var ninecards = {
 				Mobilis.ninecards.ConfigureGame(
 					gameJid, gameName, maxPlayers, numberOfRounds, 
 					function(result){
-						ninecards.joinGame(gameJid);
-						jQuery.mobile.changePage('#game', { transition: "slide"} );
+
+						ninecards.joinMuc(gameJid, function(result){
+
+							jQuery.mobile.changePage('#game', { 
+								transition: 'slide',
+								changeHash: 'false'
+							});
+							console.log(result);
+
+						});
+						
 					},
 					function(error){
 						console.error('ConfigureGame error',error);
@@ -113,46 +127,25 @@ var ninecards = {
 
 
 
-	joinMuc : function() {
+	joinMuc : function(serviceJid, result) {
 
-		var chatRoom = ninecards.loadData(['chatRoom']).chatRoom; 
+		var resource = Strophe.getResourceFromJid(serviceJid).toLowerCase();
+		var domain = Strophe.getDomainFromJid(serviceJid);
+
+		var roomJid = resource+'@conference.'+domain;
+		ninecards.storeData({'roomJid': roomJid});
+
 		var userName = ninecards.loadData(['username']).username;
-		var chatPassword = ninecards.loadData(['chatPassword']).chatPassword;
 
 		Mobilis.connection.muc.join(
-			chatRoom,
+			roomJid,
 			userName,
 			ninecards.onMessage,
 			ninecards.onPresence,
-			ninecards.onRoster,
-			chatPassword,
-			null, null
+			ninecards.onRoster
 		);
 
-	},
-
-
-
-
-
-	processSystemMessage : function (message) {
-
-		console.log('system message:', message);
-
-		// var messageType = $(message).find('MessageType');
-		// var messageString = $(message).find('MessageString');
-		// console.log(messageString, messageType);
-
-	},
-
-
-
-
-
-	processChatMessage : function (message) {
-
-		console.log('chat message:',message);
-
+		if (result) result('joined', roomJid);
 	},
 
 
@@ -161,11 +154,13 @@ var ninecards = {
 
 	onMessage : function (message){
 
+		console.log(message);
+
 		var messageBody = $(message).find('body').text();
 		var messageXml = $.parseXML('<xml>'+messageBody+'</xml>');
 
-		if ( $(messageXml).find('IsSystemMessage').length > 0 ) {
-			ninecards.processSystemMessage(messageXml);
+		if ( $(messageXml).find('MobilisMessage').length > 0 ) {
+			ninecards.processMobilisMessage(messageXml);
 		} else {
 			ninecards.processChatMessage(messageBody);
 		}
@@ -179,17 +174,24 @@ var ninecards = {
 
 	onPresence : function (presence){
 		
+		console.log(presence);
+
 		var presenceJid = $(presence).find('item').attr('jid');
 
-		if ($(presence).attr('type') == 'unavailable') {
+		if ( $(presence).attr('type') == 'unavailable' ) {
 			$('#'+ninecards.clearJid(presenceJid)).remove();
 			$('#players-list').listview('refresh');
 		} else {
-			$('#players-list').append(
-				'<li class="player" id="' + ninecards.clearJid(presenceJid) + '">'
-				+ presenceJid +
-				'<span class="ui-li-count">4</span></li>'
-			).listview('refresh');
+			
+			if ( $('#'+ninecards.clearJid(presenceJid)).length < 1 ){ // list item existent?
+
+				$('#players-list').append(
+					'<li class="player" id="' + ninecards.clearJid(presenceJid) + '">'
+					+ presenceJid +
+					'<span class="ui-li-count">4</span></li>'
+				).listview('refresh');
+
+			}
 		}
 
 		return true;
@@ -198,9 +200,15 @@ var ninecards = {
 
 
 
-
 	onRoster : function (roster){
 		console.log('the roster:', roster);
+		ninecards.players = roster;
+		$.each(ninecards.players, function(index,player){
+			console.log(player);
+			if (player.affiliation == 'owner'){
+				ninecards.storeData({'serviceNick':player.nick});
+			}
+		});
 		return true;
 	},
 
@@ -208,42 +216,115 @@ var ninecards = {
 
 
 
-	sendMessage : function (message) {
+	processChatMessage : function (message) {
+
+		console.log('chat message:',message);
+		return true;
+
+	},
+
+
+
+
+
+	processMobilisMessage : function (message) {
+
+		console.log('MobilisMessage:', message);
+
+		$(message).find('MobilisMessage').each(function(){
+
+			var type = $(this).attr('type');
+
+			console.log('type',type);
+
+			switch (type) {
+				case 'StartGameMessage' : ninecards.onStartGameMessage(message); break;
+			}
+
+		});
+		return true;
+	},
+
+
+
+
+	onStartGameMessage : function (message) {
+		console.log('Game Started',message);
+		var rounds = $(message).find('rounds').text();
+		console.log('rounds',rounds);
+		var password = $(message).find('password').text();
+		console.log('password',password);
+	},
+
+
+
+
+	sendMessage : function (nick, message) {
 		Mobilis.connection.muc.message(
-			ninecards.loadData(['chatRoom']).chatRoom, 
-			null, // no private message
+			ninecards.loadData(['roomJid']).roomJid, 
+			nick,
 			message, 
 			null, // no html markup
-			'groupchat');
+			'chat');
 		return true;
 	},
 
 
 
+
+	sendGroupchatMessage : function (message) {
+		Mobilis.connection.muc.groupchat(
+			ninecards.loadData(['roomJid']).roomJid, 
+			message, 
+			null // no html markup
+			);
+		return true;
+	},
+
+
+
+
+	startGame : function(){
+
+		ninecards.buildMobilisMessage(null,'StartGameMessage', function(message){
+			ninecards.sendMessage(
+				ninecards.loadData(['serviceNick']).serviceNick,
+				// 'marc',
+				message
+			);
+			ninecards.sendGroupchatMessage(	'sent to service: '+message );
+		});
+	},
+
+	
 
 
 	sendCard : function(card, disableButton){
 		console.log('card', card);
 
-		ninecards.makeSystemMessage(card,'myType',function(xml){
-			console.log(xml);
-			ninecards.sendMessage(xml);
+		ninecards.buildMobilisMessage(card,'PlayCardMessage',function(message){
+			ninecards.sendMessage(
+				ninecards.loadData(['serviceNick']).serviceNick,
+				message
+			);
+			ninecards.sendGroupchatMessage(	'sent to service: '+message );
 			disableButton();
-
-		} );
+		});
 
 	},
 
 
-	makeSystemMessage : function(message,type,returnXml) {
 
-		var xmlString = $build('MobilisMessage',{type:'PlayerInfo'})
-			.c('IsSystemMessage').t('true').up()
-			.c('MessageString').t(message).up()
-			.c('MessageType').t(type).up()
-			.toString();
 
-		returnXml(xmlString);
+	buildMobilisMessage : function(message,type,returnXml) {
+
+		var xml = $build('MobilisMessage',{type:type});
+		
+		if (message) {
+			xml = xml.t(message);		
+		}
+
+		returnXml( xml.toString() );
 	},
 
 
@@ -371,7 +452,7 @@ $(document).on('vclick', '#message-button', function() {
 $(document).on('vclick', '#message-submit', function() {
 	var message = $('#message-form #message').val();
 	if (message) {
-		ninecards.sendMessage(message);
+		ninecards.sendGroupchatMessage(message);
 	}
 	$('#message-popup').popup('close');
 	return false;
@@ -380,6 +461,7 @@ $(document).on('vclick', '#message-submit', function() {
 
 
 $(document).on('vclick', '#numpad a', function(card) {
+	card.preventDefault();
 	var card  = $(this).attr('data-id');
 	if (card) {
 		ninecards.sendCard(card, function(){
@@ -387,4 +469,15 @@ $(document).on('vclick', '#numpad a', function(card) {
 		});
 	}
 	return false;
+});
+
+$(document).on('vclick', '#startgame-button', function(event){
+
+	event.preventDefault();
+
+	console.log('start the game');
+	// $('#startgame-button').remove();
+	ninecards.startGame();
+	return false;
+
 });
