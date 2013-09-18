@@ -41,7 +41,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.server.BeanProviderAdapter;
 /**
  * The class for handling the raw XMPP bean connection.
  * 
- * Also implments the listener interface for receiving IQ events. The class that is interested in processing a IQ
+ * Also implements the listener interface for receiving IQ events. The class that is interested in processing a IQ
  * event implements this interface, and the object created with that class is registered with a component using the
  * component's addIQListener() method. When the IQ event occurs, that object's appropriate method is invoked.
  * @see IQEvent

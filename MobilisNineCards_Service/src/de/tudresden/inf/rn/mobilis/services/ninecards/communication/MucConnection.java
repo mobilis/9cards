@@ -3,6 +3,9 @@ package de.tudresden.inf.rn.mobilis.services.ninecards.communication;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
+import org.jivesoftware.smack.Chat;
+import org.jivesoftware.smack.ChatManagerListener;
+import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
@@ -18,7 +21,7 @@ import de.tudresden.inf.rn.mobilis.services.ninecards.NineCardsService;
 import de.tudresden.inf.rn.mobilis.services.ninecards.Player;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 
-public class MucConnection implements PacketListener {
+public class MucConnection implements PacketListener, MessageListener {
 	
 	/** The Mobilis Service 9Cards Instance */
 	private NineCardsService mServiceInstance;
@@ -75,6 +78,15 @@ public class MucConnection implements PacketListener {
 			muc.sendConfigurationForm(cnfgForm);
 			muc.addParticipantListener(mParticipantListener);
 			muc.addParticipantStatusListener(mParticipantStatusListener);
+			
+			muc.addMessageListener(this);
+			mServiceInstance.getAgent().getConnection().getChatManager().addChatListener(
+					new ChatManagerListener() {
+						@Override
+						public void chatCreated(Chat chat, boolean createdLocally) {
+							chat.addMessageListener(MucConnection.this);
+						}
+					});
 			
 			LOGGER.info("Chatroom created (ID: " + mServiceInstance.getSettings().getChatID());
 			
@@ -143,9 +155,13 @@ public class MucConnection implements PacketListener {
 	}
 	
 	
+	/*
+	 * (non-Javadoc)
+	 * @see org.jivesoftware.smack.PacketListener#processPacket(org.jivesoftware.smack.packet.Packet)
+	 */
 	@Override
 	public void processPacket(Packet packet) {
-		
+		// TODO mal gucken ob das überhaupt genutzt wird
 		if(packet instanceof Message) {
 			Message mesg = (Message) packet;
 			
@@ -156,6 +172,25 @@ public class MucConnection implements PacketListener {
 				} catch (Exception e) {
 					LOGGER.severe("failed to process incoming chat package (" + e.getClass() + " - " + e.getMessage() + ")");
 				}
+			}
+		}
+	}
+
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.jivesoftware.smack.MessageListener#processMessage(org.jivesoftware.smack.Chat, org.jivesoftware.smack.packet.Message)
+	 */
+	@Override
+	public void processMessage(Chat chat, Message mesg) {
+		if(mesg.getBody() != null) {
+			try {
+				if(mesg.getFrom() == null)
+					mesg.setFrom(chat.getParticipant());
+				LOGGER.info("processing incoming chat packet: " + mesg.getFrom() + " - " + mesg.getBody());
+				packetProcessor.processPacket(mesg);
+			} catch (Exception e) {
+				LOGGER.severe("failed to process incoming chat package (" + e.getClass() + " - " + e.getMessage() + ")");
 			}
 		}
 	}
@@ -218,8 +253,9 @@ public class MucConnection implements PacketListener {
 				LOGGER.warning("ParticipantListener can't get JID of new player!");
 				return;
 			}
-			
+
 			// hab den rest nach mParticipantStatusListener.joined() verschoben
+			else LOGGER.info("mParticipantListener received packet from " + packet.getFrom());
 		}			
 	};
 	
