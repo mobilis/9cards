@@ -17,3 +17,7 @@ table#numpad a {
 table#numpad a .ui-btn-inner {
 	/*font-size: 200%;*/
 }
+
+.ui-icon-custom {
+    background-position: 15px 0;
+}
