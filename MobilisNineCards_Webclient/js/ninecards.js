@@ -186,7 +186,7 @@ var ninecards = {
 				$('#players-list').append(
 					'<li id="' + ninecards.clearString(player.nick) + '" data-icon="custom"><a href="#">'
 					+ player.nick +
-					'</a></li>'
+					'<span class="ui-li-count">0</span></a></li>'
 				).listview('refresh');
 
 			}
@@ -220,6 +220,7 @@ var ninecards = {
 		switch (type) {
 			case 'StartGameMessage' : ninecards.onStartGameMessage(message); break;
 			case 'CardPlayedMessage' : ninecards.onCardPlayedMessage(message); break;
+			case 'RoundCompleteMessage' : ninecards.onRoundCompleteMessage(message); break;
 		}
 
 		return true;
@@ -241,10 +242,25 @@ var ninecards = {
 
 
 	onCardPlayedMessage : function (message) {
-
 		var nick = Strophe.getResourceFromJid( $(message).find('player').text() );
 		console.log('nick',nick);
 		$('#'+ninecards.clearString(nick)).buttonMarkup({ icon: 'check' });
+	},
+
+
+
+
+	onRoundCompleteMessage : function (message) {
+		console.log('message',message);
+		$(message).find('playerinfo').each( function(index,playerinfo){
+			console.log('playerinfo',playerinfo);
+			var nick = Strophe.getResourceFromJid( $(playerinfo).find('jid').text() );
+			console.log('nick',nick);
+			console.log('player',ninecards.players[nick]);
+			ninecards.players[nick].score = $(playerinfo).find('score').text();
+			console.log('score',ninecards.players[nick].score);
+			$('#'+nick+' a span').html(ninecards.players[nick].score);
+		});
 	},
 
 
