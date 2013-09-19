@@ -43,7 +43,7 @@ var ninecards = {
 						$('#game-list').append(
 							'<li><a class="available-game" id="'
 							+ $(this).attr('jid')
-							+ '" href="#lobby" data-transition="slide">'
+							+ '" href="#game" data-transition="slide">'
 							+ $(this).attr('serviceName')
 							+ ' (' + Strophe.getResourceFromJid($(this).attr('jid')) + ')'
 							+ '</a></li>');
@@ -75,7 +75,12 @@ var ninecards = {
 				Mobilis.ninecards.ConfigureGame(
 					gameJid, gameName, maxPlayers, numberOfRounds, 
 					function(result){
-						ninecards.joinGame(gameJid);						
+						ninecards.joinGame(gameJid, function(result){
+							console.log(result);
+							$('#game .ui-content').append(
+								'<a href="#" id="startgame-button" data-theme="a" data-role="button">Start Game</a>'
+							).trigger('create');
+						});
 					},
 					function(error){
 						console.error('ConfigureGame error',error);
@@ -93,18 +98,17 @@ var ninecards = {
 
 
 
-	joinGame : function(gameJid){
-
+	joinGame : function(gameJid, result){
+		var res;
 		ninecards.joinMuc(gameJid, function(result){
 
-			jQuery.mobile.changePage('#lobby', { 
+			jQuery.mobile.changePage('#game', { 
 				transition: 'slide',
-				changeHash: false
+				changeHash: true
 			});
-			console.log(result);
-
+			res = result;
 		});
-
+		if (result) result(res);
 	},
 
 
@@ -175,15 +179,19 @@ var ninecards = {
 		$('#players-list').empty();
 
 		$.each(ninecards.players, function(index,player){
+			console.log('player',player);
 			if (player.affiliation == 'owner'){
 				ninecards.storeData({'serviceNick':player.nick});
+				console.log('owner');
 			} else {
+				console.log('before append',player.jid,ninecards.clearJid(player.jid),player.nick);
 				$('#players-list').append(
 					'<li class="player" id="' + ninecards.clearJid(player.jid) + '">'
 					+ player.nick +
 					'</li>'
 					// '<span class="ui-li-count">4</span></li>'
 				).listview('refresh');
+				console.log('after append',player.jid);
 			}
 		});
 		return true;
@@ -420,7 +428,9 @@ $(document).on('vclick', '#create-game-submit', function() {
 
 $(document).on('vclick', '.available-game', function () {
 
-	ninecards.joinGame( $(this).attr('id') );
+	ninecards.joinGame( $(this).attr('id'), function (result){
+		console.log(result);
+	});
 	
 });
 
@@ -463,7 +473,7 @@ $(document).on('vclick', '#startgame-button', function(event){
 	event.preventDefault();
 
 	console.log('start the game');
-	// $('#startgame-button').remove();
+	$('#startgame-button').remove();
 	ninecards.startGame();
 	return false;
 
@@ -473,10 +483,11 @@ $(document).on('vclick', '#exitgame-button', function(event){
 
 	event.preventDefault();
 	$('#players-list').empty();
+	$('#startgame-button').remove();
 	jQuery.mobile.changePage('#games', { 
 								transition: 'slide',
 								reverse: true,
-								changeHash: false
+								changeHash: true
 							});
 	console.log('quit game');
 	return false;
