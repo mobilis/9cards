@@ -80,7 +80,7 @@ var ninecards = {
 
 							jQuery.mobile.changePage('#game', { 
 								transition: 'slide',
-								changeHash: 'false'
+								changeHash: false
 							});
 							console.log(result);
 
@@ -157,14 +157,15 @@ var ninecards = {
 		console.log(message);
 
 		var messageBody = $(message).find('body').text();
-		var messageXml = $.parseXML('<xml>'+messageBody+'</xml>');
+		// console.log('messageBody',messageBody);
+		var html = $.parseHTML(messageBody)[0];
+		// console.log('html',html);
 
-		if ( $(messageXml).find('MobilisMessage').length > 0 ) {
-			ninecards.processMobilisMessage(messageXml);
+		if ( $(html).attr('type') ) {
+			ninecards.processMobilisMessage(html);
 		} else {
 			ninecards.processChatMessage(messageBody);
 		}
-
 		return true;
 	},
 
@@ -176,23 +177,25 @@ var ninecards = {
 		
 		console.log(presence);
 
-		var presenceJid = $(presence).find('item').attr('jid');
+		// var presenceJid = $(presence).find('item').attr('jid');
 
-		if ( $(presence).attr('type') == 'unavailable' ) {
-			$('#'+ninecards.clearJid(presenceJid)).remove();
-			$('#players-list').listview('refresh');
-		} else {
-			
-			if ( $('#'+ninecards.clearJid(presenceJid)).length < 1 ){ // list item existent?
+		// if ( $(presence).attr('type') == 'unavailable' ) {
+		// 	$('#'+ninecards.clearJid(presenceJid)).remove();
+		// 	$('#players-list').listview('refresh');
+		// } else {
+		// 	var length = $('#'+ninecards.clearJid(presenceJid)).length;
+		// 	console.log('length: ', length );
 
-				$('#players-list').append(
-					'<li class="player" id="' + ninecards.clearJid(presenceJid) + '">'
-					+ presenceJid +
-					'<span class="ui-li-count">4</span></li>'
-				).listview('refresh');
+		// 	if ( $('#'+ninecards.clearJid(presenceJid)).length < 1 ){ // list item existent?
 
-			}
-		}
+		// 		$('#players-list').append(
+		// 			'<li class="player" id="' + ninecards.clearJid(presenceJid) + '">'
+		// 			+ length + ' ' + presenceJid +
+		// 			'<span class="ui-li-count">4</span></li>'
+		// 		).listview('refresh');
+
+		// 	}
+		// }
 
 		return true;
 	},
@@ -201,12 +204,21 @@ var ninecards = {
 
 
 	onRoster : function (roster){
-		console.log('the roster:', roster);
+
+		console.log('roster:', roster);
 		ninecards.players = roster;
+
+		$('#players-list').empty();
+
 		$.each(ninecards.players, function(index,player){
-			console.log(player);
 			if (player.affiliation == 'owner'){
 				ninecards.storeData({'serviceNick':player.nick});
+			} else {
+				$('#players-list').append(
+					'<li class="player" id="' + ninecards.clearJid(player.jid) + '">'
+					+ player.nick +
+					'<span class="ui-li-count">4</span></li>'
+				).listview('refresh');
 			}
 		});
 		return true;
@@ -292,7 +304,7 @@ var ninecards = {
 				// 'marc',
 				message
 			);
-			ninecards.sendGroupchatMessage(	'sent to service: '+message );
+			ninecards.sendGroupchatMessage(	'sent to '+ninecards.loadData(['serviceNick']).serviceNick+': '+message );
 		});
 	},
 
@@ -301,8 +313,8 @@ var ninecards = {
 
 	sendCard : function(card, disableButton){
 		console.log('card', card);
-
-		ninecards.buildMobilisMessage(card,'PlayCardMessage',function(message){
+		var round = 1; // TODO
+		ninecards.buildMobilisCardMessage(card,round,'PlayCardMessage',function(message){
 			ninecards.sendMessage(
 				ninecards.loadData(['serviceNick']).serviceNick,
 				message
@@ -318,11 +330,21 @@ var ninecards = {
 
 	buildMobilisMessage : function(message,type,returnXml) {
 
-		var xml = $build('MobilisMessage',{type:type});
+		var xml = $build('mobilismessage',{type:type});
 		
 		if (message) {
 			xml = xml.t(message);		
 		}
+
+		returnXml( xml.toString() );
+	},
+
+
+	buildMobilisCardMessage : function(card,round,type,returnXml) {
+
+		var xml = $build('mobilismessage',{type:type})
+				.c('round').t(round).up()
+				.c('card').t(card);
 
 		returnXml( xml.toString() );
 	},
@@ -478,6 +500,20 @@ $(document).on('vclick', '#startgame-button', function(event){
 	console.log('start the game');
 	// $('#startgame-button').remove();
 	ninecards.startGame();
+	return false;
+
+});
+
+$(document).on('vclick', '#exitgame-button', function(event){
+
+	event.preventDefault();
+	$('#players-list').empty();
+	jQuery.mobile.changePage('#games', { 
+								transition: 'slide',
+								reverse: true,
+								changeHash: false
+							});
+	console.log('quit game');
 	return false;
 
 });
