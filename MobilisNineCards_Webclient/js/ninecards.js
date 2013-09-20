@@ -77,7 +77,7 @@ var ninecards = {
 					function(result){
 						ninecards.joinGame(gameJid, function(result){
 							console.log(result);
-							$('#game .ui-content').append(
+							$('#game div[data-role=content]').append(
 								'<a href="#" id="startgame-button" data-theme="a" data-role="button">Start Game</a>'
 							).trigger('create');
 						});
@@ -227,6 +227,7 @@ var ninecards = {
 			case 'StartGameMessage' : ninecards.onStartGameMessage(message); break;
 			case 'CardPlayedMessage' : ninecards.onCardPlayedMessage(message); break;
 			case 'RoundCompleteMessage' : ninecards.onRoundCompleteMessage(message); break;
+			case 'GameOverMessage' : ninecards.onGameOverMessage(message); break;
 		}
 
 		return true;
@@ -271,6 +272,34 @@ var ninecards = {
 
 
 
+	
+
+	onGameOverMessage : function (message) {
+		var winner = Strophe.getResourceFromJid( $(message).find('winner').text() );
+
+		$('#dialog-popup').popup({
+			afteropen: function( event, ui ) {
+				$(this).find('h1').html('Game Over');
+				$(this).find('.ui-content h3').html('Winner:');
+				$(this).find('.ui-content p').html(winner);
+			},
+			afterclose: function( event, ui ) {
+				jQuery.mobile.changePage('#games', {
+					transition: 'slide',
+					reverse: true,
+					changeHash: true
+				});
+			}
+		});
+		$('#dialog-popup').popup('open', {
+			positionTo: 'window'
+		});
+
+
+	},
+	
+
+
 
 	onPresenceError : function (presence) {
 		
@@ -278,13 +307,11 @@ var ninecards = {
 		var children = $(presence).find('error').children().prop('tagName');
 		$('#dialog-popup').popup({
 			afteropen: function( event, ui ) {
-
 				$(this).find('h1').html('Error');
 				$(this).find('.ui-content h3').html(code);
 				$(this).find('.ui-content p').html(children);
 			},
 			afterclose: function( event, ui ) {
-
 				jQuery.mobile.changePage('#games', {
 					transition: 'slide',
 					reverse: true,
