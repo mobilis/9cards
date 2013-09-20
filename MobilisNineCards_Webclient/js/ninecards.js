@@ -165,6 +165,12 @@ var ninecards = {
 		
 		console.log(presence);
 
+		var type = $(presence).attr('type');
+
+		switch (type) {
+			case 'error' : ninecards.onPresenceError(presence); break;
+		}
+
 		return true;
 	},
 
@@ -261,6 +267,35 @@ var ninecards = {
 			console.log('score',ninecards.players[nick].score);
 			$('#'+nick+' a span').html(ninecards.players[nick].score);
 		});
+	},
+
+
+
+
+	onPresenceError : function (presence) {
+		
+		var code = $(presence).find('error').attr('code');
+		var children = $(presence).find('error').children().prop('tagName');
+		$('#dialog-popup').popup({
+			afteropen: function( event, ui ) {
+
+				$(this).find('h1').html('Error');
+				$(this).find('.ui-content h3').html(code);
+				$(this).find('.ui-content p').html(children);
+			},
+			afterclose: function( event, ui ) {
+
+				jQuery.mobile.changePage('#games', {
+					transition: 'slide',
+					reverse: true,
+					changeHash: true
+				});
+			}
+		});
+		$('#dialog-popup').popup('open', {
+			positionTo: 'window'
+		});
+
 	},
 
 
