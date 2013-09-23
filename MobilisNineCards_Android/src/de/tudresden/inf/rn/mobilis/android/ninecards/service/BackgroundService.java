@@ -63,8 +63,12 @@ public class BackgroundService extends Service
 	
 	/** The code used by mUpdateUIHandler to signalize that the start button shall be enabled. */
 	public static final int CODE_ENABLE_START_GAME_BUTTON = 6;
+	/** The code used for disabling start button, canceling waiting dialogue and enable cards. */
+	public static final int CODE_START_GAME = 7;
 	/** The code used by mUpdateUIHandler to signalize that theplayers list shall be updated. */
-	public static final int CODE_UPDATE_GAME_PLAYERS_LIST = 7;
+	public static final int CODE_UPDATE_GAME_PLAYERS_LIST = 8;
+	/** The code used for re-enabling the cards and updating the current round. */
+	public static final int CODE_START_NEW_ROUND = 9;
 	
 
     /*
@@ -77,7 +81,7 @@ public class BackgroundService extends Service
     	super.onCreate();
 
 		mServerConnection = new ServerConnection(this);		
-		Log.v(this.getClass().getName(), this.getClass().getName() + " started");
+		Log.i(this.getClass().getName(), this.getClass().getName() + " started");
     }
     
     
@@ -114,7 +118,7 @@ public class BackgroundService extends Service
 		super.onDestroy();
 		
 		mServerConnection.disconnectFromXmppServer();
-		Log.v(this.getClass().getName(), this.getClass().getName() + " stopped");
+		Log.i(this.getClass().getName(), this.getClass().getName() + " stopped");
 	}
 	
 // -------------------------------------------------------------------------------------------------------------------------------

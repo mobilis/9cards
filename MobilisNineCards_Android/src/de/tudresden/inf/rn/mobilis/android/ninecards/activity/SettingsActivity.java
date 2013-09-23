@@ -41,7 +41,8 @@ public class SettingsActivity extends PreferenceActivity
 		mobilisServerJid.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
 					@Override
-					public boolean onPreferenceChange(Preference preference, Object newValue) {
+					public boolean onPreferenceChange(Preference preference, Object newValue)
+					{
 						String serverJid = (String) newValue;
 						
 						if (serverJid != null && !serverJid.equals("")) {
@@ -50,7 +51,7 @@ public class SettingsActivity extends PreferenceActivity
 								((EditTextPreference) preference).setText(arr[0].toLowerCase() + "/Coordinator");
 						}
 						
-						return false;
+						return true;
 					}
 				});
 	}

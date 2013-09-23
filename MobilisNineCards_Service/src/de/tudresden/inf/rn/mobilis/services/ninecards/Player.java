@@ -26,8 +26,8 @@ import java.util.List;
 /**
  * The Class for representing a specific player.
  */
-public class Player {
-	
+public class Player
+{
 	/** The player's jid. */
 	private String jid;
 	/** True if the player is the one who created the game. */
@@ -47,8 +47,8 @@ public class Player {
 	 * @param jid the jid of the player
 	 * @param name the name of the player
 	 */
-	public Player(String jid, boolean isCreator) {
-		
+	public Player(String jid, boolean isCreator)
+	{
 		this.jid = jid;
 		this.creator = isCreator;
 		this.roundsWon = 0;
@@ -63,7 +63,8 @@ public class Player {
 	 * and to the ID of the chosen card after the player chose one.
 	 * @param chosenCard
 	 */
-	public void setChosenCard(int chosenCard) {
+	public void setChosenCard(int chosenCard)
+	{
 		this.chosenCard = chosenCard;
 	}
 	
@@ -72,7 +73,8 @@ public class Player {
 	 * Returns the ID of the card which was chosen for this round, or -1 if there isn't any yet.
 	 * @return
 	 */
-	public int getChosenCard() {
+	public int getChosenCard()
+	{
 		return chosenCard;
 	}
 	
@@ -80,7 +82,8 @@ public class Player {
 	/**
 	 * Increments the number of rounds won by this player by 1.
 	 */
-	public void incrementRoundsWon() {
+	public void incrementRoundsWon()
+	{
 		roundsWon++;
 	}
 	
@@ -89,7 +92,8 @@ public class Player {
 	 * Returns the number of rounds of this game which this player has already won.
 	 * @return the number of rounds the player won
 	 */
-	public int getRoundsWon() {
+	public int getRoundsWon()
+	{
 		return roundsWon;
 	}
 	
@@ -98,7 +102,8 @@ public class Player {
 	 * Returns a list containing the cards the player already used.
 	 * @return a list containing the card values which were already used
 	 */
-	public List<Integer> getUsedCards() {
+	public List<Integer> getUsedCards()
+	{
 		return usedCards;
 	}
 	
@@ -107,7 +112,8 @@ public class Player {
 	 * Gets the jid of the player.
 	 * @return the jid of the player
 	 */
-	public String getJid() {
+	public String getJid()
+	{
 		return jid;
 	}
 	
@@ -116,7 +122,8 @@ public class Player {
 	 * Set player ready.
 	 * @param ready true, if player is ready
 	 */
-	public void setCreator(boolean creator) {
+	public void setCreator(boolean creator)
+	{
 		this.creator=creator;
 	}
 	
@@ -125,7 +132,8 @@ public class Player {
 	 * Whether the player is ready.
 	 * @return true, if player is ready
 	 */
-	public boolean isCreator() {
+	public boolean isCreator()
+	{
 		return creator;
 	}
 	
@@ -135,7 +143,8 @@ public class Player {
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
-	public String toString(){
+	public String toString()
+	{
 		String str = "";
 		
 		str += "jid: " + jid;

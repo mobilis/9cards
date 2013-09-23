@@ -13,14 +13,14 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 import de.tudresden.inf.rn.mobilis.android.ninecards.R;
+import de.tudresden.inf.rn.mobilis.android.ninecards.communication.MobilisServiceDiscoveryBean;
+import de.tudresden.inf.rn.mobilis.android.ninecards.communication.MobilisServiceInfo;
 import de.tudresden.inf.rn.mobilis.android.ninecards.communication.ServerConnection;
+import de.tudresden.inf.rn.mobilis.android.ninecards.communication.XMPPBean;
+import de.tudresden.inf.rn.mobilis.android.ninecards.communication.XMPPInfo;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.BackgroundService;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.ServiceConnector;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscoveryBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceInfo;
 
 /*******************************************************************************
  * Copyright (C) 2013 Technische Universität Dresden
@@ -87,6 +87,7 @@ public class StartActivity extends Activity
 		@Override
 		public void handleMessage(Message messg) {
 			serverConnection = mBackgroundServiceConnector.getBackgroundService().getServerConnection();
+			serverConnection.registerXmppExtensions();
 			mBackgroundServiceConnector.getBackgroundService().setGameState(new GameStateStart());
 		}
 	};

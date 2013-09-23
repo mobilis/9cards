@@ -30,8 +30,8 @@ import de.tudresden.inf.rn.mobilis.server.services.MobilisService;
 import de.tudresden.inf.rn.mobilis.services.ninecards.communication.IqConnection;
 import de.tudresden.inf.rn.mobilis.services.ninecards.communication.MucConnection;
 
-public class NineCardsService extends MobilisService {
-	
+public class NineCardsService extends MobilisService
+{
 	/** The raw XMPP connection wrapper for this service. */
 	private IqConnection mIqConnection;
 	/** The class for MUC management. */
@@ -50,7 +50,8 @@ public class NineCardsService extends MobilisService {
 	 * @see de.tudresden.inf.rn.mobilis.server.services.MobilisService#startup(de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent)
 	 */
 	@Override
-	public void startup(MobilisAgent agent) throws Exception  {
+	public void startup(MobilisAgent agent) throws Exception
+	{
 		mSettings = new Settings(this.getAgent());
 		mGame = new Game(this);
 		
@@ -59,8 +60,8 @@ public class NineCardsService extends MobilisService {
 	
 
 	@Override
-	protected void registerPacketListener() {
-		
+	protected void registerPacketListener()
+	{
 		try {
 			mIqConnection = new IqConnection(this);
 			mMucConnection = new MucConnection(this);
@@ -81,7 +82,8 @@ public class NineCardsService extends MobilisService {
 	
 	
 	@Override
-	public void shutdown() {
+	public void shutdown()
+	{
 		LOGGER.info(getAgent().getFullJid() + " is shutting down.");
 		try {
 			if (mGame != null)
@@ -105,7 +107,8 @@ public class NineCardsService extends MobilisService {
 	 * Gets the IqConnection for this service. This is a wrapper for the raw XMPP connection.
 	 * @return the iq connection
 	 */
-	public IqConnection getIqConnection() {
+	public IqConnection getIqConnection()
+	{
 		return mIqConnection;
 	}
 	
@@ -113,7 +116,8 @@ public class NineCardsService extends MobilisService {
 	 * Gets the MucConnection for this service. This is a wrapper for the muc connection.
 	 * @return the muc connection
 	 */
-	public MucConnection getMucConnection() {
+	public MucConnection getMucConnection()
+	{
 		return mMucConnection;
 	}
 	
@@ -121,7 +125,8 @@ public class NineCardsService extends MobilisService {
 	 * Gets the actual game instance.
 	 * @return the actual game instance
 	 */
-	public Game getGame() {
+	public Game getGame()
+	{
 		return mGame;
 	}
 	
@@ -129,7 +134,8 @@ public class NineCardsService extends MobilisService {
 	 * Gets the Settings.
 	 * @return the Settings
 	 */
-	public Settings getSettings() {
+	public Settings getSettings()
+	{
 		return mSettings;
 	}
 }

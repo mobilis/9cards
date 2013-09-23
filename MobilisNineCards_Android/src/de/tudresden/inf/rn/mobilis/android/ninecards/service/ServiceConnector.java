@@ -53,7 +53,7 @@ public class ServiceConnector implements ServiceConnection
 	public void onServiceConnected(ComponentName className, IBinder service)
 	{
 		mBackgroundService = ((BackgroundService.LocalBinder)service).getService();
-        Log.v(this.getClass().getName(), "BackgroundService bound");
+        Log.i(this.getClass().getName(), "BackgroundService bound");
         
         // notify all registered handlers
         for(int i=0; i<mServiceBoundHandlers.size(); i++){
@@ -70,7 +70,7 @@ public class ServiceConnector implements ServiceConnection
     public void onServiceDisconnected(ComponentName className)
 	{
         mBackgroundService = null;
-        Log.v(this.getClass().getName(), "BackgroundService unbound");
+        Log.i(this.getClass().getName(), "BackgroundService unbound");
     }
 
 	

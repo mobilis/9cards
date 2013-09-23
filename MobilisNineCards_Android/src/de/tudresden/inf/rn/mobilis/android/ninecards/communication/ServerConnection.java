@@ -1,8 +1,8 @@
 package de.tudresden.inf.rn.mobilis.android.ninecards.communication;
 
-import java.util.ArrayList;
+import java.io.StringReader;
 import java.util.Collection;
-import java.util.List;
+import java.util.Iterator;
 
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManagerListener;
@@ -14,29 +14,31 @@ import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.filter.AndFilter;
 import org.jivesoftware.smack.filter.FromContainsFilter;
+import org.jivesoftware.smack.filter.OrFilter;
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.filter.PacketTypeFilter;
+import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smackx.muc.DefaultUserStatusListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.ParticipantStatusListener;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 import android.os.Handler;
 import android.util.Log;
 import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.CardPlayedMessage;
 import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.ConfigureGameRequest;
 import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.GameOverMessage;
-import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.PlayerInfo;
 import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.RoundCompleteMessage;
+import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.StartGameMessage;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.Player;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.BackgroundService;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.CreateNewServiceInstanceBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscoveryBean;
-import de.tudresden.inf.rn.mobilis.xmpp.server.BeanIQAdapter;
+
+
 
 /*******************************************************************************
  * Copyright (C) 2013 Technische Universität Dresden
@@ -90,10 +92,11 @@ public class ServerConnection
 	 * @return
 	 */
 	public boolean connectToXmppServer(String server, String userJid, String userPw)
-	{
+	{		
 		// Create connection to XMPP server
 		ConnectionConfiguration config = new ConnectionConfiguration(server, 5222);
 		xmppConnection = new XMPPConnection(config);
+		//xmppConnection = new XMPPConnection("mobilis-dev.inf.tu-dresden.de");
 		
 		try {
 			xmppConnection.connect();
@@ -113,14 +116,37 @@ public class ServerConnection
 			return false;
 		}
 		
-		// Listen for packets from Mobilis server
-		PacketFilter packetFilter = new AndFilter(
+		// subfilter for packets of type Message or IQ (ignore Presence packets)
+		PacketFilter subFilterTypes = new OrFilter(
 				new PacketTypeFilter(Message.class),
-				new FromContainsFilter(server));
+				new PacketTypeFilter(IQ.class));
 		
-		xmppConnection.addPacketListener(mPacketListener, packetFilter);
+		// subfilter for sender (coordinator service running on mobilis server)
+		PacketFilter subFilterFrom = new FromContainsFilter(bgService.getMobilisServerJID());
+		
+		// set filters
+		PacketFilter filter = new AndFilter(
+				subFilterTypes,
+				subFilterFrom); 
+		
+		xmppConnection.addPacketListener(mPacketListener, filter);
 		
 		return true;
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public void registerXmppExtensions()
+	{
+		MobilisServiceDiscoveryBean discoveryBean = new MobilisServiceDiscoveryBean();
+		IQImplProvider iqProv_1 = new IQImplProvider(discoveryBean.getNamespace(), discoveryBean.getChildElement());
+		ProviderManager.getInstance().addIQProvider(discoveryBean.getChildElement(), discoveryBean.getNamespace(), iqProv_1);
+
+		CreateNewServiceInstanceBean createBean = new CreateNewServiceInstanceBean();
+		IQImplProvider iqProv_2 = new IQImplProvider(createBean.getNamespace(), createBean.getChildElement());
+		ProviderManager.getInstance().addIQProvider(createBean.getChildElement(), createBean.getNamespace(), iqProv_2);
 	}
 	
 	
@@ -130,7 +156,7 @@ public class ServerConnection
 	 */
 	public boolean initializeMucAndChat(Handler updateUIHandler)
 	{		
-		// return if connectiion was not established yet
+		// return if connection was not established yet
 		if (xmppConnection == null || !xmppConnection.isConnected()) {
 			Log.e(getClass().getSimpleName(), "Can't create chat - not connected to XMPP Server!");
 			return false;
@@ -169,8 +195,15 @@ public class ServerConnection
 		}
 		
 		// initialise chat with service (for private messages)
-		if(privateChat == null)
-			publicChat.createPrivateChat(roomId + "9Cards-Service", mChatMessageListener);
+		if(privateChat == null) {
+			for(Iterator<String> it = publicChat.getOccupants(); it.hasNext();) {
+				String id = it.next();
+				if(id.toLowerCase().endsWith("/9cards-service")) {
+					privateChat = publicChat.createPrivateChat(id, mChatMessageListener);
+					break;
+				}
+			}
+		}
 		
 		// also listen to messages of private chats which were initiated by the other side
 		xmppConnection.getChatManager().addChatListener(new ChatManagerListener() {
@@ -180,6 +213,17 @@ public class ServerConnection
 					chat.addMessageListener(mChatMessageListener);
 			}
 		});
+		
+		// also add a player object for current player to the game
+		for(Iterator<String> it = publicChat.getOccupants(); it.hasNext();) {
+			String myId = it.next();
+			if(myId.endsWith(publicChat.getNickname())) {
+				Player me = new Player(myId);
+				bgService.getGame().getPlayers().put(me.getNickname(), me);
+				mUpdateUIHandler.sendEmptyMessage(BackgroundService.CODE_UPDATE_GAME_PLAYERS_LIST);
+				break;
+			}
+		}
 		
 		return true;
 	}
@@ -198,12 +242,13 @@ public class ServerConnection
 	/**
 	 * 
 	 */
-	public void leavePublicChat()
+	public void leaveChat()
 	{
-		if(publicChat != null && publicChat.isJoined())
+		if(publicChat != null)// && publicChat.isJoined())
 			publicChat.leave();
 		
 		publicChat = null;
+		privateChat = null;
 	}
 	
 	
@@ -212,14 +257,15 @@ public class ServerConnection
 	 */
 	public void disconnectFromXmppServer()
 	{
-		Presence presence = new Presence(Presence.Type.unavailable);
-		presence.setStatus("User disconnected from XMPP Server");
-		xmppConnection.sendPacket(presence);
-		
-		leavePublicChat();
-		xmppConnection.disconnect();
+		if(isConnected()) {
+			Presence presence = new Presence(Presence.Type.unavailable);
+			presence.setStatus("User disconnected from XMPP Server");
+			xmppConnection.sendPacket(presence);
+			
+			leaveChat();
+			xmppConnection.disconnect();
+		}
 
-		privateChat = null;
 		xmppConnection = null;
 	}
 
@@ -232,23 +278,33 @@ public class ServerConnection
 		
 		@Override
 		public void processPacket(Packet packet) {
-			Log.i(getClass().getSimpleName(), "Received packet: " + packet.toXML());
-
-			if(packet instanceof BeanIQAdapter) {
-				XMPPBean bean = ((BeanIQAdapter) packet).getBean();
+			Log.i("ServerConnection.mPacketListener", "Packet received (" + packet.toXML() + ")");
+			
+			if(packet instanceof IQ) {
+				IQ iq = (IQ) packet;
+				XMPPBean bean = null;
 				
-				if(bean instanceof MobilisServiceDiscoveryBean) {
-					Log.i(getClass().getSimpleName(), "MobilisServiceDiscoveryBean received! (" + bean.toXML() + ")");
-					bgService.getGameState().processPacket(bean);
+				if(iq.getChildElementXML().toLowerCase().startsWith("<servicediscovery"))
+					bean = new MobilisServiceDiscoveryBean();
+				
+				else if(iq.getChildElementXML().toLowerCase().startsWith("<createnewserviceinstance"))
+					bean = new CreateNewServiceInstanceBean();
+				
+				if(bean != null) {
+					try {
+						XmlPullParser xmlParser = XmlPullParserFactory.newInstance().newPullParser();
+						xmlParser.setInput(new StringReader(iq.getChildElementXML()));
+						bean.fromXML(xmlParser);
+						bgService.getGameState().processPacket(bean);
+					} catch (Exception e) {
+						Log.e(getClass().getSimpleName(), "Failed to parse XML (" + e.getMessage() + ")");
+					}
 				}
 				
-				else if(bean instanceof CreateNewServiceInstanceBean) {
-					Log.i(getClass().getSimpleName(), "CreateNewServiceInstanceBean received! (" + bean.toXML() + ")");
-					bgService.getGameState().processPacket(bean);
-				}
+				else Log.w("ServerConnection.mPacketListener", "Unhandled IQ type received! (" + iq.getChildElementXML() + ")");
 			}
 			
-			else Log.w(getClass().getSimpleName(), "Unhandled packet received (" + packet.toXML() + ")");
+			else Log.w(getClass().getSimpleName(), "Unhandled Packet type received (" + packet.toXML() + ")");
 		}
 	};
 	
@@ -262,8 +318,7 @@ public class ServerConnection
 		public void processMessage(Chat chat, Message message) {
 			Log.i(getClass().getSimpleName(), "Received private chat message: " + message.getBody());
 			
-			// TODO
-			// evtl auf ConfigureGameResponses lauschen, läuft aber derzeit ohne
+			// TODO evtl die ConfigureGameResponses beachten, werden vom service bereits gesendet
 		}
 	};
 	
@@ -277,58 +332,30 @@ public class ServerConnection
 		public void processPacket(Packet packet) {
 			Log.i(getClass().getSimpleName(), "Received public MUC message: " + packet.toXML());
 			
-			// TODO
-			// das alles mal mit xmlparser machen (hatte exceptions bei 2 aufeinanderfolgenden sich öffnenden tags gegeben)
-			if(packet.toXML().contains(CardPlayedMessage.class.getSimpleName())) {
-				String player = packet.toXML().substring(packet.toXML().indexOf("<player>") + "<player>".length(), packet.toXML().indexOf("</player>"));
-				int round = Integer.parseInt(packet.toXML().substring(packet.toXML().indexOf("<round>") + "<round>".length(), packet.toXML().indexOf("</round>")));
-				bgService.getGameState().processChatMessage(new CardPlayedMessage(round, player));
-			}
+			if(packet instanceof Message) {
+				Message mesg = (Message) packet;
+				XMPPInfo info = null;
+				
+				if(mesg.getBody().toLowerCase().startsWith("<mobilismessage type=startgamemessage"))
+					info = new StartGameMessage();
+				if(mesg.getBody().toLowerCase().startsWith("<mobilismessage type=cardplayedmessage"))
+					info = new CardPlayedMessage();
+				if(mesg.getBody().toLowerCase().startsWith("<mobilismessage type=roundcompletemessage"))
+					info = new RoundCompleteMessage();
+				if(mesg.getBody().toLowerCase().startsWith("<mobilismessage type=gameovermessage"))
+					info = new GameOverMessage();
 			
-			else if(packet.toXML().contains(RoundCompleteMessage.class.getSimpleName())) {
-				String startTag = "<MobilisMessage type=" + RoundCompleteMessage.class.getSimpleName() + ">";
-				String endTag = "</MobilisMessage>";
-				String full = packet.toXML();
-				String content = full.substring(full.indexOf(startTag) + startTag.length(), full.indexOf(endTag));
-				
-				String roundString = content.substring(content.indexOf("<round>") + "<round>".length(), content.indexOf("</round>"));
-				String winnerString = content.substring(content.indexOf("<winner>") + "<winner>".length(), content.indexOf("</winner>"));
-				
-				List<PlayerInfo> list = new ArrayList<PlayerInfo>();
-				String plrInfos = content.substring(content.indexOf("<PlayerInfo>"), content.lastIndexOf("</PlayerInfo>") + "</PlayerInfo>".length());
-				String[] infos = plrInfos.split("</PlayerInfo>");
-				for(int i=0; i<infos.length; i++) {
-					PlayerInfo info = new PlayerInfo();
-					String jid = infos[i].substring(infos[i].indexOf("<jid>") + "<jid>".length(), infos[i].indexOf("</jid>"));
-					String score = infos[i].substring(infos[i].indexOf("<score>") + "<score>".length(), infos[i].indexOf("</score>"));
-					info.setJid(jid);
-					info.setScore(Integer.parseInt(score));
-					
-					List<Integer> usedCards = new ArrayList<Integer>();
-					String crdInfos = infos[i].substring(infos[i].indexOf("<usedcards>"), infos[i].lastIndexOf("</usedcards>") + "</usedcards>".length());
-					String[] crds = crdInfos.split("</usedcards>");
-
-					for(int j=0; j<crds.length; j++) {
-						String value = crds[j].substring(crds[j].indexOf("<usedcards>") + "<usedcards>".length());
-						usedCards.add(Integer.parseInt(value));
+				if(info != null) {
+					try {
+						XmlPullParser xmlParser = XmlPullParserFactory.newInstance().newPullParser();
+						String content = mesg.getBody().substring(mesg.getBody().indexOf(">") + 1, mesg.getBody().lastIndexOf("<"));
+						xmlParser.setInput(new StringReader(content));
+						info.fromXML(xmlParser);
+						bgService.getGameState().processChatMessage(info);
+					} catch (Exception e) {
+						Log.e(getClass().getSimpleName(), "Failed to parse XML (" + e.getMessage() + ")");
 					}
-					
-					info.setUsedcards(usedCards);
-					list.add(info);
 				}
-				
-				RoundCompleteMessage rcMessage = new RoundCompleteMessage();
-				rcMessage.setRound(Integer.parseInt(roundString));
-				rcMessage.setWinner(winnerString);
-				rcMessage.setPlayerInfos(list);
-				
-				bgService.getGameState().processChatMessage(rcMessage);
-			}
-			
-			else if(packet.toXML().contains(GameOverMessage.class.getSimpleName())) {
-				String winner = packet.toXML().substring(packet.toXML().indexOf("<winner>") + "<winner>".length(), packet.toXML().indexOf("</winner>"));
-				int score = Integer.parseInt(packet.toXML().substring(packet.toXML().indexOf("<score>") + "<score>".length(), packet.toXML().indexOf("</score>")));
-				bgService.getGameState().processChatMessage(new GameOverMessage(winner, score));
 			}
 		}
 	}; 
@@ -405,9 +432,9 @@ public class ServerConnection
 		bean.setType(XMPPBean.TYPE_GET);
 		bean.setFrom(bgService.getUserJid());
 		bean.setTo(bgService.getMobilisServerJID());
-		
 		xmppConnection.sendPacket(new BeanIQAdapter(bean));
-		Log.v(getClass().getSimpleName(), "MobilisServiceDiscoveryBean sent");
+		
+		Log.i(getClass().getSimpleName(), "MobilisServiceDiscoveryBean sent (" + (new BeanIQAdapter(bean)).toXML() + ")");
 	}
 	
 	
@@ -433,7 +460,7 @@ public class ServerConnection
 		bean.setTo(bgService.getMobilisServerJID());
 		
 		xmppConnection.sendPacket(new BeanIQAdapter(bean));
-		Log.v("IQProxy", "CreateNewServiceInstanceBean sent");
+		Log.i("IQProxy", "CreateNewServiceInstanceBean sent");
 	}
 	
 	
@@ -452,7 +479,7 @@ public class ServerConnection
 		bean.setTo(bgService.getGameServiceJid());
 		
 		xmppConnection.sendPacket(new BeanIQAdapter(bean));
-		Log.v("IQProxy", "ConfigureGameBean sent");
+		Log.i("IQProxy", "ConfigureGameBean sent");
 	}
 	
 	
@@ -467,7 +494,7 @@ public class ServerConnection
 		resultBean.setType(XMPPBean.TYPE_ERROR);
 		
 		xmppConnection.sendPacket(new BeanIQAdapter(resultBean));
-		Log.v(getClass().getSimpleName(), "Errorbean sent");
+		Log.i(getClass().getSimpleName(), "Errorbean sent");
 	}
 
 // -------------------------------------------------------------------------------------------------------------------------------
@@ -486,7 +513,7 @@ public class ServerConnection
 		try {
 			privateChat.sendMessage(mesg);
 		} catch (Exception e) {
-			Log.e(getClass().getSimpleName(), "Failed to send start game message (" + e.getMessage() + ")");
+			Log.e(getClass().getSimpleName(), "Failed to send start game message (" + e.getClass().toString() + ": " + e.getMessage() + ")");
 			return false;
 		}
 		
@@ -503,7 +530,7 @@ public class ServerConnection
 	{
 		if(publicChat != null)
 			return publicChat.getRoom() + "/" + publicChat.getNickname();
-		
+	
 		return null;
 	}
 	

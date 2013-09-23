@@ -14,13 +14,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import de.tudresden.inf.rn.mobilis.android.ninecards.R;
+import de.tudresden.inf.rn.mobilis.android.ninecards.communication.CreateNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.android.ninecards.communication.ServerConnection;
+import de.tudresden.inf.rn.mobilis.android.ninecards.communication.XMPPBean;
+import de.tudresden.inf.rn.mobilis.android.ninecards.communication.XMPPInfo;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.BackgroundService;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.ServiceConnector;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.CreateNewServiceInstanceBean;
 
 /*******************************************************************************
  * Copyright (C) 2013 Technische Universität Dresden

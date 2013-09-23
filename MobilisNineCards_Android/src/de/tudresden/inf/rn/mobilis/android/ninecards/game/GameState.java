@@ -19,8 +19,12 @@
  ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.android.ninecards.game;
 
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
+import de.tudresden.inf.rn.mobilis.android.ninecards.communication.XMPPBean;
+import de.tudresden.inf.rn.mobilis.android.ninecards.communication.XMPPInfo;
+
+
+
+
 
 
 /**

@@ -19,6 +19,8 @@
  ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.services.ninecards.communication;
 
+import java.util.logging.Logger;
+
 import org.jivesoftware.smack.packet.Message;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -32,8 +34,8 @@ import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.PlayCardMessage;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.RoundCompleteMessage;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.StartGameMessage;
 
-public class MucPacketProcessor {
-	
+public class MucPacketProcessor
+{
 	/**	The 9Cards service instance. */
 	private NineCardsService mServiceInstance;
 	/** The XML Pull Parser used for the fromXML() methods. */
@@ -43,7 +45,8 @@ public class MucPacketProcessor {
 	 * 
 	 * @param connection
 	 */
-	public MucPacketProcessor(NineCardsService serviceInstance) throws Exception {
+	public MucPacketProcessor(NineCardsService serviceInstance) throws Exception
+	{
 		this.mServiceInstance = serviceInstance;
 		
 		XmlPullParserFactory parserFactory = XmlPullParserFactory.newInstance();
@@ -56,15 +59,22 @@ public class MucPacketProcessor {
 	 * 
 	 * @param message
 	 */
-	public void processPacket(Message message) throws Exception {
-		String startPrefix = "<mobilismessage type=" + StartGameMessage.class.getSimpleName().toLowerCase() + ">";
+	public void processPacket(Message message) throws Exception
+	{
+		if(message.getBody().toLowerCase().contains("startgamemessage"))
+			onStartGame(message);
+		else if(message.getBody().toLowerCase().contains("playcardmessage"))
+			onPlayCard(message);
+		
+		
+		/*String startPrefix = "<mobilismessage type=" + StartGameMessage.class.getSimpleName().toLowerCase();
 		String cardPrefix = "<mobilismessage type=" + PlayCardMessage.class.getSimpleName().toLowerCase() + ">";
 		
 		// check type of message and handle it accordingly
 		if(message.getBody().toLowerCase().startsWith(startPrefix))
 			onStartGame(message);
 		else if(message.getBody().toLowerCase().startsWith(cardPrefix))
-			onPlayCard(message);
+			onPlayCard(message);*/
 	}
 	
 	
@@ -72,17 +82,17 @@ public class MucPacketProcessor {
 	 * 
 	 * @param message
 	 */
-	private void onStartGame(Message message) {
-		
+	private void onStartGame(Message message)
+	{
 		// only allowed in gamestate ready
 		if(mServiceInstance.getGame().getGameState() == State.READY) {
 			
 			// check if player is allowed to start the game
-			Player player = mServiceInstance.getGame().getPlayer(message.getFrom());
+//			Player player = mServiceInstance.getGame().getPlayer(message.getFrom());
 			
 			//TODO soll dann später nur über die admin-affiliation laufen, erst testen ob der participantlistener die jid der neuen spieler kennt
-			if(mServiceInstance.getMucConnection().isAdmin(message.getFrom())
-					|| ((player != null) && (player.isCreator()))) {
+//			if(mServiceInstance.getMucConnection().isAdmin(message.getFrom())
+//					|| ((player != null) && (player.isCreator()))) {
 
 				// close game for joining
 				mServiceInstance.getMucConnection().lockMuc();
@@ -96,7 +106,7 @@ public class MucPacketProcessor {
 						new StartGameMessage(
 								mServiceInstance.getSettings().getRounds(),
 								mServiceInstance.getMucConnection().getMucPw()));
-			}
+//			}
 		}
 	}
 	
@@ -105,22 +115,28 @@ public class MucPacketProcessor {
 	 * 
 	 * @param message
 	 */
-	private void onPlayCard(Message message) throws Exception {
-		
+	private void onPlayCard(Message message) throws Exception
+	{
 		// reconstruct PlayCardMessage
-		String prefix = "<mobilismessage type=" + PlayCardMessage.class.getSimpleName().toLowerCase() + ">";
+		/*String prefix = "<mobilismessage type=" + PlayCardMessage.class.getSimpleName().toLowerCase() + ">";
 		String content = message.getBody().toLowerCase().substring(
 				message.getBody().indexOf(prefix) + prefix.length(),
-				message.getBody().indexOf("</mobilismessage>"));
+				message.getBody().indexOf("</mobilismessage>"));*/
 
 		PlayCardMessage playCardMesg = new PlayCardMessage();
-		//xmlParser.setInput(new StringReader(content));
+		//xmlParser.setInput(new StringReader(message.getBody()));
 		//playCardMesg.fromXML(xmlParser);
-		
-String round = content.substring(content.indexOf("<round>" + "<round>".length(), content.indexOf("</round>")));
-String card = content.substring(content.indexOf("<card>" + "<card>".length(), content.indexOf("</card>")));
+
+
+Logger LOGGER = Logger.getLogger(MucPacketProcessor.class.getCanonicalName());	
+LOGGER.info(" ---> message.getBody.toLowerCase(): " + message.getBody().toLowerCase());
+String body = message.getBody().toLowerCase();
+String round = body.substring(body.indexOf("<round>") + "<round>".length(), body.indexOf("</round>"));
+String card = body.substring(body.indexOf("<card>") + "<card>".length(), body.indexOf("</card>"));
+
 playCardMesg.setRound(Integer.parseInt(round));
-playCardMesg.setCard(Integer.parseInt(card));		
+playCardMesg.setCard(Integer.parseInt(card));	
+//TODO runde checken
 
 		// act depending on message
 		Player player = mServiceInstance.getGame().getPlayer(message.getFrom());
@@ -138,10 +154,11 @@ playCardMesg.setCard(Integer.parseInt(card));
 				}
 			}
 		}
+		
+else LOGGER.warning(" ----> PLAYER == NULL");
 
 		// check if round is finished
 		if(mServiceInstance.getGame().checkRoundOver()) {
-			
 			// increment winner's number of wins
 			mServiceInstance.getGame().getRoundWinner().incrementRoundsWon();
 			
@@ -151,7 +168,7 @@ playCardMesg.setCard(Integer.parseInt(card));
 						new GameOverMessage(
 								mServiceInstance.getGame().getGameWinner().getJid(),
 								mServiceInstance.getGame().getGameWinner().getRoundsWon()));
-				mServiceInstance.shutdown();
+				//mServiceInstance.shutdown();
 			}
 			
 			// else start next round

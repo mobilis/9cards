@@ -24,8 +24,8 @@ import de.tudresden.inf.rn.mobilis.services.ninecards.NineCardsService;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.ConfigureGameRequest;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
-public class IqPacketProcessor {
-	
+public class IqPacketProcessor
+{
 	/**	The 9Cards service instance. */
 	private NineCardsService mServiceInstance;
 	
@@ -34,7 +34,8 @@ public class IqPacketProcessor {
 	 * 
 	 * @param connection
 	 */
-	public IqPacketProcessor(NineCardsService serviceInstance) {
+	public IqPacketProcessor(NineCardsService serviceInstance)
+	{
 		this.mServiceInstance = serviceInstance;
 	}
 	
@@ -43,8 +44,8 @@ public class IqPacketProcessor {
 	 * 
 	 * @param inBean
 	 */
-	public void processPacket(XMPPBean inBean) {
-		
+	public void processPacket(XMPPBean inBean)
+	{
 		if(inBean instanceof ConfigureGameRequest)
 			onConfigureGame((ConfigureGameRequest) inBean);
 		
@@ -62,8 +63,8 @@ public class IqPacketProcessor {
 	 * 
 	 * @param inBean
 	 */
-	private void onConfigureGame(ConfigureGameRequest inBean) {
-		
+	private void onConfigureGame(ConfigureGameRequest inBean)
+	{
 		if (mServiceInstance.getGame().getGameState() == State.UNINITIALIZED) {
 			
 			mServiceInstance.getSettings().setGameName(inBean.getGamename());

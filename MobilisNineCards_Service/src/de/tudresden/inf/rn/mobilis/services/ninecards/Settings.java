@@ -25,14 +25,12 @@ import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
 /**
  * The Class Settings contains global setting for the game.
  */
-public class Settings {
-	
+public class Settings
+{
 	/** The game name. */
 	private String gameName;
-	/** The amount of max players. */
+	/** The maximum amount of players. */
 	private int maxPlayers;
-	/** The amount of min players. */
-	private int minPlayers;
 	/** The amount of rounds for this game. */
 	private int rounds;
 	
@@ -42,16 +40,13 @@ public class Settings {
 	
 	/**
 	 * Initializes the Settings with predefined values.
-	 *
 	 * @param agent the MobilisAgent which contains XMPP specific attributes.
 	 */
-	public Settings(MobilisAgent agent) {
-		
+	public Settings(MobilisAgent agent)
+	{
 		gameName = agent.getConnection().getServiceName();
-
 		rounds = 9;
 		maxPlayers = 9;
-		minPlayers = 1;
 		
 		// replace all '/' and ':' because they would produce an error in chat name
 		chatID = (
@@ -67,7 +62,8 @@ public class Settings {
 	 * Gets the game name.
 	 * @return the game name
 	 */
-	public String getGameName() {
+	public String getGameName()
+	{
 		return gameName;
 	}
 	
@@ -75,54 +71,38 @@ public class Settings {
 	 * Sets the game name.
 	 * @param gameName the new game name
 	 */
-	public void setGameName(String gameName) {
+	public void setGameName(String gameName)
+	{
 		if((gameName != null) && (gameName.length() > 0))
 			this.gameName = gameName;
 	}
 
 	/**
 	 * Sets the max players.
-	 *
 	 * @param maxPlayer the new max players
 	 */
-	public void setMaxPlayers(int maxPlayer) {
-		if((maxPlayer >= minPlayers) && (maxPlayer <= 9))
-			this.maxPlayers = maxPlayer;
+	public void setMaxPlayers(int maxPlayers)
+	{
+		if(maxPlayers > 0 && maxPlayers <= 10)
+			this.maxPlayers = maxPlayers;
 	}
 
 	/**
 	 * Gets the max players.
-	 *
 	 * @return the max players
 	 */
-	public int getMaxPlayers() {
+	public int getMaxPlayers()
+	{
 		return maxPlayers;
 	}
 
-	/**
-	 * Sets the min players.
-	 *
-	 * @param minPlayer the new min players
-	 */
-	public void setMinPlayers(int minPlayer) {
-		if((minPlayer > 0) && (minPlayer <= 9))
-			this.minPlayers = minPlayer;
-	}
-
-	/**
-	 * Gets the min players.
-	 *
-	 * @return the min players
-	 */
-	public int getMinPlayers() {
-		return minPlayers;
-	}
 	
 	/**
 	 * Sets the chat id.
 	 * @param chatID the new chat id
 	 */
-	public void setChatID(String chatID) {
+	public void setChatID(String chatID)
+	{
 		this.chatID = chatID;
 	}
 	
@@ -130,7 +110,8 @@ public class Settings {
 	 * Gets the chat id.
 	 * @return the chat id
 	 */
-	public String getChatID() {
+	public String getChatID()
+	{
 		return chatID;
 	}
 	
@@ -139,7 +120,8 @@ public class Settings {
 	 * Sets the rounds.
 	 * @param rounds the new rounds
 	 */
-	public void setRounds(int rounds) {
+	public void setRounds(int rounds)
+	{
 		if((rounds > 0) && (rounds <= 9))
 				this.rounds = rounds;
 	}
@@ -150,8 +132,8 @@ public class Settings {
 	 *
 	 * @return the rounds
 	 */
-	public int getRounds() {
+	public int getRounds()
+	{
 		return rounds;
 	}
-	
 }

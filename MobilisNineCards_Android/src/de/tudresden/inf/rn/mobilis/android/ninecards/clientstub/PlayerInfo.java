@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.xmlpull.v1.XmlPullParser;
 
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
+import de.tudresden.inf.rn.mobilis.android.ninecards.communication.XMPPInfo;
 
 public class PlayerInfo implements XMPPInfo {
 

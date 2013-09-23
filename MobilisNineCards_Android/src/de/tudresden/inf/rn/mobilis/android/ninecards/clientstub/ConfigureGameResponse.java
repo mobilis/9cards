@@ -2,7 +2,7 @@ package de.tudresden.inf.rn.mobilis.android.ninecards.clientstub;
 
 import org.xmlpull.v1.XmlPullParser;
 
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
+import de.tudresden.inf.rn.mobilis.android.ninecards.communication.XMPPBean;
 
 public class ConfigureGameResponse extends XMPPBean {
 

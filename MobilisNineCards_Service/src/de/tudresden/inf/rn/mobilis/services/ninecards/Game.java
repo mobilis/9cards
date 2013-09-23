@@ -32,8 +32,8 @@ import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.PlayerInfo;
  * It organizes players, cards and the state of the game.
  */
 
-public class Game {
-	
+public class Game
+{
 	/** The control. */
 	private NineCardsService mServiceInstance;
 	
@@ -64,7 +64,8 @@ public class Game {
 	 * Initializes the Game Component.
 	 * @param serviceInstance NineCardsController, who administrates the whole life cycle
 	 */
-	public Game(NineCardsService serviceInstance) throws Exception {
+	public Game(NineCardsService serviceInstance)
+	{
 		this.mServiceInstance = serviceInstance;
 
 		this.round = 0;
@@ -79,7 +80,8 @@ public class Game {
 	/**
 	 * Called when starting a new round.
 	 */
-	public void startNewRound() {
+	public void startNewRound()
+	{
 		LOGGER.info("Starting round " + round+1 + "!");
 		
 		for(Player player : gamePlayers.values())
@@ -94,7 +96,8 @@ public class Game {
 	 * Checks if all players chose a card.
 	 * @return true if all players chose a card.
 	 */
-	public boolean checkRoundOver() {
+	public boolean checkRoundOver()
+	{
 		boolean over = true;
 		for(Player player : gamePlayers.values())
 			over = over && (player.getChosenCard() != -1);
@@ -109,8 +112,8 @@ public class Game {
 	 * highest card.
 	 * @return
 	 */
-	public Player getRoundWinner() {
-		
+	public Player getRoundWinner()
+	{
 		if(winnerOfRound == null) {
 			
 			List<Player> potentialWinners = new ArrayList<Player>();
@@ -146,7 +149,8 @@ public class Game {
 	 * null will be returned.
 	 * @return
 	 */
-	public Player getGameWinner() {
+	public Player getGameWinner()
+	{
 		if(round < mServiceInstance.getSettings().getRounds())
 			return null;
 		
@@ -182,7 +186,8 @@ public class Game {
 	 * Returns a list containing a PlayerInfo Object for each player.
 	 * @return
 	 */
-	public List<PlayerInfo> getPlayerInfos() {
+	public List<PlayerInfo> getPlayerInfos()
+	{
 		List<PlayerInfo> infoList = new ArrayList<PlayerInfo>();
 		
 		// create PlayerInfo for each player
@@ -206,7 +211,8 @@ public class Game {
 	 * Adds a new player.
 	 * @param player the player to be added
 	 */
-	public void addPlayer(Player player){
+	public void addPlayer(Player player)
+	{
 		this.gamePlayers.put(player.getJid(), player);
 		LOGGER.info("Added player " + player.getJid());
 	}
@@ -217,7 +223,8 @@ public class Game {
 	 * @param jid The JabberID of the player.
 	 * @return Player the player that matches the JabberID.
 	 */
-	public Player getPlayer(String jid) {
+	public Player getPlayer(String jid)
+	{
 		return gamePlayers.get(jid);
 	}
 
@@ -226,7 +233,8 @@ public class Game {
 	 * For getting a list containing players.
 	 * @return The list of players.
 	 */
-	public HashMap<String, Player> getPlayers() {
+	public HashMap<String, Player> getPlayers()
+	{
 		return gamePlayers;
 	}
 	
@@ -234,7 +242,8 @@ public class Game {
 	 * Removes a player by using his JID. Also removes him from the chat.
 	 * @param jid the JID of the player to be kicked
 	 */
-	public void removePlayer(String jid){
+	public void removePlayer(String jid)
+	{
 		gamePlayers.remove(jid);
 		mServiceInstance.getMucConnection().removePlayerFromChat(jid);
 		LOGGER.info("Removed player " + jid);
@@ -250,7 +259,8 @@ public class Game {
 	 * Sets the current game state to a new one.
 	 * @param newState the next state for the state machine.
 	 */
-	public void setGameState(State newState) {
+	public void setGameState(State newState)
+	{
 		state = newState;
 		LOGGER.info("Game State set to " + newState);
 	}
@@ -259,7 +269,8 @@ public class Game {
 	 * Gets the game state.
 	 * @return the current game state
 	 */
-	public State getGameState() {
+	public State getGameState()
+	{
 		return state;
 	}
 
@@ -267,7 +278,8 @@ public class Game {
 	 * Gets the current round.
 	 * @return the round
 	 */
-	public int getRound() {
+	public int getRound()
+	{
 		return round;
 	}
 	
@@ -275,7 +287,8 @@ public class Game {
 	 * Sets the game creator.
 	 * @param creator the JID of the creator 
 	 */
-	public void setCreator(String creator) {
+	public void setCreator(String creator)
+	{
 		this.creator = creator;
 	}
 	
@@ -283,7 +296,8 @@ public class Game {
 	 * Returns the player which created the game.
 	 * @return the JID of the game creator
 	 */
-	public String getCreator() {
+	public String getCreator()
+	{
 		return creator;
 	}
 }

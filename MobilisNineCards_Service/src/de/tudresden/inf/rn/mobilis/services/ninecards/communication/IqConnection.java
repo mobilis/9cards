@@ -46,8 +46,8 @@ import de.tudresden.inf.rn.mobilis.xmpp.server.BeanProviderAdapter;
  * component's addIQListener() method. When the IQ event occurs, that object's appropriate method is invoked.
  * @see IQEvent
  */
-public class IqConnection implements PacketListener {
-	
+public class IqConnection implements PacketListener
+{
 	/** The NineCards service. */
 	private NineCardsService mServiceInstance;
 	/** The class which processes iq packets. */
@@ -72,7 +72,8 @@ public class IqConnection implements PacketListener {
 	 * Instantiates a new Connection.
 	 * @param serviceInstance the NineCards service
 	 */
-	public IqConnection(NineCardsService serviceInstance) {
+	public IqConnection(NineCardsService serviceInstance)
+	{
 		this.mServiceInstance = serviceInstance;
 		this.packetProcessor = new IqPacketProcessor(mServiceInstance);
 		this._proxy = new MobilisNineCardsProxy(_proxyOutgoingMapper);
@@ -82,8 +83,8 @@ public class IqConnection implements PacketListener {
 	
 	
 	@Override
-	public void processPacket(Packet packet) {
-		
+	public void processPacket(Packet packet)
+	{
 		// Check if the incoming Packet is of type IQ (BeanIQAdapter is just a wrapper)
 		if(packet instanceof BeanIQAdapter) {
 			
@@ -109,7 +110,8 @@ public class IqConnection implements PacketListener {
 	 * @param bean the XMPPBean
 	 * @return the XMPPBean as string
 	 */
-	private String beanToString(XMPPBean bean){
+	private String beanToString(XMPPBean bean)
+	{
 		String str = "XMPPBean: [NS="
 			+ bean.getNamespace()
 			+ " id=" + bean.getId()
@@ -131,13 +133,15 @@ public class IqConnection implements PacketListener {
 	}
 	
 	
-	public MobilisNineCardsProxy getProxy() {
+	public MobilisNineCardsProxy getProxy()
+	{
 		return _proxy;
 	}
 	
 	
 	@SuppressWarnings("unchecked")
-	public boolean handleCallback(XMPPBean inBean){
+	public boolean handleCallback(XMPPBean inBean)
+	{
 		@SuppressWarnings("rawtypes")
 		IXMPPCallback callback = _waitingCallbacks.get(inBean.getId());
 
@@ -152,7 +156,8 @@ public class IqConnection implements PacketListener {
 	 * Checks if 9Cards service is connected to XMPP server.
 	 * @return true, if is connected
 	 */
-	public boolean isConnected(){
+	public boolean isConnected()
+	{
 		return mServiceInstance.getAgent().getConnection() != null
 			? mServiceInstance.getAgent().getConnection().isConnected()
 			: false;
@@ -162,7 +167,8 @@ public class IqConnection implements PacketListener {
 	/**
 	 * Register all XMBBBeabs labeled as XMPP extensions.
 	 */
-	private void registerXMPPExtensions() {		
+	private void registerXMPPExtensions()
+	{		
 		registerXMPPBean(new ConfigureGameRequest());
 		registerXMPPBean(new ConfigureGameResponse());
 	}
@@ -173,8 +179,8 @@ public class IqConnection implements PacketListener {
 	 *
 	 * @param prototype a basic instance of the XMPPBean
 	 */
-	private void registerXMPPBean(XMPPBean prototype) {
-		
+	private void registerXMPPBean(XMPPBean prototype)
+	{
 		// add XMPPBean to service provider to enable it in XMPP
 		(new BeanProviderAdapter(new ProxyBean(prototype.getNamespace(), prototype.getChildElement()))).addToProviderManager();
 		
@@ -197,7 +203,8 @@ public class IqConnection implements PacketListener {
 	 * @param bean the XMPPBean to send
 	 * @return true, if sending was successful
 	 */
-	private boolean sendXMPPBean(XMPPBean bean) {
+	private boolean sendXMPPBean(XMPPBean bean)
+	{
 		bean.setFrom(mServiceInstance.getAgent().getFullJid());
 		sendBean(bean);
 
@@ -214,7 +221,8 @@ public class IqConnection implements PacketListener {
 	 *
 	 * @param bean the XMPPBean to send
 	 */
-	private void sendBean(XMPPBean bean) {
+	private void sendBean(XMPPBean bean)
+	{
 		// just send the XMPPBean if XMPP connection is established and no FileTransfer is active
 		if((mServiceInstance.getAgent() != null)
 				&& (mServiceInstance.getAgent().getConnection() != null)
@@ -234,7 +242,8 @@ public class IqConnection implements PacketListener {
 	 * @param fromBean the original XMPPBean
 	 * @return true, if sending successful
 	 */
-	public boolean sendXMPPBeanError(XMPPBean resultBean, XMPPBean fromBean){
+	public boolean sendXMPPBeanError(XMPPBean resultBean, XMPPBean fromBean)
+	{
 		resultBean.setTo(fromBean.getFrom());
 		resultBean.setType(XMPPBean.TYPE_ERROR);
 		resultBean.setId(fromBean.getId());
@@ -248,7 +257,8 @@ public class IqConnection implements PacketListener {
 	 * @param adapter
 	 * @return
 	 */
-	public XMPPBean unpackBeanIQAdapter(BeanIQAdapter adapter){
+	public XMPPBean unpackBeanIQAdapter(BeanIQAdapter adapter)
+	{
 		XMPPBean unpackedBean = null;
 		
 		if( beanPrototypes.containsKey( adapter.getNamespace() )
@@ -266,15 +276,17 @@ public class IqConnection implements PacketListener {
 	/**
 	 * The proxy for outgoing XMPP beans.
 	 */
-	private IMobilisNineCardsOutgoing _proxyOutgoingMapper = new IMobilisNineCardsOutgoing() {
-		
+	private IMobilisNineCardsOutgoing _proxyOutgoingMapper = new IMobilisNineCardsOutgoing()
+	{
 		@Override
-		public void sendXMPPBean(XMPPBean out) {
+		public void sendXMPPBean(XMPPBean out)
+		{
 			IqConnection.this.sendXMPPBean(out);
 		}
 		
 		@Override
-		public void sendXMPPBean(XMPPBean out, IXMPPCallback<? extends XMPPBean> callback) {
+		public void sendXMPPBean(XMPPBean out, IXMPPCallback<? extends XMPPBean> callback)
+		{
 			_waitingCallbacks.put(out.getId(), callback);
 			sendXMPPBean(out);
 		}
