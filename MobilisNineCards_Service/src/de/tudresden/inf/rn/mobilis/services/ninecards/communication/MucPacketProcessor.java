@@ -167,7 +167,8 @@ else LOGGER.warning(" ----> PLAYER == NULL");
 				mServiceInstance.getMucConnection().sendMessagetoMuc(
 						new GameOverMessage(
 								mServiceInstance.getGame().getGameWinner().getJid(),
-								mServiceInstance.getGame().getGameWinner().getRoundsWon()));
+								mServiceInstance.getGame().getGameWinner().getRoundsWon(),
+								mServiceInstance.getGame().getPlayerInfos()));
 				//mServiceInstance.shutdown();
 			}
 			

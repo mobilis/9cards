@@ -1,20 +1,24 @@
 package de.tudresden.inf.rn.mobilis.android.ninecards.clientstub;
 
 import org.xmlpull.v1.XmlPullParser;
-
 import de.tudresden.inf.rn.mobilis.android.ninecards.communication.XMPPInfo;
 
+import java.util.List;import java.util.ArrayList;
 
 public class GameOverMessage implements XMPPInfo {
 
 	private String winner = null;
 	private int score = Integer.MIN_VALUE;
+	private List< PlayerInfo > PlayerInfos = new ArrayList< PlayerInfo >();
 
 
-	public GameOverMessage( String winner, int score ) {
+	public GameOverMessage( String winner, int score, List< PlayerInfo > PlayerInfos ) {
 		super();
 		this.winner = winner;
 		this.score = score;
+		for ( PlayerInfo entity : PlayerInfos ) {
+			this.PlayerInfos.add( entity );
+		}
 	}
 
 	public GameOverMessage(){}
@@ -38,6 +42,14 @@ public class GameOverMessage implements XMPPInfo {
 				}
 				else if (tagName.equals( "score" ) ) {
 					this.score = Integer.parseInt( parser.nextText() );
+				}
+				else if (tagName.equals( PlayerInfo.CHILD_ELEMENT ) ) {
+					PlayerInfo entity = new PlayerInfo();
+
+					entity.fromXML( parser );
+					this.PlayerInfos.add( entity );
+					
+					parser.next();
 				}
 				else
 					parser.next();
@@ -83,6 +95,12 @@ public class GameOverMessage implements XMPPInfo {
 			.append( this.score )
 			.append( "</score>" );
 
+		for( PlayerInfo entry : this.PlayerInfos ) {
+			sb.append( "<" + PlayerInfo.CHILD_ELEMENT + ">" );
+			sb.append( entry.toXML() );
+			sb.append( "</" + PlayerInfo.CHILD_ELEMENT + ">" );
+		}
+
 		return sb.toString();
 	}
 
@@ -102,6 +120,14 @@ public class GameOverMessage implements XMPPInfo {
 
 	public void setScore( int score ) {
 		this.score = score;
+	}
+
+	public List< PlayerInfo > getPlayerInfos() {
+		return this.PlayerInfos;
+	}
+
+	public void setPlayerInfos( List< PlayerInfo > PlayerInfos ) {
+		this.PlayerInfos = PlayerInfos;
 	}
 
 }
