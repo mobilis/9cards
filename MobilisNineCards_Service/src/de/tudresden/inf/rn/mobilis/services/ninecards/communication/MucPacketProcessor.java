@@ -19,7 +19,7 @@
  ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.services.ninecards.communication;
 
-import java.util.logging.Logger;
+import java.io.StringReader;
 
 import org.jivesoftware.smack.packet.Message;
 import org.xmlpull.v1.XmlPullParser;
@@ -33,25 +33,21 @@ import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.GameOverMessage;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.PlayCardMessage;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.RoundCompleteMessage;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.StartGameMessage;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 
 public class MucPacketProcessor
 {
 	/**	The 9Cards service instance. */
 	private NineCardsService mServiceInstance;
-	/** The XML Pull Parser used for the fromXML() methods. */
-	private XmlPullParser xmlParser;
+	
 	
 	/**
 	 * 
 	 * @param connection
 	 */
-	public MucPacketProcessor(NineCardsService serviceInstance) throws Exception
+	public MucPacketProcessor(NineCardsService serviceInstance)
 	{
 		this.mServiceInstance = serviceInstance;
-		
-		XmlPullParserFactory parserFactory = XmlPullParserFactory.newInstance();
-		parserFactory.setNamespaceAware(true);
-		xmlParser = parserFactory.newPullParser();
 	}
 	
 	
@@ -61,20 +57,27 @@ public class MucPacketProcessor
 	 */
 	public void processPacket(Message message) throws Exception
 	{
-		if(message.getBody().toLowerCase().contains("startgamemessage"))
-			onStartGame(message);
-		else if(message.getBody().toLowerCase().contains("playcardmessage"))
-			onPlayCard(message);
+		XMPPInfo info = null;
 		
+		if(message.getBody().toLowerCase().startsWith("<mobilismessage type=startgamemessage"))
+			info = new StartGameMessage();
+		if(message.getBody().toLowerCase().startsWith("<mobilismessage type=playcardmessage"))
+			info = new PlayCardMessage();
 		
-		/*String startPrefix = "<mobilismessage type=" + StartGameMessage.class.getSimpleName().toLowerCase();
-		String cardPrefix = "<mobilismessage type=" + PlayCardMessage.class.getSimpleName().toLowerCase() + ">";
+		if(info != null) {
+			XmlPullParser xmlParser = XmlPullParserFactory.newInstance().newPullParser();
+			String content = message.getBody().substring(message.getBody().indexOf(">") + 1, message.getBody().lastIndexOf("<"));
+			// TODO use " or ' for attribute of top level tag instead of replacing whole tag to avoid exceptions
+			content = "<randomtopleveltag>" + content + "</randomtopleveltag>";
+			xmlParser.setInput(new StringReader(content));
+			info.fromXML(xmlParser);
+		}
+
+		if(info instanceof StartGameMessage)
+			onStartGame((StartGameMessage) info, message.getFrom());
 		
-		// check type of message and handle it accordingly
-		if(message.getBody().toLowerCase().startsWith(startPrefix))
-			onStartGame(message);
-		else if(message.getBody().toLowerCase().startsWith(cardPrefix))
-			onPlayCard(message);*/
+		else if(info instanceof PlayCardMessage)
+			onPlayCard((PlayCardMessage) info, message.getFrom());
 	}
 	
 	
@@ -82,17 +85,17 @@ public class MucPacketProcessor
 	 * 
 	 * @param message
 	 */
-	private void onStartGame(Message message)
+	private void onStartGame(StartGameMessage message, String sender)
 	{
 		// only allowed in gamestate ready
 		if(mServiceInstance.getGame().getGameState() == State.READY) {
 			
 			// check if player is allowed to start the game
-//			Player player = mServiceInstance.getGame().getPlayer(message.getFrom());
+			Player player = mServiceInstance.getGame().getPlayer(sender);
 			
 			//TODO soll dann später nur über die admin-affiliation laufen, erst testen ob der participantlistener die jid der neuen spieler kennt
-//			if(mServiceInstance.getMucConnection().isAdmin(message.getFrom())
-//					|| ((player != null) && (player.isCreator()))) {
+			if(mServiceInstance.getMucConnection().isAdmin(sender)
+					|| ((player != null) && (player.isCreator()))) {
 
 				// close game for joining
 				mServiceInstance.getMucConnection().lockMuc();
@@ -106,7 +109,7 @@ public class MucPacketProcessor
 						new StartGameMessage(
 								mServiceInstance.getSettings().getRounds(),
 								mServiceInstance.getMucConnection().getMucPw()));
-//			}
+			}
 		}
 	}
 	
@@ -115,71 +118,51 @@ public class MucPacketProcessor
 	 * 
 	 * @param message
 	 */
-	private void onPlayCard(Message message) throws Exception
+	private void onPlayCard(PlayCardMessage message, String sender) throws Exception
 	{
-		// reconstruct PlayCardMessage
-		/*String prefix = "<mobilismessage type=" + PlayCardMessage.class.getSimpleName().toLowerCase() + ">";
-		String content = message.getBody().toLowerCase().substring(
-				message.getBody().indexOf(prefix) + prefix.length(),
-				message.getBody().indexOf("</mobilismessage>"));*/
-
-		PlayCardMessage playCardMesg = new PlayCardMessage();
-		//xmlParser.setInput(new StringReader(message.getBody()));
-		//playCardMesg.fromXML(xmlParser);
-
-
-Logger LOGGER = Logger.getLogger(MucPacketProcessor.class.getCanonicalName());	
-LOGGER.info(" ---> message.getBody.toLowerCase(): " + message.getBody().toLowerCase());
-String body = message.getBody().toLowerCase();
-String round = body.substring(body.indexOf("<round>") + "<round>".length(), body.indexOf("</round>"));
-String card = body.substring(body.indexOf("<card>") + "<card>".length(), body.indexOf("</card>"));
-
-playCardMesg.setRound(Integer.parseInt(round));
-playCardMesg.setCard(Integer.parseInt(card));	
-//TODO runde checken
-
-		// act depending on message
-		Player player = mServiceInstance.getGame().getPlayer(message.getFrom());
+		Player player = mServiceInstance.getGame().getPlayer(sender);
 		if(player != null) {
+			
 			// check if player already played a card this round
 			if(player.getChosenCard() == -1) {
+				
 				// check if player already used this card
-				if(!player.getUsedCards().contains(playCardMesg.getCard())) {
-					// mark this card as used and set player to alreadyChose
-					player.getUsedCards().add(playCardMesg.getCard());
-					player.setChosenCard(playCardMesg.getCard());
+				if(!player.getUsedCards().contains(message.getCard())) {
+					
+					// add this card to the used ones and set player to alreadyChose
+					player.getUsedCards().add(message.getCard());
+					player.setChosenCard(message.getCard());
+					
 					// inform other players that this player chose some card
 					mServiceInstance.getMucConnection().sendMessagetoMuc(
 							new CardPlayedMessage(mServiceInstance.getGame().getRound(), player.getJid()));
+					
+					// check if round is finished
+					if(mServiceInstance.getGame().checkRoundOver()) {
+						
+						// if true, get winner and increment his score
+						mServiceInstance.getGame().getRoundWinner().incrementRoundsWon();
+						
+						// check if end of game is reached
+						if(mServiceInstance.getGame().getRound() == mServiceInstance.getSettings().getRounds()) {
+							mServiceInstance.getMucConnection().sendMessagetoMuc(
+									new GameOverMessage(
+											mServiceInstance.getGame().getGameWinner().getJid(),
+											mServiceInstance.getGame().getGameWinner().getRoundsWon(),
+											mServiceInstance.getGame().getPlayerInfos()));
+						}
+						
+						// else start next round
+						else {
+							mServiceInstance.getMucConnection().sendMessagetoMuc(
+									new RoundCompleteMessage(
+											mServiceInstance.getGame().getRound(),
+											mServiceInstance.getGame().getRoundWinner().getJid(),
+											mServiceInstance.getGame().getPlayerInfos()));
+							mServiceInstance.getGame().startNewRound();
+						}
+					}
 				}
-			}
-		}
-		
-else LOGGER.warning(" ----> PLAYER == NULL");
-
-		// check if round is finished
-		if(mServiceInstance.getGame().checkRoundOver()) {
-			// increment winner's number of wins
-			mServiceInstance.getGame().getRoundWinner().incrementRoundsWon();
-			
-			// check if end of game is reached. if true, also shutdown service
-			if(mServiceInstance.getGame().getRound() == mServiceInstance.getSettings().getRounds()) {
-				mServiceInstance.getMucConnection().sendMessagetoMuc(
-						new GameOverMessage(
-								mServiceInstance.getGame().getGameWinner().getJid(),
-								mServiceInstance.getGame().getGameWinner().getRoundsWon(),
-								mServiceInstance.getGame().getPlayerInfos()));
-				//mServiceInstance.shutdown();
-			}
-			
-			// else start next round
-			else {
-				mServiceInstance.getMucConnection().sendMessagetoMuc(
-						new RoundCompleteMessage(
-								mServiceInstance.getGame().getRound(),
-								mServiceInstance.getGame().getRoundWinner().getJid(),
-								mServiceInstance.getGame().getPlayerInfos()));
-				mServiceInstance.getGame().startNewRound();
 			}
 		}
 	}
