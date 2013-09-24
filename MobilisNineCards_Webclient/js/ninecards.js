@@ -196,7 +196,7 @@ var ninecards = {
 				ninecards.storeData({'serviceNick':player.nick});
 			} else {
 				$('#players-list').append(
-					'<li id="' + ninecards.clearString(player.nick) + '" data-icon="custom"><a href="#">'
+					'<li id="' + ninecards.clearString(player.nick) + '" data-icon="clear"><a href="#">'
 					+ player.nick +
 					'<span class="ui-li-count">0</span></a></li>'
 				).listview('refresh');
@@ -272,9 +272,9 @@ var ninecards = {
 			console.log('player',ninecards.players[nick]);
 			ninecards.players[nick].score = $(playerinfo).find('score').text();
 			console.log('score',ninecards.players[nick].score);
-			$('#'+nick+' a span').html(ninecards.players[nick].score);
-
+			$('#'+ninecards.clearString(nick)+' a span').html(ninecards.players[nick].score);
 			
+			$('#'+ninecards.clearString(nick)).buttonMarkup({ icon: 'clear' });
 		});
 	},
 
