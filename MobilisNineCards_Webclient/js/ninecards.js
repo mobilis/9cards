@@ -575,3 +575,16 @@ $(document).on('vclick', '#exitgame-button', function(event){
 	return false;
 
 });
+
+$(document).on('vclick', '#exitgames-button', function(event){
+
+	event.preventDefault();
+	Mobilis.connection.disconnect();
+	jQuery.mobile.changePage('#start', { 
+								transition: 'slide',
+								reverse: true,
+								changeHash: true
+							});
+	return false;
+
+});
