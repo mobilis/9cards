@@ -198,7 +198,7 @@ var ninecards = {
 				$('#players-list').append(
 					'<li id="' + ninecards.clearString(player.nick) + '" data-icon="clear"><a href="#">'
 					+ player.nick +
-					'<span class="ui-li-count">0</span></a></li>'
+					'<p class="ui-li-aside"></p></li>'
 				).listview('refresh');
 
 			}
@@ -264,15 +264,21 @@ var ninecards = {
 
 
 	onRoundCompleteMessage : function (message) {
+		console.log(message);
+		$(message).find('playerinfo').each( function(index,playerInfo){
+			console.log('playerinfo',playerInfo);
+			var nick = Strophe.getResourceFromJid( $(playerInfo).find('jid').text() );
 
-		$(message).find('playerinfo').each( function(index,playerinfo){
-			console.log('playerinfo',playerinfo);
-			var nick = Strophe.getResourceFromJid( $(playerinfo).find('jid').text() );
+			ninecards.players[nick].score = $(playerInfo).find('score').text();
+			console.log(ninecards.players[nick],'score',ninecards.players[nick].score);
 
-			console.log('player',ninecards.players[nick]);
-			ninecards.players[nick].score = $(playerinfo).find('score').text();
-			console.log('score',ninecards.players[nick].score);
-			$('#'+ninecards.clearString(nick)+' a span').html(ninecards.players[nick].score);
+			var usedCardsHTML = '';
+			$(playerInfo).find('usedcards').each(function(index,usedCard){
+				usedCardsHTML += '<span class="used-card">'+$(usedCard).text()+'</span>';
+			});
+
+			$('#'+ninecards.clearString(nick)+' p.ui-li-aside').html(usedCardsHTML).append(
+				'<strong>/ '+ninecards.players[nick].score+'</strong>');
 			
 			$('#'+ninecards.clearString(nick)).buttonMarkup({ icon: 'clear' });
 		});

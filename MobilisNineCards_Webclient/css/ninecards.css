@@ -24,3 +24,6 @@ table#numpad a .ui-btn-inner {
 #dialog-popup {
 	min-width: 220px;
 }
+.used-card {
+	padding: 0 0.25em;
+}
