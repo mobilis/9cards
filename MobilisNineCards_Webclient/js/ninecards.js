@@ -264,15 +264,17 @@ var ninecards = {
 
 
 	onRoundCompleteMessage : function (message) {
-		console.log('message',message);
+
 		$(message).find('playerinfo').each( function(index,playerinfo){
 			console.log('playerinfo',playerinfo);
 			var nick = Strophe.getResourceFromJid( $(playerinfo).find('jid').text() );
-			console.log('nick',nick);
+
 			console.log('player',ninecards.players[nick]);
 			ninecards.players[nick].score = $(playerinfo).find('score').text();
 			console.log('score',ninecards.players[nick].score);
 			$('#'+nick+' a span').html(ninecards.players[nick].score);
+
+			
 		});
 	},
 
@@ -420,6 +422,12 @@ var ninecards = {
 
 
 
+	disableButton : function(button){
+			$('a[data-id='+button+']').addClass('ui-disabled');
+			console.log('button', button, 'disabled');
+	},
+
+
 
 	loadData : function(data) {
 		var loadedObjects = {};
@@ -429,9 +437,6 @@ var ninecards = {
 		});
 		return loadedObjects;
 	},
-
-
-
 
 
 	storeData : function(storedObjects) {
@@ -552,7 +557,7 @@ $(document).on('vclick', '#numpad a', function(card) {
 	var card  = $(this).attr('data-id');
 	if (card) {
 		ninecards.sendCard(card, function(){
-			$('a[data-id='+card+']').addClass('ui-disabled');
+			ninecards.disableButton(card);
 		});
 	}
 	return false;
