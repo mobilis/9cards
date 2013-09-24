@@ -290,12 +290,13 @@ var ninecards = {
 
 	onGameOverMessage : function (message) {
 		var winner = Strophe.getResourceFromJid( $(message).find('winner').text() );
+		var score = $(message).find('score').text();
 
 		$('#dialog-popup').popup({
 			afteropen: function( event, ui ) {
 				$(this).find('h1').html('Game Over');
 				$(this).find('.ui-content h3').html('Winner:');
-				$(this).find('.ui-content p').html(winner);
+				$(this).find('.ui-content p').html(winner+' ('+score+')');
 			},
 			afterclose: function( event, ui ) {
 				jQuery.mobile.changePage('#games', {
