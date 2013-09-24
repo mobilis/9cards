@@ -77,7 +77,7 @@ var ninecards = {
 					function(result){
 						ninecards.joinGame(gameJid, function(result){
 							console.log(result);
-							$('#game div[data-role=content]').append(
+							$('#game-area').append(
 								'<a href="#" id="startgame-button" data-theme="a" data-role="button">Start Game</a>'
 							).trigger('create');
 						});
@@ -100,14 +100,20 @@ var ninecards = {
 
 	joinGame : function(gameJid, result){
 		var res;
-		ninecards.joinMuc(gameJid, function(result){
+		ninecards.joinMuc(
+			gameJid, 
+			ninecards.onMessage,
+			ninecards.onPresence,
+			ninecards.onRoster,
+			function(result){
 
-			jQuery.mobile.changePage('#game', { 
-				transition: 'slide',
-				changeHash: true
-			});
-			res = result;
-		});
+				jQuery.mobile.changePage('#game', { 
+					transition: 'slide',
+					changeHash: true
+				});
+				res = result;
+			}
+		);
 		if (result) result(res);
 	},
 
@@ -115,7 +121,7 @@ var ninecards = {
 
 
 
-	joinMuc : function(serviceJid, result) {
+	joinMuc : function(serviceJid, onMessage, onPresence, onRoster, result) {
 
 		var resource = Strophe.getResourceFromJid(serviceJid).toLowerCase();
 		var domain = Strophe.getDomainFromJid(serviceJid);
@@ -128,9 +134,9 @@ var ninecards = {
 		Mobilis.connection.muc.join(
 			roomJid,
 			userName,
-			ninecards.onMessage,
-			ninecards.onPresence,
-			ninecards.onRoster
+			onMessage,
+			onPresence,
+			onRoster
 		);
 
 		if (result) result('joined', roomJid);

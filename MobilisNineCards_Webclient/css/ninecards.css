@@ -21,3 +21,6 @@ table#numpad a .ui-btn-inner {
 .ui-icon-custom {
     background-position: 15px 0;
 }
+#dialog-popup {
+	min-width: 220px;
+}
