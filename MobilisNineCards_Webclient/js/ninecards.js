@@ -250,9 +250,12 @@ var ninecards = {
 
 	onStartGameMessage : function (message) {
 		$('#numpad a').removeClass('ui-disabled');
-		console.log('Game Started',message);
+
 		var rounds = $(message).find('rounds').text();
-		console.log('rounds',rounds);
+		$('#round-count #round').html('1');
+		$('#round-count #rounds').html(rounds);
+		$('#round-count').css('display','block');
+
 		var password = $(message).find('password').text();
 		console.log('password',password);
 	},
@@ -271,6 +274,8 @@ var ninecards = {
 
 	onRoundCompleteMessage : function (message) {
 		ninecards.updateScore(message);
+		var round = parseInt($(message).find('round').text())+1;
+		$('#round-count #round').html(round);
 	},
 
 
@@ -302,6 +307,7 @@ var ninecards = {
 
 		var winner = Strophe.getResourceFromJid( $(message).find('winner').text() );
 		var score = ninecards.players[winner].score;
+		$('#round-count').html('<span>Game Over</span>');
 
 		$('#dialog-popup').popup({
 			afteropen: function( event, ui ) {
