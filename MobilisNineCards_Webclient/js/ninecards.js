@@ -43,6 +43,8 @@ var ninecards = {
 						$('#game-list').append(
 							'<li><a class="available-game" id="'
 							+ $(this).attr('jid')
+							+ '" data-name="'
+							+ $(this).attr('serviceName')
 							+ '" href="#game" data-transition="slide">'
 							+ $(this).attr('serviceName')
 							+ ' (' + Strophe.getResourceFromJid($(this).attr('jid')) + ')'
@@ -75,7 +77,7 @@ var ninecards = {
 				Mobilis.ninecards.ConfigureGame(
 					gameJid, gameName, maxPlayers, numberOfRounds, 
 					function(result){
-						ninecards.joinGame(gameJid, function(result){
+						ninecards.joinGame(gameJid, gameName, function(result){
 							console.log(result);
 							$('#game-area').append(
 								'<a href="#" id="startgame-button" data-theme="a" data-role="button">Start Game</a>'
@@ -98,7 +100,8 @@ var ninecards = {
 
 
 
-	joinGame : function(gameJid, result){
+	joinGame : function(gameJid, gameName, result){
+		console.log('gameName',gameName);
 		var res;
 		ninecards.joinMuc(
 			gameJid, 
@@ -111,6 +114,9 @@ var ninecards = {
 					transition: 'slide',
 					changeHash: true
 				});
+
+				$('#game h1').append(gameName);
+
 				res = result;
 			}
 		);
@@ -535,7 +541,7 @@ $(document).on('vclick', '#create-game-submit', function() {
 
 $(document).on('vclick', '.available-game', function () {
 
-	ninecards.joinGame( $(this).attr('id'), function (result){
+	ninecards.joinGame( $(this).attr('id'), $(this).attr('data-name'), function (result){
 		console.log(result);
 	});
 	
