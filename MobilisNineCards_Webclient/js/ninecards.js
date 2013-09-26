@@ -19,6 +19,18 @@ var ninecards = {
 
 
 
+	disconnect : function(){
+		Mobilis.connection.disconnect();
+		jQuery.mobile.changePage(
+			'#start', {
+				transition: 'slide',
+				reverse: true,
+				changeHash: true
+			}
+		);
+
+	},
+
 
 
 	queryGames : function() {
@@ -26,7 +38,7 @@ var ninecards = {
 		Mobilis.core.mobilisServiceDiscovery(
 			[Mobilis.ninecards.NS.SERVICE],
 			function(result) {
-				$('#game-list').empty().listview();
+				$('#games-list').empty().listview();
 
 				if ($(result).find('mobilisService').length){
 					$(result).find('mobilisService').each( function() {
@@ -35,7 +47,7 @@ var ninecards = {
 							'jid': $(this).attr('jid'),
 							'servicename' : $(this).attr('serviceName')
 						};
-						$('#game-list').append(
+						$('#games-list').append(
 							'<li><a class="available-game" id="'
 							+ $(this).attr('jid')
 							+ '" data-name="'
@@ -46,9 +58,9 @@ var ninecards = {
 							+ '</a></li>');
 					});
 				} else {
-					$('#game-list').append('<li>No games found</li>');
+					$('#games-list').append('<li>No games found</li>');
 				}
-				$('#game-list').listview('refresh');
+				$('#games-list').listview('refresh');
 			},
 			function(error) {
 				console.error('queryGames error:',error);
@@ -143,6 +155,34 @@ var ninecards = {
 	},
 
 
+
+	leaveMuc : function(room, onLeft){
+		Mobilis.connection.muc.leave(
+			room,
+			jQuery.jStorage.get('settings').username
+		);
+		onLeft();
+	},
+
+
+
+	leaveGame : function(){
+		ninecards.leaveMuc(
+			jQuery.jStorage.get('chatroom'),
+			function(){
+				$('#players-list').empty();
+				$('#startgame-button').remove();
+				jQuery.mobile.changePage(
+					'#games', {
+						transition: 'slide',
+						reverse: true,
+						changeHash: true
+					}
+				);
+				console.log('left game');
+			}
+		);
+	},
 
 
 
@@ -310,13 +350,6 @@ var ninecards = {
 				$(this).find('h1').html('Game Over');
 				$(this).find('.ui-content h3').html('Winner:');
 				$(this).find('.ui-content p').html(winner+' ('+score+')');
-			// },
-			// afterclose: function( event, ui ) {
-			// 	jQuery.mobile.changePage('#games', {
-			// 		transition: 'slide',
-			// 		reverse: true,
-			// 		changeHash: true
-			// 	});
 			}
 		});
 		$('#dialog-popup').popup('open', {
@@ -477,14 +510,17 @@ $(document).on('pageshow', '#settings', function() {
 
 
 $(document).on('pageshow', '#games', function(){
-	
-	var settings = jQuery.jStorage.get('settings');
 
-	ninecards.connect(
-		settings.jid,
-		settings.password,
-		settings.gameserver
-	);
+	if ( Mobilis.connection && Mobilis.connection.connected ) {
+		ninecards.queryGames();
+	} else {
+		var settings = jQuery.jStorage.get('settings');
+		ninecards.connect(
+			settings.jid,
+			settings.password,
+			settings.gameserver
+		);
+	}
 
 });
 
@@ -492,13 +528,6 @@ $(document).on('pageshow', '#games', function(){
 
 
 $(document).on('vclick', '#settings-submit', function() {
-
-	// ninecards.storeData({
-	// 	'username':     $('#settings-form #username').val(),
-	// 	'gameserver':   $('#settings-form #gameserver').val(),
-	// 	'jid':          $('#settings-form #jid').val(),
-	// 	'password':     $('#settings-form #password').val()
-	// });
 
 	jQuery.jStorage.set('settings', {
 		'username':   $('#settings-form #username').val(),
@@ -523,7 +552,7 @@ $(document).on('vclick', '#create-game-submit', function() {
 	if (gameName && numPlayers && numRounds) {
 		ninecards.createGame(gameName, numPlayers, numRounds);
 	}
-	$('#create-game-popup').popup('close');
+	$('#creategame-popup').popup('close');
 	return false;
 });
 
@@ -583,14 +612,7 @@ $(document).on('vclick', '#startgame-button', function(event){
 $(document).on('vclick', '#exitgame-button', function(event){
 
 	event.preventDefault();
-	$('#players-list').empty();
-	$('#startgame-button').remove();
-	jQuery.mobile.changePage('#games', { 
-								transition: 'slide',
-								reverse: true,
-								changeHash: true
-							});
-	console.log('quit game');
+	ninecards.leaveGame();
 	return false;
 
 });
@@ -598,12 +620,7 @@ $(document).on('vclick', '#exitgame-button', function(event){
 $(document).on('vclick', '#exitgames-button', function(event){
 
 	event.preventDefault();
-	Mobilis.connection.disconnect();
-	jQuery.mobile.changePage('#start', { 
-								transition: 'slide',
-								reverse: true,
-								changeHash: true
-							});
+	ninecards.disconnect();
 	return false;
 
 });

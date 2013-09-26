@@ -78,17 +78,17 @@
 	<div data-role="header">
 		<a id="exitgames-button" href="#start" data-icon="back">Back</a>
 		<h1>9Cards: Games</h1>
-		<a href="#create-game-popup" id="create-game-button" data-rel="popup" data-position-to="window" data-icon="plus">Create</a>
+		<a href="#creategame-popup" id="create-game-button" data-rel="popup" data-position-to="window" data-icon="plus">Create</a>
 	</div><!-- /header -->
 
 	<div data-role="content">	
 
-	<ul id="game-list" data-role="listview">
+	<ul id="games-list" data-role="listview">
 	</ul>
 
 	</div><!-- /content -->
 
-	<div data-role="popup" id="create-game-popup" data-theme="a" class="ui-corner-all">
+	<div data-role="popup" id="creategame-popup" data-theme="a" class="ui-corner-all">
 		<form id="create-game-form" method="post">
 			<div style="padding:10px">
 				<h3>Create new game:</h3>
@@ -101,7 +101,20 @@
 				<button type="submit" id="create-game-submit" data-theme="b" data-icon="check">Create</button>
 			</div>
 		</form>
-	</div>
+	</div><!-- /creategame-popup -->
+
+	<div data-role="popup" id="error-popup" data-theme="c" class="ui-corner-all" data-dismissible="false">
+		<div data-role="header" data-theme="a" class="ui-corner-top">
+			<h1></h1>
+		</div>
+		<div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+			<h3 class="ui-title"></h3>
+			<p></p>
+			<a href="#" data-role="button" data-rel="back" data-transition="flow" data-theme="b">OK</a>
+		</div>
+	</div><!-- /dialog-popup -->
+
+
 </div><!-- /games-page -->
 
 

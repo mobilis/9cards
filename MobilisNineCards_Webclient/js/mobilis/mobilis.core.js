@@ -76,6 +76,24 @@
 						console.log('authenticating');
 					} else if (status == Mobilis.core.Status.AUTHFAIL) {
 						console.log('authentication fail');
+						$('#error-popup').popup({
+							afteropen: function( event, ui ) {
+								$(this).find('h1').html('Error');
+								$(this).find('.ui-content h3').html('Authentication Fail');
+								$(this).find('.ui-content p').html('Please check the settings');
+							},
+							afterclose: function( event, ui ) {
+								Mobilis.connection.disconnect();
+								jQuery.mobile.changePage('#start', {
+									transition: 'slide',
+									reverse: true,
+									changeHash: true
+								});
+							}
+						});
+						$('#error-popup').popup('open', {
+							positionTo: 'window'
+						});
 					} else if (status == Mobilis.core.Status.CONNECTED) {
 						console.log('connected');
 
@@ -117,7 +135,10 @@
 					} else if (status == Mobilis.core.Status.DISCONNECTED) {
 						console.log('disconnected');
 					} else if (status == Mobilis.core.Status.DISCONNECTING) {
-					} else if (status == Mobilis.core.Status.ATTACHED) {}
+						console.log('disconnecting');
+					} else if (status == Mobilis.core.Status.ATTACHED) {
+						console.log('attached');
+					}
 					if (callback) {
 						callback(status);
 					}
