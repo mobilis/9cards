@@ -95,11 +95,18 @@ var ninecards = {
 
 
 
-	joinGame : function(gameJid, gameName, result){
-		console.log('gameName',gameName);
+	joinGame : function(serviceJid, gameName, result){
+
+		var resource = Strophe.getResourceFromJid(serviceJid).toLowerCase();
+		var domain = Strophe.getDomainFromJid(serviceJid);
+		var chatservice = jQuery.jStorage.get('settings').chatservice;
+		var chatroom = resource+'@'+chatservice+'.'+domain;
+
+		jQuery.jStorage.set('chatroom',chatroom);
+
 		var res;
 		ninecards.joinMuc(
-			gameJid, 
+			chatroom, 
 			ninecards.onMessage,
 			ninecards.onPresence,
 			ninecards.onRoster,
@@ -122,25 +129,17 @@ var ninecards = {
 
 
 
-	joinMuc : function(serviceJid, onMessage, onPresence, onRoster, result) {
-
-		var resource = Strophe.getResourceFromJid(serviceJid).toLowerCase();
-		var domain = Strophe.getDomainFromJid(serviceJid);
-
-		var roomJid = resource+'@conference.'+domain;
-		ninecards.storeData({'roomJid': roomJid});
-
-		var userName = ninecards.loadData(['username']).username;
+	joinMuc : function(room, onMessage, onPresence, onRoster, result) {
 
 		Mobilis.connection.muc.join(
-			roomJid,
-			userName,
+			room,
+			jQuery.jStorage.get('settings').username,
 			onMessage,
 			onPresence,
 			onRoster
 		);
 
-		if (result) result('joined', roomJid);
+		if (result) result('joined', room);
 	},
 
 
@@ -194,7 +193,7 @@ var ninecards = {
 		$.each(ninecards.players, function(index,player){
 
 			if (player.affiliation == 'owner'){
-				ninecards.storeData({'serviceNick':player.nick});
+				jQuery.jStorage.set('serviceNick',player.nick);
 			} else {
 				$('#players-list').append(
 					'<li id="' + ninecards.clearString(player.nick) + '" data-icon="clear"><a href="#">'
@@ -359,7 +358,7 @@ var ninecards = {
 
 	sendMessage : function (nick, message) {
 		Mobilis.connection.muc.message(
-			ninecards.loadData(['roomJid']).roomJid, 
+			jQuery.jStorage.get('chatroom'),
 			nick,
 			message, 
 			null, // no html markup
@@ -372,7 +371,7 @@ var ninecards = {
 
 	sendGroupchatMessage : function (message) {
 		Mobilis.connection.muc.groupchat(
-			ninecards.loadData(['roomJid']).roomJid, 
+			jQuery.jStorage.get('chatroom'),
 			message, 
 			null // no html markup
 			);
@@ -386,11 +385,11 @@ var ninecards = {
 
 		ninecards.buildMobilisMessage(null,'StartGameMessage', function(message){
 			ninecards.sendMessage(
-				ninecards.loadData(['serviceNick']).serviceNick,
+				jQuery.jStorage.get('serviceNick'),
 				// 'marc',
 				message
 			);
-			ninecards.sendGroupchatMessage(	'sent to '+ninecards.loadData(['serviceNick']).serviceNick+': '+message );
+			ninecards.sendGroupchatMessage(	'sent to '+jQuery.jStorage.get('serviceNick')+': '+message );
 		});
 	},
 
@@ -402,10 +401,10 @@ var ninecards = {
 		var round = 1; // TODO
 		ninecards.buildMobilisCardMessage(card,round,'PlayCardMessage',function(message){
 			ninecards.sendMessage(
-				ninecards.loadData(['serviceNick']).serviceNick,
+				jQuery.jStorage.get('serviceNick'),
 				message
 			);
-			ninecards.sendGroupchatMessage(	'sent to service: '+message );
+			ninecards.sendGroupchatMessage(	'sent to '+jQuery.jStorage.get('serviceNick')+': '+message );
 			disableButton();
 		});
 
@@ -446,27 +445,6 @@ var ninecards = {
 	disableButton : function(button){
 			$('a[data-id='+button+']').addClass('ui-disabled');
 			console.log('button', button, 'disabled');
-	},
-
-
-
-	loadData : function(data) {
-		var loadedObjects = {};
-		$.each(data, function(index,value){
-			loadedObjects[value] = localStorage.getItem('mobilis.ninecards.'+value);
-			// console.log('loaded from localStorage:', value, '=', loadedObjects[value]);
-		});
-		return loadedObjects;
-	},
-
-
-	storeData : function(storedObjects) {
-
-		$.each(storedObjects, function(index,value){
-			localStorage.setItem('mobilis.ninecards.'+index, value);
-			// console.log('stored in localStorage:', index, '=', value);
-		});
-		return true;
 	}
 
 }
@@ -484,12 +462,13 @@ var ninecards = {
 
 $(document).on('pageshow', '#settings', function() {
 
-	var settingsData = ninecards.loadData(['username','gameserver','jid','password']);
+	var settings = jQuery.jStorage.get('settings');
 
-	$('#settings-form #username').val(settingsData.username);
-	$('#settings-form #gameserver').val(settingsData.gameserver);
-	$('#settings-form #jid').val(settingsData.jid);
-	$('#settings-form #password').val(settingsData.password);
+	$('#settings-form #username').val(settings.username);
+	$('#settings-form #gameserver').val(settings.gameserver);
+	$('#settings-form #chatservice').val(settings.chatservice);
+	$('#settings-form #jid').val(settings.jid);
+	$('#settings-form #password').val(settings.password);
 
 	return true;
 });
@@ -499,12 +478,12 @@ $(document).on('pageshow', '#settings', function() {
 
 $(document).on('pageshow', '#games', function(){
 	
-	var connData = ninecards.loadData(['gameserver','jid','password']);
+	var settings = jQuery.jStorage.get('settings');
 
 	ninecards.connect(
-		connData.jid,
-		connData.password,
-		connData.gameserver
+		settings.jid,
+		settings.password,
+		settings.gameserver
 	);
 
 });
@@ -514,11 +493,19 @@ $(document).on('pageshow', '#games', function(){
 
 $(document).on('vclick', '#settings-submit', function() {
 
-	ninecards.storeData({
-		'username':     $('#settings-form #username').val(),
-		'gameserver':   $('#settings-form #gameserver').val(),
-		'jid':          $('#settings-form #jid').val(),
-		'password':     $('#settings-form #password').val()
+	// ninecards.storeData({
+	// 	'username':     $('#settings-form #username').val(),
+	// 	'gameserver':   $('#settings-form #gameserver').val(),
+	// 	'jid':          $('#settings-form #jid').val(),
+	// 	'password':     $('#settings-form #password').val()
+	// });
+
+	jQuery.jStorage.set('settings', {
+		'username':   $('#settings-form #username').val(),
+		'gameserver': $('#settings-form #gameserver').val(),
+		'chatservice': $('#settings-form #chatservice').val(),
+		'jid':        $('#settings-form #jid').val(),
+		'password':   $('#settings-form #password').val()
 	});
 
 	return true;
@@ -619,4 +606,23 @@ $(document).on('vclick', '#exitgames-button', function(event){
 							});
 	return false;
 
+});
+
+
+$(document).on('ready', function(){
+
+	if ( !jQuery.jStorage.index().length ){
+
+		$.getJSON('settings.json', function(data){
+			jQuery.jStorage.set('settings', {
+			    "username":    window.navigator.appCodeName,
+			    "gameserver":  data.gameserver,
+			    "chatservice": data.chatservice,
+			    "jid":         data.jid+'/'+window.navigator.appCodeName,
+			    "password":    ""
+			});
+			console.log('imported settings');
+		});
+
+	}
 });
