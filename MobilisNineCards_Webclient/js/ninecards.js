@@ -3,11 +3,6 @@ var ninecards = {
 
 
 
-	players : {},
-
-
-
-
 	connect : function(userJid, userPassword, serverURL) {
 
 		Mobilis.core.connect(
@@ -251,13 +246,15 @@ var ninecards = {
 	onStartGameMessage : function (message) {
 		$('#numpad a').removeClass('ui-disabled');
 
-		var rounds = $(message).find('rounds').text();
-		$('#round-count #round').html('1');
-		$('#round-count #rounds').html(rounds);
+		ninecards.game = {};
+		ninecards.game.password = $(message).find('password').text();
+		ninecards.game.round = 1;
+		ninecards.game.rounds = parseInt( $(message).find('rounds').text() );
+
+		$('#round-count #round').html(ninecards.game.round);
+		$('#round-count #rounds').html(ninecards.game.rounds);
 		$('#round-count').css('display','block');
 
-		var password = $(message).find('password').text();
-		console.log('password',password);
 	},
 
 
@@ -274,8 +271,8 @@ var ninecards = {
 
 	onRoundCompleteMessage : function (message) {
 		ninecards.updateScore(message);
-		var round = parseInt($(message).find('round').text())+1;
-		$('#round-count #round').html(round);
+		ninecards.game.round = parseInt($(message).find('round').text())+1;
+		$('#round-count #round').html(ninecards.game.round);
 	},
 
 
