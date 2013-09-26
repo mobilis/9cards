@@ -1,0 +1,3 @@
+[submodule "MobilisNineCards_Webclient/js/jStorage"]
+	path = MobilisNineCards_Webclient/js/jStorage
+	url = git://github.com/andris9/jStorage.git
