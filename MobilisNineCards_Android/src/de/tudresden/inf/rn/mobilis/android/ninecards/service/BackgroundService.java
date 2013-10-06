@@ -7,9 +7,9 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 import de.tudresden.inf.rn.mobilis.android.ninecards.R;
-import de.tudresden.inf.rn.mobilis.android.ninecards.communication.ServerConnection;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.Game;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState;
+import de.tudresden.inf.rn.mobilis.android.ninecards.game.ServerConnection;
 
 /*******************************************************************************
  * Copyright (C) 2013 Technische Universität Dresden
@@ -69,6 +69,8 @@ public class BackgroundService extends Service
 	public static final int CODE_UPDATE_GAME_PLAYERS_LIST = 8;
 	/** The code used for re-enabling the cards and updating the current round. */
 	public static final int CODE_START_NEW_ROUND = 9;
+	/** The code used for creating and displaying the game over dialog. */
+	public static final int CODE_SHOW_GAMEOVER_DIALOG = 10;
 	
 
     /*

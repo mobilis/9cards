@@ -70,7 +70,6 @@ public class IqPacketProcessor
 			mServiceInstance.getSettings().setGameName(inBean.getGamename());
 			mServiceInstance.getSettings().setRounds(inBean.getRounds());
 			mServiceInstance.getSettings().setMaxPlayers(inBean.getPlayers());
-			mServiceInstance.getGame().setCreator(inBean.getFrom());
 
 			mServiceInstance.getGame().setGameState(State.READY);
 			mServiceInstance.getMucConnection().createMultiUserChat();

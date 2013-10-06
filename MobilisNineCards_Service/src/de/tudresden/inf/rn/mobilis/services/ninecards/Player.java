@@ -28,10 +28,8 @@ import java.util.List;
  */
 public class Player
 {
-	/** The player's jid. */
-	private String jid;
-	/** True if the player is the one who created the game. */
-	private boolean creator;
+	/** The player's id in the muc room (example: room@conference.jabber.org/nick) */
+	private String fullID;
 
 	/** The cards (values from 1-9) which the player already used */
 	private List<Integer> usedCards;
@@ -44,13 +42,12 @@ public class Player
 	/**
 	 * Initializes a new 9Cards Player.
 	 * 
-	 * @param jid the jid of the player
-	 * @param name the name of the player
+	 * @param fullID the player's id in the muc room (example: room@conference.jabber.org/nick)
+	 * @param isCreator true if this player is the owner of the game
 	 */
-	public Player(String jid, boolean isCreator)
+	public Player(String fullID)
 	{
-		this.jid = jid;
-		this.creator = isCreator;
+		this.fullID = fullID;
 		this.roundsWon = 0;
 		this.chosenCard = -1;
 		
@@ -109,49 +106,21 @@ public class Player
 	
 
 	/**
-	 * Gets the jid of the player.
-	 * @return the jid of the player
+	 * Gets the id of the player in the muc room (example: room@conference.jabber.org/nick)
+	 * @return the id of the player
 	 */
-	public String getJid()
+	public String getID()
 	{
-		return jid;
+		return fullID;
 	}
 	
 	
 	/**
-	 * Set player ready.
-	 * @param ready true, if player is ready
+	 * Changes the id of the player in the muc room. Needed when he changes his nickname.
+	 * @param the new full id (example: room@conference.jabber.org/nick)
 	 */
-	public void setCreator(boolean creator)
+	public void changeID(String newID)
 	{
-		this.creator=creator;
-	}
-	
-	
-	/**
-	 * Whether the player is ready.
-	 * @return true, if player is ready
-	 */
-	public boolean isCreator()
-	{
-		return creator;
-	}
-	
-	
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString()
-	{
-		String str = "";
-		
-		str += "jid: " + jid;
-		str += "; isCreator: " + isCreator();
-		str += "; roundsWon: " + getRoundsWon();
-		str += "; usedCards: " + getUsedCards();
-		
-		return str;
+		this.fullID = newID;
 	}
 }

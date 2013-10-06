@@ -1,11 +1,14 @@
 package de.tudresden.inf.rn.mobilis.android.ninecards.activity;
 
+import org.jivesoftware.smack.SmackAndroid;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -13,12 +16,12 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 import de.tudresden.inf.rn.mobilis.android.ninecards.R;
-import de.tudresden.inf.rn.mobilis.android.ninecards.communication.MobilisServiceDiscoveryBean;
-import de.tudresden.inf.rn.mobilis.android.ninecards.communication.MobilisServiceInfo;
-import de.tudresden.inf.rn.mobilis.android.ninecards.communication.ServerConnection;
-import de.tudresden.inf.rn.mobilis.android.ninecards.communication.XMPPBean;
-import de.tudresden.inf.rn.mobilis.android.ninecards.communication.XMPPInfo;
+import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.MobilisServiceDiscoveryBean;
+import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.MobilisServiceInfo;
+import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPBean;
+import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPInfo;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState;
+import de.tudresden.inf.rn.mobilis.android.ninecards.game.ServerConnection;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.BackgroundService;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.ServiceConnector;
 
@@ -41,7 +44,7 @@ import de.tudresden.inf.rn.mobilis.android.ninecards.service.ServiceConnector;
  * Computer Networks Group: http://www.rn.inf.tu-dresden.de
  * mobilis project: https://github.com/mobilis
  ******************************************************************************/
-public class StartActivity extends Activity
+public class MainActivity extends Activity
 {
 	
 	/** The connection to the background service. */
@@ -58,10 +61,14 @@ public class StartActivity extends Activity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_start);
+		setContentView(R.layout.activity_main);
+		PreferenceManager.setDefaultValues(this, R.xml.layout_settings, false);
 		
 		bindBackgroundService();
 		initComponents();
+		
+		// the following line is needed by aSmack (see https://github.com/Flowdalic/asmack/blob/master/README.asmack)
+		SmackAndroid.init(this);
 	}
 
 
@@ -113,7 +120,7 @@ public class StartActivity extends Activity
 					
 					// if it fails, notify user
 					if(!serverConnection.connectToXmppServer(server, userJid, userPw)) {
-						Toast.makeText(StartActivity.this,
+						Toast.makeText(MainActivity.this,
 								"Failed to connect to XMPP server.\nPlease check your settings!",
 								Toast.LENGTH_LONG).show();
 						
@@ -132,7 +139,7 @@ public class StartActivity extends Activity
 			
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(StartActivity.this, SettingsActivity.class);
+				Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
 				startActivity(intent);
 			}
 		});
@@ -143,7 +150,7 @@ public class StartActivity extends Activity
 			
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(StartActivity.this, InstructionsActivity.class);
+				Intent intent = new Intent(MainActivity.this, InstructionsActivity.class);
 				startActivity(intent);
 			}
 		});
@@ -167,15 +174,15 @@ public class StartActivity extends Activity
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 				case BackgroundService.CODE_SERVICE_SUPPORTED : {
-					startActivity(new Intent(StartActivity.this, OpenGamesActivity.class));
+					startActivity(new Intent(MainActivity.this, OpenGamesActivity.class));
 					break;
 				}
 				case BackgroundService.CODE_SERVICE_NOT_AVAILABLE : {
-					Toast.makeText(StartActivity.this.getApplicationContext(), "No 9Cards Service installed on Server", Toast.LENGTH_SHORT).show();
+					Toast.makeText(MainActivity.this.getApplicationContext(), "No 9Cards Service installed on Server", Toast.LENGTH_SHORT).show();
 					break;
 				}
 				case BackgroundService.CODE_SERVER_RESPONSE_ERROR : {
-					Toast.makeText(StartActivity.this, "Server not found. Please check your settings!", Toast.LENGTH_SHORT).show();
+					Toast.makeText(MainActivity.this, "Server not found. Please check your settings!", Toast.LENGTH_SHORT).show();
 					break;
 				}
 				default :
@@ -219,15 +226,18 @@ public class StartActivity extends Activity
 	 */
 	@Override
 	public void finish()
-	{
-		if(serverConnection != null)
-			serverConnection.disconnectFromXmppServer();
-		
+	{	
+		// destroy background service
 		if ((mBackgroundServiceConnector != null) && (mBackgroundServiceConnector.getBackgroundService() != null)) {
 			mBackgroundServiceConnector.getBackgroundService().stopSelf();
 			unbindService(mBackgroundServiceConnector);
 		}
-
+		
+		// we need to call onDestroy() on SmackAndroid to unregister ConnectivityChangedReceiver.
+		// SmackAndroid uses the Singleton pattern, so we can just call init() to get an instance. 
+		SmackAndroid asmack = SmackAndroid.init(this);
+		asmack.onDestroy();
+		
 		super.finish();
 	}
 	
@@ -270,7 +280,7 @@ public class StartActivity extends Activity
 						
 						// else notify user
 						else {
-							Log.w(StartActivity.class.getSimpleName(), "No 9Cards Service installed on Server");
+							Log.w(MainActivity.class.getSimpleName(), "No 9Cards Service installed on Server");
 							mServiceDiscoveryResultHandler.sendEmptyMessage(BackgroundService.CODE_SERVICE_NOT_AVAILABLE);
 						}
 					}

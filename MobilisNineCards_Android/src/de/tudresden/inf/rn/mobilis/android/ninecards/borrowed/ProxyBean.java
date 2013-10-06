@@ -1,8 +1,7 @@
-package de.tudresden.inf.rn.mobilis.android.ninecards.communication;
+package de.tudresden.inf.rn.mobilis.android.ninecards.borrowed;
 
 import java.io.StringReader;
 
-import org.xmlpull.mxp1.MXParser;
 import org.xmlpull.v1.XmlPullParser;
 
 /**

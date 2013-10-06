@@ -17,7 +17,7 @@
  * Computer Networks Group: http://www.rn.inf.tu-dresden.de
  * mobilis project: http://mobilisplatform.sourceforge.net
  ******************************************************************************/
-package de.tudresden.inf.rn.mobilis.android.ninecards.communication;
+package de.tudresden.inf.rn.mobilis.android.ninecards.borrowed;
 
 import org.jivesoftware.smack.packet.IQ;
 

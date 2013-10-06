@@ -22,7 +22,7 @@
  * mobilis project: http://mobilisplatform.sourceforge.net
  */
 
-package de.tudresden.inf.rn.mobilis.android.ninecards.communication;
+package de.tudresden.inf.rn.mobilis.android.ninecards.borrowed;
 
 import android.os.Parcel;
 import android.os.Parcelable;

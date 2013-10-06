@@ -59,17 +59,14 @@ public class MucPacketProcessor
 	{
 		XMPPInfo info = null;
 		
-		if(message.getBody().toLowerCase().startsWith("<mobilismessage type=startgamemessage"))
+		if(message.getBody().toLowerCase().contains("startgamemessage"))
 			info = new StartGameMessage();
-		if(message.getBody().toLowerCase().startsWith("<mobilismessage type=playcardmessage"))
+		if(message.getBody().toLowerCase().contains("playcardmessage"))
 			info = new PlayCardMessage();
 		
 		if(info != null) {
 			XmlPullParser xmlParser = XmlPullParserFactory.newInstance().newPullParser();
-			String content = message.getBody().substring(message.getBody().indexOf(">") + 1, message.getBody().lastIndexOf("<"));
-			// TODO use " or ' for attribute of top level tag instead of replacing whole tag to avoid exceptions
-			content = "<randomtopleveltag>" + content + "</randomtopleveltag>";
-			xmlParser.setInput(new StringReader(content));
+			xmlParser.setInput(new StringReader(message.getBody()));
 			info.fromXML(xmlParser);
 		}
 
@@ -91,11 +88,7 @@ public class MucPacketProcessor
 		if(mServiceInstance.getGame().getGameState() == State.READY) {
 			
 			// check if player is allowed to start the game
-			Player player = mServiceInstance.getGame().getPlayer(sender);
-			
-			//TODO soll dann später nur über die admin-affiliation laufen, erst testen ob der participantlistener die jid der neuen spieler kennt
-			if(mServiceInstance.getMucConnection().isAdmin(sender)
-					|| ((player != null) && (player.isCreator()))) {
+			if(mServiceInstance.getMucConnection().isAdmin(sender)) {
 
 				// close game for joining
 				mServiceInstance.getMucConnection().lockMuc();
@@ -135,33 +128,10 @@ public class MucPacketProcessor
 					
 					// inform other players that this player chose some card
 					mServiceInstance.getMucConnection().sendMessagetoMuc(
-							new CardPlayedMessage(mServiceInstance.getGame().getRound(), player.getJid()));
+							new CardPlayedMessage(mServiceInstance.getGame().getRound(), player.getID()));
 					
 					// check if round is finished
-					if(mServiceInstance.getGame().checkRoundOver()) {
-						
-						// if true, get winner and increment his score
-						mServiceInstance.getGame().getRoundWinner().incrementRoundsWon();
-						
-						// check if end of game is reached
-						if(mServiceInstance.getGame().getRound() == mServiceInstance.getSettings().getRounds()) {
-							mServiceInstance.getMucConnection().sendMessagetoMuc(
-									new GameOverMessage(
-											mServiceInstance.getGame().getGameWinner().getJid(),
-											mServiceInstance.getGame().getGameWinner().getRoundsWon(),
-											mServiceInstance.getGame().getPlayerInfos()));
-						}
-						
-						// else start next round
-						else {
-							mServiceInstance.getMucConnection().sendMessagetoMuc(
-									new RoundCompleteMessage(
-											mServiceInstance.getGame().getRound(),
-											mServiceInstance.getGame().getRoundWinner().getJid(),
-											mServiceInstance.getGame().getPlayerInfos()));
-							mServiceInstance.getGame().startNewRound();
-						}
-					}
+					mServiceInstance.getMucConnection().checkRoundOver();
 				}
 			}
 		}

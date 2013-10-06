@@ -1,22 +1,22 @@
-package de.tudresden.inf.rn.mobilis.android.ninecards.clientstub;
+package de.tudresden.inf.rn.mobilis.android.ninecards.message;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.xmlpull.v1.XmlPullParser;
 
-import de.tudresden.inf.rn.mobilis.android.ninecards.communication.XMPPInfo;
+import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPInfo;
 
 public class PlayerInfo implements XMPPInfo {
 
-	private String jid = null;
+	private String id = null;
 	private int score = Integer.MIN_VALUE;
 	private List< Integer > usedcards = new ArrayList< Integer >();
 
 
-	public PlayerInfo( String jid, int score, List< Integer > usedcards ) {
+	public PlayerInfo( String id, int score, List< Integer > usedcards ) {
 		super();
-		this.jid = jid;
+		this.id = id;
 		this.score = score;
 		for ( int entity : usedcards ) {
 			this.usedcards.add( entity );
@@ -39,8 +39,8 @@ public class PlayerInfo implements XMPPInfo {
 				if (tagName.equals(getChildElement())) {
 					parser.next();
 				}
-				else if (tagName.equals( "jid" ) ) {
-					this.jid = parser.nextText();
+				else if (tagName.equals( "id" ) ) {
+					this.id = parser.nextText();
 				}
 				else if (tagName.equals( "score" ) ) {
 					this.score = Integer.parseInt( parser.nextText() );
@@ -84,9 +84,9 @@ public class PlayerInfo implements XMPPInfo {
 	public String toXML() {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append( "<jid>" )
-			.append( this.jid )
-			.append( "</jid>" );
+		sb.append( "<id>" )
+			.append( this.id )
+			.append( "</id>" );
 
 		sb.append( "<score>" )
 			.append( this.score )
@@ -103,12 +103,12 @@ public class PlayerInfo implements XMPPInfo {
 
 
 
-	public String getJid() {
-		return this.jid;
+	public String getId() {
+		return this.id;
 	}
 
-	public void setJid( String jid ) {
-		this.jid = jid;
+	public void setId( String id ) {
+		this.id = id;
 	}
 
 	public int getScore() {

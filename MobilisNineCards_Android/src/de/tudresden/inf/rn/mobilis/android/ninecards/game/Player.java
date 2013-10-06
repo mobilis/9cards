@@ -28,9 +28,8 @@ import java.util.List;
  */
 public class Player
 {
-	
-	/** The player's nickname. */
-	private String nick;
+	/** The player's id in the muc room (example: room@conference.jabber.org/nick) */
+	private String fullID;
 
 	/** The cards which were already used. */
 	private List<Integer> usedCards;
@@ -45,12 +44,12 @@ public class Player
 	/**
 	 * Initializes a new 9Cards Player.
 	 * 
-	 * @param nick the nickname of the player
+	 * @param fullID the id of the player in the muc room (example: room@conference.jabber.org/nick)
 	 * @param name the name of the player
 	 */
-	public Player(String nick)
+	public Player(String fullID)
 	{
-		this.nick = nick;
+		this.fullID = fullID;
 		this.roundsWon = 0;
 		this.chosenCard = -1;
 		this.usedCards = new ArrayList<Integer>(9);
@@ -88,6 +87,10 @@ public class Player
 	}
 	
 	
+	/**
+	 * 
+	 * @param roundsWon
+	 */
 	public void setRoundsWon(int roundsWon)
 	{
 		this.roundsWon = roundsWon;
@@ -115,22 +118,24 @@ public class Player
 	
 	
 	/**
-	 * Gets the nickname of the player.
-	 * @return the nick of the player
+	 * Gets the id of the player in the muc room (example: room@conference.jabber.org/nick)
+	 * @return the id of the player
 	 */
-	public String getNickname()
+	public String getPlayerID()
 	{
-		return nick;
+		return fullID;
 	}
 	
 	
 	/**
+	 * Changes the id of the player in the muc room. Needed when he changes his nickname.
+	 * Should only be used by Game.changePlayerID(String oldID, String newID).
 	 * 
-	 * @param newNick
+	 * @param the new full id (example: room@conference.jabber.org/nick)
 	 */
-	public void changeNickname(String newNick)
+	public void changePlayerID(String newID)
 	{
-		this.nick = newNick;
+		this.fullID = newID;
 	}
 	
 	

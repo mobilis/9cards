@@ -39,10 +39,8 @@ public class Game
 	
 	/** The current round of the game. */
 	private int round;
-	/** The game players (JID, player) */
+	/** The game players (ID in MUC room, player object) */
 	private HashMap<String, Player> gamePlayers;
-	/** The JID of the player who created the game. */
-	private String creator;
 	/** The winner of a round, needed for repeated calls of "getRoundWinner()". */
 	private Player winnerOfRound;
 	/** The winner of the game, needed for repeated calls of "getGameWinner()". */
@@ -195,7 +193,7 @@ public class Game
 			
 			// put information into new PlayerInfo
 			PlayerInfo info = new PlayerInfo();
-			info.setJid(plr.getJid());
+			info.setId(plr.getID());
 			info.setScore(plr.getRoundsWon());
 			info.setUsedcards(plr.getUsedCards());
 			
@@ -213,8 +211,8 @@ public class Game
 	 */
 	public void addPlayer(Player player)
 	{
-		this.gamePlayers.put(player.getJid(), player);
-		LOGGER.info("Added player " + player.getJid());
+		this.gamePlayers.put(player.getID(), player);
+		LOGGER.info("Added player " + player.getID());
 	}
 	
 	
@@ -240,19 +238,21 @@ public class Game
 	
 	/**
 	 * Removes a player by using his JID. Also removes him from the chat.
-	 * @param jid the JID of the player to be kicked
+	 * @param fullID the JID of the player to be kicked
 	 */
-	public void removePlayer(String jid)
+	public Player removePlayer(String fullID, String reason)
 	{
-		gamePlayers.remove(jid);
-		mServiceInstance.getMucConnection().removePlayerFromChat(jid);
-		LOGGER.info("Removed player " + jid);
+		Player player = gamePlayers.remove(fullID);
+		mServiceInstance.getMucConnection().removePlayerFromChat(fullID, reason);
+		LOGGER.info("Removed player " + fullID);
 		
 		// shut down if there are no more players left
 		if(gamePlayers.values().size() == 0) {
 			LOGGER.info("no players left, shutting down service");
 			mServiceInstance.shutdown();
 		}
+		
+		return player;
 	}
 	
 	/**
@@ -281,23 +281,5 @@ public class Game
 	public int getRound()
 	{
 		return round;
-	}
-	
-	/**
-	 * Sets the game creator.
-	 * @param creator the JID of the creator 
-	 */
-	public void setCreator(String creator)
-	{
-		this.creator = creator;
-	}
-	
-	/**
-	 * Returns the player which created the game.
-	 * @return the JID of the game creator
-	 */
-	public String getCreator()
-	{
-		return creator;
 	}
 }

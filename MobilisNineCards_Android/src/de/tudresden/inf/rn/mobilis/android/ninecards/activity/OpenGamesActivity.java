@@ -26,12 +26,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import de.tudresden.inf.rn.mobilis.android.ninecards.R;
-import de.tudresden.inf.rn.mobilis.android.ninecards.communication.MobilisServiceDiscoveryBean;
-import de.tudresden.inf.rn.mobilis.android.ninecards.communication.MobilisServiceInfo;
-import de.tudresden.inf.rn.mobilis.android.ninecards.communication.ServerConnection;
-import de.tudresden.inf.rn.mobilis.android.ninecards.communication.XMPPBean;
-import de.tudresden.inf.rn.mobilis.android.ninecards.communication.XMPPInfo;
+import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.MobilisServiceDiscoveryBean;
+import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.MobilisServiceInfo;
+import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPBean;
+import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPInfo;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState;
+import de.tudresden.inf.rn.mobilis.android.ninecards.game.ServerConnection;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.BackgroundService;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.ServiceConnector;
 

@@ -59,6 +59,10 @@ public class NineCardsService extends MobilisService
 	}
 	
 
+	/*
+	 * (non-Javadoc)
+	 * @see de.tudresden.inf.rn.mobilis.server.services.MobilisService#registerPacketListener()
+	 */
 	@Override
 	protected void registerPacketListener()
 	{
@@ -85,20 +89,17 @@ public class NineCardsService extends MobilisService
 	public void shutdown()
 	{
 		LOGGER.info(getAgent().getFullJid() + " is shutting down.");
-		try {
-			if (mGame != null)
-				for (String playerJID : mGame.getPlayers().keySet())
-					mGame.removePlayer(playerJID);
-			mMucConnection.closeMultiUserChat();
-			LOGGER.info("Closed multi user chat");
-		} catch (Exception e) {
-			LOGGER.warning("failed to close MUC (" + e.getClass() + " - " + e.getMessage() + ")");
-		}
 		
+		if (mGame != null)
+			for (String playerJID : mGame.getPlayers().keySet())
+				mGame.removePlayer(playerJID, "shutting down 9cards service");
+		
+		mMucConnection.closeMultiUserChat("shutting down 9cards service");
+
 		try {
 			super.shutdown();			
 		} catch (Exception e) {
-			LOGGER.warning("failed to shut down (" + e.getClass() + " - " + e.getMessage() + ")");
+			LOGGER.warning("failed to shut down service (" + e.getClass().getSimpleName() + " - " + e.getMessage() + ")");
 		}
 	}
 	

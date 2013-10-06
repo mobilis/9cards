@@ -1,4 +1,4 @@
-package de.tudresden.inf.rn.mobilis.android.ninecards.communication;
+package de.tudresden.inf.rn.mobilis.android.ninecards.borrowed;
 
 import java.util.ArrayList;
 import java.util.List;

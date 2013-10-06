@@ -11,6 +11,11 @@ import de.tudresden.inf.rn.mobilis.android.ninecards.R;
 
 public class SettingsActivity extends PreferenceActivity
 {
+	private EditTextPreference mobilisServerJid;
+	private EditTextPreference xmppServerAddress;
+	private EditTextPreference userJid;
+	private EditTextPreference userNick;
+	private EditTextPreference userPassword;
 	
 	/*
 	 * (non-Javadoc)
@@ -21,9 +26,7 @@ public class SettingsActivity extends PreferenceActivity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_settings);
-
 		addPreferencesFromResource(R.xml.layout_settings);
-		setContentView(R.layout.activity_settings);
 		
 		initComponents();
 		
@@ -37,7 +40,13 @@ public class SettingsActivity extends PreferenceActivity
 	 */
 	private void initComponents()
 	{
-		EditTextPreference mobilisServerJid = (EditTextPreference) getPreferenceScreen().findPreference(getResources().getString(R.string.edit_text_pref_server_mobilis_jid));
+		xmppServerAddress	= (EditTextPreference) getPreferenceScreen().findPreference(getResources().getString(R.string.edit_text_pref_server_xmpp));
+		mobilisServerJid	= (EditTextPreference) getPreferenceScreen().findPreference(getResources().getString(R.string.edit_text_pref_server_mobilis_jid));
+		userJid				= (EditTextPreference) getPreferenceScreen().findPreference(getResources().getString(R.string.edit_text_pref_user_jid));
+		userNick			= (EditTextPreference) getPreferenceScreen().findPreference(getResources().getString(R.string.edit_text_pref_user_nick));
+		userPassword		= (EditTextPreference) getPreferenceScreen().findPreference(getResources().getString(R.string.edit_text_pref_user_password));
+		
+		
 		mobilisServerJid.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
 					@Override
@@ -54,8 +63,43 @@ public class SettingsActivity extends PreferenceActivity
 						return true;
 					}
 				});
+		
+		updateSummaries();
 	}
 	
+	
+	/*
+	 * (non-Javadoc)
+	 * @see android.app.Activity#onWindowFocusChanged(boolean)
+	 */
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus)
+	{
+		updateSummaries();
+		super.onWindowFocusChanged(hasFocus);
+	}
+	
+	
+	/**
+	 * 
+	 */
+	private void updateSummaries()
+	{
+		if(xmppServerAddress != null)
+			xmppServerAddress.setSummary(xmppServerAddress.getText());
+		
+		if(mobilisServerJid != null)
+			mobilisServerJid.setSummary(mobilisServerJid.getText());
+		
+		if(userJid != null)
+			userJid.setSummary(userJid.getText());
+		
+		if(userNick != null)
+			userNick.setSummary(userNick.getText());
+		
+		if(userPassword != null)
+			userPassword.setSummary(userPassword.getText());
+	}
 	
 	
 	/**

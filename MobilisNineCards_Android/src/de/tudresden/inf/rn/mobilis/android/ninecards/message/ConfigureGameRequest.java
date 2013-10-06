@@ -1,8 +1,8 @@
-package de.tudresden.inf.rn.mobilis.android.ninecards.clientstub;
+package de.tudresden.inf.rn.mobilis.android.ninecards.message;
 
 import org.xmlpull.v1.XmlPullParser;
 
-import de.tudresden.inf.rn.mobilis.android.ninecards.communication.XMPPBean;
+import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPBean;
 
 public class ConfigureGameRequest extends XMPPBean {
 

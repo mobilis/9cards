@@ -1,23 +1,22 @@
-package de.tudresden.inf.rn.mobilis.android.ninecards.clientstub;
+package de.tudresden.inf.rn.mobilis.android.ninecards.message;
 
 import org.xmlpull.v1.XmlPullParser;
 
-import de.tudresden.inf.rn.mobilis.android.ninecards.communication.XMPPInfo;
+import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPInfo;
 
-
-public class CardPlayedMessage implements XMPPInfo {
+public class PlayCardMessage implements XMPPInfo {
 
 	private int round = Integer.MIN_VALUE;
-	private String player = null;
+	private int card = Integer.MIN_VALUE;
 
 
-	public CardPlayedMessage( int round, String player ) {
+	public PlayCardMessage( int round, int card ) {
 		super();
 		this.round = round;
-		this.player = player;
+		this.card = card;
 	}
 
-	public CardPlayedMessage(){}
+	public PlayCardMessage(){}
 
 
 
@@ -36,8 +35,8 @@ public class CardPlayedMessage implements XMPPInfo {
 				else if (tagName.equals( "round" ) ) {
 					this.round = Integer.parseInt( parser.nextText() );
 				}
-				else if (tagName.equals( "player" ) ) {
-					this.player = parser.nextText();
+				else if (tagName.equals( "card" ) ) {
+					this.card = Integer.parseInt( parser.nextText() );
 				}
 				else
 					parser.next();
@@ -57,14 +56,14 @@ public class CardPlayedMessage implements XMPPInfo {
 		} while (!done);
 	}
 
-	public static final String CHILD_ELEMENT = "CardPlayedMessage";
+	public static final String CHILD_ELEMENT = "PlayCardMessage";
 
 	@Override
 	public String getChildElement() {
 		return CHILD_ELEMENT;
 	}
 
-	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService#type:CardPlayedMessage";
+	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService#type:PlayCardMessage";
 
 	@Override
 	public String getNamespace() {
@@ -79,9 +78,9 @@ public class CardPlayedMessage implements XMPPInfo {
 			.append( this.round )
 			.append( "</round>" );
 
-		sb.append( "<player>" )
-			.append( this.player )
-			.append( "</player>" );
+		sb.append( "<card>" )
+			.append( this.card )
+			.append( "</card>" );
 
 		return sb.toString();
 	}
@@ -96,12 +95,12 @@ public class CardPlayedMessage implements XMPPInfo {
 		this.round = round;
 	}
 
-	public String getPlayer() {
-		return this.player;
+	public int getCard() {
+		return this.card;
 	}
 
-	public void setPlayer( String player ) {
-		this.player = player;
+	public void setCard( int card ) {
+		this.card = card;
 	}
 
 }

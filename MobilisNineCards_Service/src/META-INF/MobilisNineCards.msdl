@@ -63,7 +63,7 @@
 			<!-- Custom data structures -->
 			<xs:complexType name="PlayerInfo">
 				<xs:sequence>
-					<xs:element name="jid" type="xs:string" />
+					<xs:element name="id" type="xs:string" />
 					<xs:element name="score" type="xs:int" />
 					<xs:element name="usedcards" type="xs:int" minOccurs="0" maxOccurs="unbounded" />
 				</xs:sequence>

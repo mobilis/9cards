@@ -20,7 +20,7 @@
  * mobilis project: http://mobilisplatform.sourceforge.net
  */
 
-package de.tudresden.inf.rn.mobilis.android.ninecards.communication;
+package de.tudresden.inf.rn.mobilis.android.ninecards.borrowed;
 
 import java.util.LinkedList;
 import java.util.List;

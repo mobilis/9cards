@@ -1,8 +1,8 @@
-package de.tudresden.inf.rn.mobilis.android.ninecards.clientstub;
+package de.tudresden.inf.rn.mobilis.android.ninecards.message;
 
 import org.xmlpull.v1.XmlPullParser;
 
-import de.tudresden.inf.rn.mobilis.android.ninecards.communication.XMPPInfo;
+import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPInfo;
 
 public class StartGameMessage implements XMPPInfo {
 

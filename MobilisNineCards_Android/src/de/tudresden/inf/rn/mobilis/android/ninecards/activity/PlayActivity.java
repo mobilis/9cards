@@ -8,8 +8,10 @@ import org.jivesoftware.smack.util.StringUtils;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -28,18 +30,18 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 import de.tudresden.inf.rn.mobilis.android.ninecards.R;
-import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.CardPlayedMessage;
-import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.GameOverMessage;
-import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.PlayCardMessage;
-import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.PlayerInfo;
-import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.RoundCompleteMessage;
-import de.tudresden.inf.rn.mobilis.android.ninecards.clientstub.StartGameMessage;
-import de.tudresden.inf.rn.mobilis.android.ninecards.communication.ServerConnection;
-import de.tudresden.inf.rn.mobilis.android.ninecards.communication.XMPPBean;
-import de.tudresden.inf.rn.mobilis.android.ninecards.communication.XMPPInfo;
+import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPBean;
+import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPInfo;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.Game;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.Player;
+import de.tudresden.inf.rn.mobilis.android.ninecards.game.ServerConnection;
+import de.tudresden.inf.rn.mobilis.android.ninecards.message.CardPlayedMessage;
+import de.tudresden.inf.rn.mobilis.android.ninecards.message.GameOverMessage;
+import de.tudresden.inf.rn.mobilis.android.ninecards.message.PlayCardMessage;
+import de.tudresden.inf.rn.mobilis.android.ninecards.message.PlayerInfo;
+import de.tudresden.inf.rn.mobilis.android.ninecards.message.RoundCompleteMessage;
+import de.tudresden.inf.rn.mobilis.android.ninecards.message.StartGameMessage;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.BackgroundService;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.ServiceConnector;
 
@@ -88,7 +90,6 @@ public class PlayActivity extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_play);
 		
-		initComponents();
 		bindBackgroundService();
 		
 		// Show the Up button in the action bar.
@@ -129,7 +130,7 @@ public class PlayActivity extends Activity
 		// display a progress dialog until the creator starts the game.
 		blockBeforeStartDialog = new ProgressDialog(this);
 		blockBeforeStartDialog.setTitle("Please wait until creator starts the game.");
-		blockBeforeStartDialog.setCancelable(true);	//TODO
+		blockBeforeStartDialog.setCancelable(true);
 		blockBeforeStartDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		blockBeforeStartDialog.setIndeterminate(true);
 		blockBeforeStartDialog.show();
@@ -140,14 +141,14 @@ public class PlayActivity extends Activity
 	 * 
 	 * @param button
 	 */
-	private void handleCardClick(ImageButton button) {
-		
+	private void handleCardClick(ImageButton button)
+	{
 		// if game is null, the backgroundservice is not bound yet
 		if(game == null)
 			return;
-		
+
 		// check which card was tapped and act depending on whether it has already been used
-		List<Integer> myUsedCards = game.getPlayers().get(serverConnection.getMyChatNick()).getUsedCards();
+		List<Integer> myUsedCards = game.getPlayers().get(serverConnection.getMyChatID()).getUsedCards();
 		
 		int validCardId = -1;
 		
@@ -208,7 +209,7 @@ public class PlayActivity extends Activity
 			break;
 		}
 		
-		// if the tapped card has not been used yet, disable all cards until next round begins
+		// if the tapped card has not been used yet, disable all cards until beginning of next round
 		if(validCardId > -1) {
 			for (int i=1; i<=cardSet.size(); i++) {
 				cardSet.get(i).setClickable(false);
@@ -217,6 +218,9 @@ public class PlayActivity extends Activity
 				if((i != validCardId) && (!myUsedCards.contains(i)))
 					cardSet.get(i).setAlpha(0);
 			}
+			
+			game.getPlayers().get(serverConnection.getMyChatID()).setChosenCard(validCardId);
+			mUpdateUIHandler.sendEmptyMessage(BackgroundService.CODE_UPDATE_GAME_PLAYERS_LIST);
 			
 			//  inform server
 			PlayCardMessage playCardMesg = new PlayCardMessage(game.getRound(), validCardId );
@@ -231,7 +235,8 @@ public class PlayActivity extends Activity
 	/**
 	 * Bind background service using the mBackgroundServiceBoundHandler.
 	 */
-	private void bindBackgroundService() {
+	private void bindBackgroundService()
+	{
 		mBackgroundServiceConnector = new ServiceConnector();
 		mBackgroundServiceConnector.addHandlerToList(mBackgroundServiceBoundHandler);
 		
@@ -243,17 +248,31 @@ public class PlayActivity extends Activity
 	
 	
 	/** The handler which is called if the XHuntService was bound. */
-	private Handler mBackgroundServiceBoundHandler = new Handler() {
+	private Handler mBackgroundServiceBoundHandler = new Handler()
+	{
 		@Override
-		public void handleMessage(Message messg) {
-			game = mBackgroundServiceConnector.getBackgroundService().getGame();
-			setTitle(game.getName());
-			mBackgroundServiceConnector.getBackgroundService().setGameState(new GameStatePlay());
+		public void handleMessage(Message messg)
+		{
 			serverConnection = mBackgroundServiceConnector.getBackgroundService().getServerConnection();
-			serverConnection.initializeMucAndChat(mUpdateUIHandler);
-
-//TODO über die admin affiliation, listener funktioniert zZ irgendwie nicht
-mUpdateUIHandler.sendEmptyMessage(BackgroundService.CODE_ENABLE_START_GAME_BUTTON);
+			boolean gameStillOpen = serverConnection.initializeMucAndChat(mUpdateUIHandler);
+			
+			if(gameStillOpen) {
+				game = mBackgroundServiceConnector.getBackgroundService().getGame();
+				setTitle(game.getName());
+				mBackgroundServiceConnector.getBackgroundService().setGameState(new GameStatePlay());
+				initComponents();
+				
+				// check if we are creator (the UserStatusListener in ServerConnection only informs us if our
+				// affiliation changes to admin, but this wouldn't work if the admin leaves and rejoins the game)
+				if(serverConnection.isPlayerAdmin())
+					mUpdateUIHandler.sendEmptyMessage(BackgroundService.CODE_ENABLE_START_GAME_BUTTON);
+				
+			} else {
+				Message mesg = new Message();
+				mesg.obj = "This game is already closed";		
+				mDisplayToastHandler.sendMessage(mesg);
+				PlayActivity.this.finish();
+			}
 		}
 	};
 	
@@ -262,10 +281,11 @@ mUpdateUIHandler.sendEmptyMessage(BackgroundService.CODE_ENABLE_START_GAME_BUTTO
 	 * The handler to update the players view if something changed, like a player
 	 * joined/left the game or the card infos changed after finishing of a round.
 	 */
-	private Handler mUpdateUIHandler = new Handler() {
+	private Handler mUpdateUIHandler = new Handler()
+	{
 		@Override
-		public void handleMessage(Message msg) {
-			
+		public void handleMessage(Message msg)
+		{
 			switch (msg.what) {
 				case BackgroundService.CODE_ENABLE_START_GAME_BUTTON : {
 					Button btn_ready = (Button) findViewById(R.id.btn_ready);
@@ -286,10 +306,11 @@ mUpdateUIHandler.sendEmptyMessage(BackgroundService.CODE_ENABLE_START_GAME_BUTTO
 				}
 				
 				case BackgroundService.CODE_START_GAME : {
-					// disable start button for admin users
+					// disable start button for admin users and clear button text for all players
 					final Button startBtn = (Button) findViewById(R.id.btn_ready);
 					if(startBtn.isEnabled())
 						startBtn.setEnabled(false);
+					startBtn.setText("");
 
 					// enable card buttons 
 					for(ImageButton button : cardSet.values()) {
@@ -312,7 +333,7 @@ mUpdateUIHandler.sendEmptyMessage(BackgroundService.CODE_ENABLE_START_GAME_BUTTO
 					setTitle(game.getName() + " - Round " + game.getRound() + "/" + game.getMaxRounds());
 					
 					// re-enable remaining cards
-					List<Integer> myUsedCards = game.getPlayers().get(serverConnection.getMyChatNick()).getUsedCards();
+					List<Integer> myUsedCards = game.getPlayers().get(serverConnection.getMyChatID()).getUsedCards();
 					for (Map.Entry<Integer, ImageButton> entry : cardSet.entrySet()) {
 						if (!myUsedCards.contains(entry.getKey())) {
 							entry.getValue().setClickable(true);
@@ -330,6 +351,21 @@ mUpdateUIHandler.sendEmptyMessage(BackgroundService.CODE_ENABLE_START_GAME_BUTTO
 					break;
 				}
 				
+				case BackgroundService.CODE_SHOW_GAMEOVER_DIALOG : {
+					new AlertDialog.Builder(PlayActivity.this)
+						.setTitle("Game Over")
+						.setMessage(msg.obj.toString())
+						.setPositiveButton("Quit", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								PlayActivity.this.finish();
+							}
+						})
+						.show();
+					
+					break;
+				}
+				
 				default :
 					Log.w(getClass().getSimpleName(), "Unexpected handler event code (" + msg.what + ")");
 			}
@@ -340,10 +376,11 @@ mUpdateUIHandler.sendEmptyMessage(BackgroundService.CODE_ENABLE_START_GAME_BUTTO
 	/**
 	 * 
 	 */
-	private Handler mDisplayToastHandler = new Handler() {
+	private Handler mDisplayToastHandler = new Handler()
+	{
 		@Override
-		public void handleMessage(Message msg) {
-			
+		public void handleMessage(Message msg)
+		{
 			if(msg.obj != null)
 				Toast.makeText(PlayActivity.this, msg.obj.toString(), Toast.LENGTH_LONG).show();
 		}
@@ -357,11 +394,11 @@ mUpdateUIHandler.sendEmptyMessage(BackgroundService.CODE_ENABLE_START_GAME_BUTTO
 	 * @param player the player to be insert
 	 * @return true, if successful
 	 */
-	private boolean insertNewPlayerRow(Player player) {
-System.out.println("insertrow");
+	private boolean insertNewPlayerRow(Player player)
+	{
 		// Set name of player
 		TextView tv_player = new TextView(PlayActivity.this);
-		tv_player.setText(StringUtils.parseResource(player.getNickname()));
+		tv_player.setText(StringUtils.parseResource(player.getPlayerID()));
 		tv_player.setTextSize(20);
 		tv_player.setTypeface(Typeface.DEFAULT_BOLD);
 		tv_player.setPadding(3, 0, 0, 10);
@@ -380,7 +417,7 @@ System.out.println("insertrow");
 
 		// TableRow which contains the data of the player
 		TableRow row = new TableRow(PlayActivity.this);
-		row.setTag(player.getNickname());
+		row.setTag(player.getPlayerID());
 		row.addView(tv_player);
 		row.addView(tv_used_cards);
 		row.addView(tv_rounds_won);
@@ -389,16 +426,6 @@ System.out.println("insertrow");
 
 		return true;
 	}
-	
-	
-	/*private void doSomethingOnUIThread()
-	{	
-		runOnUiThread(new Runnable()
-		{
-			public void run()
-			{}
-		});
-	}*/
 	
 	
 	/* (non-Javadoc)
@@ -495,8 +522,9 @@ System.out.println("insertrow");
 				if (((CardPlayedMessage) xmppInfo).getRound() == game.getRound()) {
 					Player player = game.getPlayers().get(((CardPlayedMessage) xmppInfo).getPlayer());
 
-					// if player.getChosenCard() returns a value bigger than 0, then it is our own player
+					// if it's our own player, the value of the chosen card is already set; else set 0 (a '?' will be displayed in UI)
 					if (player != null && player.getChosenCard() == -1) {
+						
 						player.setChosenCard(0);
 						mUpdateUIHandler.sendEmptyMessage(BackgroundService.CODE_UPDATE_GAME_PLAYERS_LIST);
 					}
@@ -514,7 +542,7 @@ System.out.println("insertrow");
 					// update all players
 					List<PlayerInfo> infos = ((RoundCompleteMessage) xmppInfo).getPlayerInfos();
 					for (PlayerInfo info : infos) {
-						Player player = game.getPlayers().get(info.getJid());
+						Player player = game.getPlayers().get(info.getId());
 						player.setUsedCards(info.getUsedcards());
 						player.setRoundsWon(info.getScore());
 						player.setChosenCard(-1);
@@ -537,14 +565,49 @@ System.out.println("insertrow");
 			
 			// GameOverMessage
 			else if(xmppInfo instanceof GameOverMessage) {
-				Message mesg = new Message();
-				mesg.obj = "The game has finished! Winner is "
-						+ StringUtils.parseResource(game.getWinner().getNickname())
-						+ " (score: " + game.getWinner().getRoundsWon() + ")";
 				
-				// finish game
-				serverConnection.leaveChat();
-				PlayActivity.this.finish();
+				List<PlayerInfo> playerInfos = ((GameOverMessage) xmppInfo).getPlayerInfos();
+
+				// update players list on top of screen
+				for (PlayerInfo info : playerInfos) {
+					Player player = game.getPlayers().get(info.getId());
+					player.setUsedCards(info.getUsedcards());
+					player.setRoundsWon(info.getScore());
+					player.setChosenCard(-1);
+				}
+				mUpdateUIHandler.sendEmptyMessage(BackgroundService.CODE_UPDATE_GAME_PLAYERS_LIST);
+				
+				// create String to be displayed in Game Over Dialog
+				StringBuilder displayedString = new StringBuilder();
+
+				while(playerInfos.size() > 0) {
+					int score = -1;
+					String playerID = "";
+					
+					for(PlayerInfo info : playerInfos) {
+						if(info.getScore() > score) {
+							score = info.getScore();
+							playerID = info.getId();
+						}
+					}
+					
+					for(PlayerInfo info : playerInfos) {
+						if(info.getId().equals(playerID)) {
+							playerInfos.remove(info);
+							break;
+						}
+					}
+			
+					displayedString.append(StringUtils.parseResource(playerID) + " - " + score + " points");
+					if(playerInfos.size() > 0)
+						displayedString.append("\n");
+				}
+				
+				// send string to UI thread which will display it in a dialog
+				Message mesg = new Message();
+				mesg.obj = displayedString.toString();
+				mesg.what = BackgroundService.CODE_SHOW_GAMEOVER_DIALOG;
+				mUpdateUIHandler.sendMessage(mesg);
 			}
 		}
 	}

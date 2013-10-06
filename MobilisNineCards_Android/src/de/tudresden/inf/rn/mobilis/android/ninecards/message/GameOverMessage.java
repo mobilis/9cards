@@ -1,30 +1,29 @@
-package de.tudresden.inf.rn.mobilis.android.ninecards.clientstub;
+package de.tudresden.inf.rn.mobilis.android.ninecards.message;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.xmlpull.v1.XmlPullParser;
 
-import de.tudresden.inf.rn.mobilis.android.ninecards.communication.XMPPInfo;
+import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPInfo;
 
+public class GameOverMessage implements XMPPInfo {
 
-public class RoundCompleteMessage implements XMPPInfo {
-
-	private int round = Integer.MIN_VALUE;
 	private String winner = null;
+	private int score = Integer.MIN_VALUE;
 	private List< PlayerInfo > PlayerInfos = new ArrayList< PlayerInfo >();
 
 
-	public RoundCompleteMessage( int round, String winner, List< PlayerInfo > PlayerInfos ) {
+	public GameOverMessage( String winner, int score, List< PlayerInfo > PlayerInfos ) {
 		super();
-		this.round = round;
 		this.winner = winner;
+		this.score = score;
 		for ( PlayerInfo entity : PlayerInfos ) {
 			this.PlayerInfos.add( entity );
 		}
 	}
 
-	public RoundCompleteMessage(){}
+	public GameOverMessage(){}
 
 
 
@@ -40,11 +39,11 @@ public class RoundCompleteMessage implements XMPPInfo {
 				if (tagName.equals(getChildElement())) {
 					parser.next();
 				}
-				else if (tagName.equals( "round" ) ) {
-					this.round = Integer.parseInt( parser.nextText() );
-				}
 				else if (tagName.equals( "winner" ) ) {
 					this.winner = parser.nextText();
+				}
+				else if (tagName.equals( "score" ) ) {
+					this.score = Integer.parseInt( parser.nextText() );
 				}
 				else if (tagName.equals( PlayerInfo.CHILD_ELEMENT ) ) {
 					PlayerInfo entity = new PlayerInfo();
@@ -72,14 +71,14 @@ public class RoundCompleteMessage implements XMPPInfo {
 		} while (!done);
 	}
 
-	public static final String CHILD_ELEMENT = "RoundCompleteMessage";
+	public static final String CHILD_ELEMENT = "GameOverMessage";
 
 	@Override
 	public String getChildElement() {
 		return CHILD_ELEMENT;
 	}
 
-	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService#type:RoundCompleteMessage";
+	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService#type:GameOverMessage";
 
 	@Override
 	public String getNamespace() {
@@ -90,13 +89,13 @@ public class RoundCompleteMessage implements XMPPInfo {
 	public String toXML() {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append( "<round>" )
-			.append( this.round )
-			.append( "</round>" );
-
 		sb.append( "<winner>" )
 			.append( this.winner )
 			.append( "</winner>" );
+
+		sb.append( "<score>" )
+			.append( this.score )
+			.append( "</score>" );
 
 		for( PlayerInfo entry : this.PlayerInfos ) {
 			sb.append( "<" + PlayerInfo.CHILD_ELEMENT + ">" );
@@ -109,20 +108,20 @@ public class RoundCompleteMessage implements XMPPInfo {
 
 
 
-	public int getRound() {
-		return this.round;
-	}
-
-	public void setRound( int round ) {
-		this.round = round;
-	}
-
 	public String getWinner() {
 		return this.winner;
 	}
 
 	public void setWinner( String winner ) {
 		this.winner = winner;
+	}
+
+	public int getScore() {
+		return this.score;
+	}
+
+	public void setScore( int score ) {
+		this.score = score;
 	}
 
 	public List< PlayerInfo > getPlayerInfos() {

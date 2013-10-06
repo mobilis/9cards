@@ -49,25 +49,30 @@ public class Game
 	}
 	
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public HashMap<String, Player> getPlayers()
 	{
 		return gamePlayers;
-	}
+	}	
 	
-	
-	public Player getWinner()
+	/**
+	 * Changes the id of the player in the muc room. Needed when he changes his nickname.
+	 * @param the new full id (example: room@conference.jabber.org/nick)
+	 */
+	public void changePlayerID(String oldID, String newID)
 	{
-		Player winner = null;
-		
-		for(Player plr : gamePlayers.values()) {
-			if((winner == null) || (plr.getRoundsWon() > winner.getRoundsWon()))
-					winner = plr;
-		}
-		
-		return winner;
+		Player player = gamePlayers.remove(oldID);
+		player.changePlayerID(newID);
+		gamePlayers.put(newID, player);
 	}
 	
-	
+	/**
+	 * 
+	 * @return
+	 */
 	public String getName()
 	{
 		return name != null ? name : "name not set";
@@ -78,16 +83,28 @@ public class Game
 		this.round = round;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public int getRound()
 	{
 		return round;
 	}
 	
+	/**
+	 * 
+	 * @param maxRounds
+	 */
 	public void setMaxRounds(int maxRounds)
 	{
 		this.maxRounds = maxRounds;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public int getMaxRounds()
 	{
 		return maxRounds;
