@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<meta name="apple-mobile-web-app-capable" content="no"/>
+
 	<title>9Cards</title>
-	<link rel="shortcut icon" href="images/favicon.ico">
-	<link rel="stylesheet" href="css/libs/jquery.mobile-1.3.2.min.css">
-	<link rel="stylesheet" href="css/fonts/open-sans/stylesheet.css">
-	<link rel="stylesheet" href="css/ninecards.css">
+	<link rel="shortcut icon" href="images/favicon.ico"/>
+	<link rel="stylesheet" href="css/libs/jquery.mobile-1.3.2.min.css"/>
+	<link rel="stylesheet" href="css/fonts/open-sans/stylesheet.css"/>
+	<link rel="stylesheet" href="css/ninecards.css"/>
 
 	<script src="js/libs/jquery-2.0.3.min.js"></script>
 	<script src="js/libs/strophe.js"></script>
@@ -78,13 +80,16 @@
 	<div data-role="header">
 		<a id="exitgames-button" href="#start" data-icon="back">Back</a>
 		<h1>9Cards: Games</h1>
-		<a href="#creategame-popup" id="create-game-button" data-rel="popup" data-position-to="window" data-icon="plus">Create</a>
+		<a href="#" id="refresh-games-button" data-icon="refresh">Refresh</a>
 	</div><!-- /header -->
 
 	<div data-role="content">	
 
-	<ul id="games-list" data-role="listview">
+	<ul id="games-list" data-role="listview" data-inset="true">
 	</ul>
+	<div>
+		<a href="#creategame-popup" id="create-game-button" data-role="button" data-rel="popup" data-position-to="window" data-icon="plus">Create new Game</a>
+	</div>
 
 	</div><!-- /content -->
 

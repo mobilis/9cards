@@ -527,6 +527,23 @@ $(document).on('pageshow', '#games', function(){
 
 
 
+$(document).on('vclick', '#refresh-games-button', function() {
+	// TODO auslagern, weil doppelt
+	if ( Mobilis.connection && Mobilis.connection.connected ) {
+		ninecards.queryGames();
+	} else {
+		var settings = jQuery.jStorage.get('settings');
+		ninecards.connect(
+			settings.jid,
+			settings.password,
+			settings.gameserver
+		);
+	}
+
+});
+
+
+
 $(document).on('vclick', '#settings-submit', function() {
 
 	jQuery.jStorage.set('settings', {
@@ -539,6 +556,9 @@ $(document).on('vclick', '#settings-submit', function() {
 
 	return true;
 });
+
+
+
 
 
 
