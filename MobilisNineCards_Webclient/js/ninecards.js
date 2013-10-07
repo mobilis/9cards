@@ -5,16 +5,16 @@ var ninecards = {
 
 	queryGames : function() {
 
-		if ( Mobilis.connection && Mobilis.connection.connected ) {
+		if ( MX.connection && MX.connection.connected ) {
 
-			Mobilis.core.mobilisServiceDiscovery(
-				[Mobilis.ninecards.NS.SERVICE],
+			MX.core.mobilisServiceDiscovery(
+				[MX.ninecards.NS.SERVICE],
 				function(result) {
 					$('#games-list').empty().listview();
 
 					if ($(result).find('mobilisService').length){
 						$(result).find('mobilisService').each( function() {
-							Mobilis.core.SERVICES[$(this).attr('namespace')] = {
+							MX.core.SERVICES[$(this).attr('namespace')] = {
 								'version': $(this).attr('version'),
 								'jid': $(this).attr('jid'),
 								'servicename' : $(this).attr('serviceName')
@@ -42,12 +42,12 @@ var ninecards = {
 		} else {
 
 			var settings = jQuery.jStorage.get('settings');
-			Mobilis.core.connect(
+			MX.core.connect(
 				settings.gameserver,
 				settings.jid,
 				settings.password,
 				function(status) {
-					if (status == Mobilis.core.Status.CONNECTED) {
+					if (status == MX.core.Status.CONNECTED) {
 						ninecards.queryGames();
 					}
 				}
@@ -62,13 +62,13 @@ var ninecards = {
 
 	createGame : function(gameName, maxPlayers, numberOfRounds) {
 
-		Mobilis.ninecards.createServiceInstance(
+		MX.ninecards.createServiceInstance(
 			gameName,
 			function(result){
 
 				var gameJid = ($(result).find('jidOfNewService').text());
 
-				Mobilis.ninecards.ConfigureGame(
+				MX.ninecards.ConfigureGame(
 					gameJid, gameName, maxPlayers, numberOfRounds, 
 					function(result){
 						ninecards.joinGame(gameJid, gameName, function(result){
@@ -130,7 +130,7 @@ var ninecards = {
 
 	joinMuc : function(room, onMessage, onPresence, onRoster, result) {
 
-		Mobilis.connection.muc.join(
+		MX.connection.muc.join(
 			room,
 			jQuery.jStorage.get('settings').username,
 			onMessage,
@@ -144,7 +144,7 @@ var ninecards = {
 
 
 	leaveMuc : function(room, onLeft){
-		Mobilis.connection.muc.leave(
+		MX.connection.muc.leave(
 			room,
 			jQuery.jStorage.get('settings').username
 		);
@@ -305,7 +305,7 @@ var ninecards = {
 	updateScore : function(message){
 		$(message).find('playerinfo').each( function(index,playerInfo){
 			console.log('playerinfo',playerInfo);
-			var nick = Strophe.getResourceFromJid( $(playerInfo).find('jid').text() );
+			var nick = Strophe.getResourceFromJid( $(playerInfo).find('id').text() );
 
 			ninecards.players[nick].score = $(playerInfo).find('score').text();
 			console.log(ninecards.players[nick],'score',ninecards.players[nick].score);
@@ -377,7 +377,7 @@ var ninecards = {
 
 
 	sendMessage : function (nick, message) {
-		Mobilis.connection.muc.message(
+		MX.connection.muc.message(
 			jQuery.jStorage.get('chatroom'),
 			nick,
 			message, 
@@ -390,7 +390,7 @@ var ninecards = {
 
 
 	sendGroupchatMessage : function (message) {
-		Mobilis.connection.muc.groupchat(
+		MX.connection.muc.groupchat(
 			jQuery.jStorage.get('chatroom'),
 			message, 
 			null // no html markup
@@ -609,7 +609,7 @@ $(document).on('vclick', '#exitgame-button', function(event){
 $(document).on('vclick', '#exitgames-button', function(event){
 
 	event.preventDefault();
-	Mobilis.core.disconnect('Application Closed');
+	MX.core.disconnect('Application Closed');
 	jQuery.mobile.changePage(
 		'#start', {
 			transition: 'slide',
@@ -639,3 +639,8 @@ $(document).on('ready', function(){
 
 	}
 });
+
+
+$(window).unload(function() {
+	MX.core.disconnect('Browser Window Closed');
+}); 
