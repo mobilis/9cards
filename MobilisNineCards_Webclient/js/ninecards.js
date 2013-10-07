@@ -3,69 +3,56 @@ var ninecards = {
 
 
 
-	connect : function(userJid, userPassword, serverURL) {
-
-		Mobilis.core.connect(
-			serverURL, 
-			userJid, 
-			userPassword, 
-			function(status) {
-				if (status == Mobilis.core.Status.CONNECTED) {
-					ninecards.queryGames();
-				}
-			}
-		);
-	},
-
-
-
-	disconnect : function(){
-		Mobilis.connection.disconnect();
-		jQuery.mobile.changePage(
-			'#start', {
-				transition: 'slide',
-				reverse: true,
-				changeHash: true
-			}
-		);
-
-	},
-
-
-
 	queryGames : function() {
 
-		Mobilis.core.mobilisServiceDiscovery(
-			[Mobilis.ninecards.NS.SERVICE],
-			function(result) {
-				$('#games-list').empty().listview();
+		if ( Mobilis.connection && Mobilis.connection.connected ) {
 
-				if ($(result).find('mobilisService').length){
-					$(result).find('mobilisService').each( function() {
-						Mobilis.core.SERVICES[$(this).attr('namespace')] = {
-							'version': $(this).attr('version'),
-							'jid': $(this).attr('jid'),
-							'servicename' : $(this).attr('serviceName')
-						};
-						$('#games-list').append(
-							'<li><a class="available-game" id="'
-							+ $(this).attr('jid')
-							+ '" data-name="'
-							+ $(this).attr('serviceName')
-							+ '" href="#game" data-transition="slide">'
-							+ $(this).attr('serviceName')
-							+ ' (' + Strophe.getResourceFromJid($(this).attr('jid')) + ')'
-							+ '</a></li>');
-					});
-				} else {
-					$('#games-list').append('<li>No games found</li>');
+			Mobilis.core.mobilisServiceDiscovery(
+				[Mobilis.ninecards.NS.SERVICE],
+				function(result) {
+					$('#games-list').empty().listview();
+
+					if ($(result).find('mobilisService').length){
+						$(result).find('mobilisService').each( function() {
+							Mobilis.core.SERVICES[$(this).attr('namespace')] = {
+								'version': $(this).attr('version'),
+								'jid': $(this).attr('jid'),
+								'servicename' : $(this).attr('serviceName')
+							};
+							$('#games-list').append(
+								'<li><a class="available-game" id="'
+								+ $(this).attr('jid')
+								+ '" data-name="'
+								+ $(this).attr('serviceName')
+								+ '" href="#game" data-transition="slide">'
+								+ $(this).attr('serviceName')
+								+ ' (' + Strophe.getResourceFromJid($(this).attr('jid')) + ')'
+								+ '</a></li>');
+						});
+					} else {
+						$('#games-list').append('<li>No games found</li>');
+					}
+					$('#games-list').listview('refresh');
+				},
+				function(error) {
+					console.error('queryGames error:',error);
 				}
-				$('#games-list').listview('refresh');
-			},
-			function(error) {
-				console.error('queryGames error:',error);
-			}
-		);
+			);
+
+		} else {
+
+			var settings = jQuery.jStorage.get('settings');
+			Mobilis.core.connect(
+				settings.gameserver,
+				settings.jid,
+				settings.password,
+				function(status) {
+					if (status == Mobilis.core.Status.CONNECTED) {
+						ninecards.queryGames();
+					}
+				}
+			);
+		}
 
 	},
 
@@ -511,16 +498,7 @@ $(document).on('pageshow', '#settings', function() {
 
 $(document).on('pageshow', '#games', function(){
 
-	if ( Mobilis.connection && Mobilis.connection.connected ) {
-		ninecards.queryGames();
-	} else {
-		var settings = jQuery.jStorage.get('settings');
-		ninecards.connect(
-			settings.jid,
-			settings.password,
-			settings.gameserver
-		);
-	}
+	ninecards.queryGames();
 
 });
 
@@ -528,17 +506,8 @@ $(document).on('pageshow', '#games', function(){
 
 
 $(document).on('vclick', '#refresh-games-button', function() {
-	// TODO auslagern, weil doppelt
-	if ( Mobilis.connection && Mobilis.connection.connected ) {
-		ninecards.queryGames();
-	} else {
-		var settings = jQuery.jStorage.get('settings');
-		ninecards.connect(
-			settings.jid,
-			settings.password,
-			settings.gameserver
-		);
-	}
+
+	ninecards.queryGames();
 
 });
 
@@ -640,7 +609,14 @@ $(document).on('vclick', '#exitgame-button', function(event){
 $(document).on('vclick', '#exitgames-button', function(event){
 
 	event.preventDefault();
-	ninecards.disconnect();
+	Mobilis.core.disconnect('Application Closed');
+	jQuery.mobile.changePage(
+		'#start', {
+			transition: 'slide',
+			reverse: true,
+			changeHash: true
+		}
+	);
 	return false;
 
 });
