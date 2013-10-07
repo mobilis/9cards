@@ -1,5 +1,7 @@
 {
-    "jid":         "mobilis@mobilis-dev.inf.tu-dresden.de",
+    "jid":         "default@mobilis-dev.inf.tu-dresden.de/Default",
+    "password":    "",
     "gameserver":  "mobilis-dev.inf.tu-dresden.de",
-    "chatservice": "conference"
+    "chatservice": "conference",
+    "coordinator": "mobilis@mobilis-dev.inf.tu-dresden.de/Coordinator"
 }

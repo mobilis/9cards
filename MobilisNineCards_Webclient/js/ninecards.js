@@ -7,18 +7,13 @@ var ninecards = {
 
 		if ( MX.connection && MX.connection.connected ) {
 
-			MX.core.mobilisServiceDiscovery(
-				[MX.ninecards.NS.SERVICE],
+			MX.core.discoverService(
+				MX.NS.SERVICE,
 				function(result) {
 					$('#games-list').empty().listview();
 
 					if ($(result).find('mobilisService').length){
 						$(result).find('mobilisService').each( function() {
-							MX.core.SERVICES[$(this).attr('namespace')] = {
-								'version': $(this).attr('version'),
-								'jid': $(this).attr('jid'),
-								'servicename' : $(this).attr('serviceName')
-							};
 							$('#games-list').append(
 								'<li><a class="available-game" id="'
 								+ $(this).attr('jid')
@@ -485,10 +480,11 @@ $(document).on('pageshow', '#settings', function() {
 	var settings = jQuery.jStorage.get('settings');
 
 	$('#settings-form #username').val(settings.username);
-	$('#settings-form #gameserver').val(settings.gameserver);
-	$('#settings-form #chatservice').val(settings.chatservice);
 	$('#settings-form #jid').val(settings.jid);
 	$('#settings-form #password').val(settings.password);
+	$('#settings-form #gameserver').val(settings.gameserver);
+	$('#settings-form #chatservice').val(settings.chatservice);
+	$('#settings-form #coordinator').val(settings.coordinator);
 
 	return true;
 });
@@ -517,10 +513,11 @@ $(document).on('vclick', '#settings-submit', function() {
 
 	jQuery.jStorage.set('settings', {
 		'username':   $('#settings-form #username').val(),
+		'jid':        $('#settings-form #jid').val(),
+		'password':   $('#settings-form #password').val(),
 		'gameserver': $('#settings-form #gameserver').val(),
 		'chatservice': $('#settings-form #chatservice').val(),
-		'jid':        $('#settings-form #jid').val(),
-		'password':   $('#settings-form #password').val()
+		'coordinator': $('#settings-form #coordinator').val()
 	});
 
 	return true;
@@ -620,27 +617,3 @@ $(document).on('vclick', '#exitgames-button', function(event){
 	return false;
 
 });
-
-
-$(document).on('ready', function(){
-
-	if ( !jQuery.jStorage.index().length ){
-
-		$.getJSON('settings.json', function(data){
-			jQuery.jStorage.set('settings', {
-			    "username":    window.navigator.appCodeName,
-			    "gameserver":  data.gameserver,
-			    "chatservice": data.chatservice,
-			    "jid":         data.jid+'/'+window.navigator.appCodeName,
-			    "password":    ""
-			});
-			console.log('imported settings');
-		});
-
-	}
-});
-
-
-$(window).unload(function() {
-	MX.core.disconnect('Browser Window Closed');
-}); 
