@@ -23,17 +23,26 @@ import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPBean;
 import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPInfo;
 
 /**
- * The Class GameState is an abstract class to handle different specific states of the 
- * game in each activity.
+ * The Class GameState is an abstract class to handle different specific states of the game
+ * and process messages in dependency of the current state.
+ * 
+ * @author Matthias Köngeter
+ *
  */
 public abstract class GameState {
 
 	/**
-	 * Process a XMPPBean forwarded from 
+	 * Process an XMPPBean forwarded from 
 	 * @see de.tudresden.inf.rn.mobilis.android.xhunt.proxy.IQProxy#AbstractCallback.
 	 *
-	 * @param bean the bean which should be processed
+	 * @param xmppBean the bean which shall be processed
 	 */
 	public abstract void processPacket(XMPPBean xmppBean);
+	
+	/**
+	 * Process an XMPPInfo which was received via multiuser or private chat.
+	 * 
+	 * @param xmppInfo the xmppInfo which shall be processed
+	 */
 	public abstract void processChatMessage(XMPPInfo xmppInfo);
 }

@@ -29,21 +29,27 @@ import de.tudresden.inf.rn.mobilis.services.ninecards.Game.State;
 import de.tudresden.inf.rn.mobilis.services.ninecards.NineCardsService;
 import de.tudresden.inf.rn.mobilis.services.ninecards.Player;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.CardPlayedMessage;
-import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.GameOverMessage;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.PlayCardMessage;
-import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.RoundCompleteMessage;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.StartGameMessage;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 
+/**
+ * This class is responsible for processing messages which where received via the multiuser chat room or private chat.
+ * 
+ * @author Matthias Köngeter
+ *
+ */
 public class MucPacketProcessor
 {
-	/**	The 9Cards service instance. */
+	
+	/**	The ninecards game service instance. */
 	private NineCardsService mServiceInstance;
 	
 	
 	/**
+	 * The constructor for creating a new MucPacketProcessor instance.
 	 * 
-	 * @param connection
+	 * @param serviceInstance the ninecards game service instance
 	 */
 	public MucPacketProcessor(NineCardsService serviceInstance)
 	{
@@ -52,8 +58,10 @@ public class MucPacketProcessor
 	
 	
 	/**
+	 * This method analyzes the type of a message and then parses it into a StartGameMessage or a PlayCardMessage,
+	 * before it is passed to the corresponding methods.
 	 * 
-	 * @param message
+	 * @param message the message to be parsed
 	 */
 	public void processPacket(Message message) throws Exception
 	{
@@ -79,8 +87,11 @@ public class MucPacketProcessor
 	
 	
 	/**
+	 * This method checks whether the game is in gamestate 'ready' and if the sender of the startgamemessage
+	 * is allowed to start the game. If both is true, the MUC room is locked and the game is being started.
 	 * 
-	 * @param message
+	 * @param message the StartGameMessage to be processed
+	 * @param sender the ID of the sender (example: room@conference.jabber.org/nick)
 	 */
 	private void onStartGame(StartGameMessage message, String sender)
 	{
@@ -108,10 +119,13 @@ public class MucPacketProcessor
 	
 	
 	/**
+	 * This method checks whether the sender has already chosen a card in this round or if he has already played
+	 * this card. If both is false, the card value is accepted and all other players are notified. 
 	 * 
-	 * @param message
+	 * @param message the PlayCardMessage to be processed
+	 * @param sender the ID of the sender (example: room@conference.jabber.org/nick)
 	 */
-	private void onPlayCard(PlayCardMessage message, String sender) throws Exception
+	private void onPlayCard(PlayCardMessage message, String sender)
 	{
 		Player player = mServiceInstance.getGame().getPlayer(sender);
 		if(player != null) {

@@ -1,3 +1,22 @@
+/*******************************************************************************
+ * Copyright (C) 2013 Technische Universität Dresden
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * Dresden, University of Technology, Faculty of Computer Science
+ * Computer Networks Group: http://www.rn.inf.tu-dresden.de
+ * mobilis project: https://github.com/mobilis
+ ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.android.ninecards.activity;
 
 import android.annotation.TargetApi;
@@ -9,13 +28,21 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import de.tudresden.inf.rn.mobilis.android.ninecards.R;
 
+/**
+ * View used for entering addresses of XMPP and Mobilis Server as well as user credentials.
+ * 
+ * @author Matthias Köngeter
+ *
+ */
 public class SettingsActivity extends PreferenceActivity
 {
-	private EditTextPreference mobilisServerJid;
-	private EditTextPreference xmppServerAddress;
-	private EditTextPreference userJid;
-	private EditTextPreference userNick;
-	private EditTextPreference userPassword;
+	
+	/** The edit text preferences for entering and saving connectivity settings. */
+	private EditTextPreference mMobilisServerJid;
+	private EditTextPreference mXmppServerAddress;
+	private EditTextPreference mUserJid;
+	private EditTextPreference mUserNick;
+	private EditTextPreference mUserPassword;
 	
 	/*
 	 * (non-Javadoc)
@@ -36,18 +63,18 @@ public class SettingsActivity extends PreferenceActivity
 	
 	
 	/**
-	 * 
+	 * Needs to be called in the beginning to initialize the components.
 	 */
 	private void initComponents()
 	{
-		xmppServerAddress	= (EditTextPreference) getPreferenceScreen().findPreference(getResources().getString(R.string.edit_text_pref_server_xmpp));
-		mobilisServerJid	= (EditTextPreference) getPreferenceScreen().findPreference(getResources().getString(R.string.edit_text_pref_server_mobilis_jid));
-		userJid				= (EditTextPreference) getPreferenceScreen().findPreference(getResources().getString(R.string.edit_text_pref_user_jid));
-		userNick			= (EditTextPreference) getPreferenceScreen().findPreference(getResources().getString(R.string.edit_text_pref_user_nick));
-		userPassword		= (EditTextPreference) getPreferenceScreen().findPreference(getResources().getString(R.string.edit_text_pref_user_password));
+		mXmppServerAddress	= (EditTextPreference) getPreferenceScreen().findPreference(getResources().getString(R.string.edit_text_pref_server_xmpp));
+		mMobilisServerJid	= (EditTextPreference) getPreferenceScreen().findPreference(getResources().getString(R.string.edit_text_pref_server_mobilis_jid));
+		mUserJid				= (EditTextPreference) getPreferenceScreen().findPreference(getResources().getString(R.string.edit_text_pref_user_jid));
+		mUserNick			= (EditTextPreference) getPreferenceScreen().findPreference(getResources().getString(R.string.edit_text_pref_user_nick));
+		mUserPassword		= (EditTextPreference) getPreferenceScreen().findPreference(getResources().getString(R.string.edit_text_pref_user_password));
 		
-		
-		mobilisServerJid.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+		// make sure that the server JID contains "/Coordinator" as resource
+		mMobilisServerJid.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
 					@Override
 					public boolean onPreferenceChange(Preference preference, Object newValue)
@@ -81,24 +108,24 @@ public class SettingsActivity extends PreferenceActivity
 	
 	
 	/**
-	 * 
+	 * Update the summary of each edit text preference to have it show its current value
 	 */
 	private void updateSummaries()
 	{
-		if(xmppServerAddress != null)
-			xmppServerAddress.setSummary(xmppServerAddress.getText());
+		if(mXmppServerAddress != null)
+			mXmppServerAddress.setSummary(mXmppServerAddress.getText());
 		
-		if(mobilisServerJid != null)
-			mobilisServerJid.setSummary(mobilisServerJid.getText());
+		if(mMobilisServerJid != null)
+			mMobilisServerJid.setSummary(mMobilisServerJid.getText());
 		
-		if(userJid != null)
-			userJid.setSummary(userJid.getText());
+		if(mUserJid != null)
+			mUserJid.setSummary(mUserJid.getText());
 		
-		if(userNick != null)
-			userNick.setSummary(userNick.getText());
+		if(mUserNick != null)
+			mUserNick.setSummary(mUserNick.getText());
 		
-		if(userPassword != null)
-			userPassword.setSummary(userPassword.getText());
+		if(mUserPassword != null)
+			mUserPassword.setSummary(mUserPassword.getText());
 	}
 	
 	
@@ -114,16 +141,24 @@ public class SettingsActivity extends PreferenceActivity
 	}
 
 	
-	
+	/*
+	 * (non-Javadoc)
+	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+	 */
 	/*@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.settings, menu);
 		return true;
-	}
+	}*/
 
-	@Override
+	
+	/*
+	 * (non-Javadoc)
+	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
+	 */
+	/*@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
 		switch (item.getItemId()) {

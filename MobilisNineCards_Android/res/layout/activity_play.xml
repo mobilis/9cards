@@ -17,14 +17,12 @@
             android:stretchColumns="1" >
         </TableLayout>
 
-
         <!-- black line for separation -->
         <View
             android:layout_width="fill_parent"
             android:layout_height="2dip"
             android:background="@android:color/black" />
 
-        
         <!-- middle part with cards -->
         <TableLayout
             android:id="@+id/tbl_cards"
@@ -122,14 +120,12 @@
                     android:src="@drawable/ic_card_9" />
             </TableRow>
         </TableLayout>
-
         
         <!-- black line for separation -->
         <View
             android:layout_width="fill_parent"
             android:layout_height="2dip"
             android:background="@android:color/black" />
-
         
         <!-- bottom part with button -->
         <LinearLayout

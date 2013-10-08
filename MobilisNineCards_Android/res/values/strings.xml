@@ -10,9 +10,9 @@
     <string name="title_activity_open_games">Open Games</string>
     <string name="title_activity_create_game">Create a Game</string>
     <string name="title_activity_play"></string>
+    <string name="title_activity_settings">XMPP Settings</string>
     <string name="txt_btn_play_start_1">Wait until creator starts the game</string>
     <string name="txt_btn_play_start_2">Start Game</string>
-    <string name="title_activity_settings">XMPP Settings</string>
     
     <string name="edit_text_pref_server_xmpp">edit_text_pref_server_xmpp</string>
     <string name="edit_text_pref_server_mobilis_jid">edit_text_pref_server_mobilis_jid</string>

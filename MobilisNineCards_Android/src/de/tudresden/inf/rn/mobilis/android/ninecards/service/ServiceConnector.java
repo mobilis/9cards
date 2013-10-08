@@ -1,14 +1,3 @@
-package de.tudresden.inf.rn.mobilis.android.ninecards.service;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import android.content.ComponentName;
-import android.content.ServiceConnection;
-import android.os.Handler;
-import android.os.IBinder;
-import android.util.Log;
-
 /*******************************************************************************
  * Copyright (C) 2013 Technische Universität Dresden
  * 
@@ -28,16 +17,33 @@ import android.util.Log;
  * Computer Networks Group: http://www.rn.inf.tu-dresden.de
  * mobilis project: https://github.com/mobilis
  ******************************************************************************/
+package de.tudresden.inf.rn.mobilis.android.ninecards.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.content.ComponentName;
+import android.content.ServiceConnection;
+import android.os.Handler;
+import android.os.IBinder;
+import android.util.Log;
+
+/**
+ * This class implements android.content.ServiceConnection and is needed for binding the background service.
+ * 
+ * @author Matthias Köngeter
+ *
+ */
 public class ServiceConnector implements ServiceConnection
 {
 	/** The application's android service running in the background. */
 	private BackgroundService mBackgroundService;
-	/** The handlers bound to the background service. */
+	/** The handlers which shall be notified if the background service was bound. */
 	private List<Handler> mServiceBoundHandlers;
 	
 	
 	/**
-	 * 
+	 * The constructor for creating a new instance of ServiceConnector.
 	 */
 	public ServiceConnector()
 	{
@@ -75,8 +81,9 @@ public class ServiceConnector implements ServiceConnection
 
 	
 	/**
+	 * Adds a handler to be notified when the background service was bound.
 	 * 
-	 * @param handler
+	 * @param handler the handler to be notified
 	 */
 	public void addHandlerToList(Handler handler)
 	{
@@ -86,6 +93,7 @@ public class ServiceConnector implements ServiceConnection
 	
     /**
      * Gets the BackgroundService.
+     * 
      * @return the BackgroundService
      */
     public BackgroundService getBackgroundService()

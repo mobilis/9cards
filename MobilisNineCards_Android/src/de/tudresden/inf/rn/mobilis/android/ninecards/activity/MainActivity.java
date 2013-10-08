@@ -1,3 +1,22 @@
+/*******************************************************************************
+ * Copyright (C) 2013 Technische Universität Dresden
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * Dresden, University of Technology, Faculty of Computer Science
+ * Computer Networks Group: http://www.rn.inf.tu-dresden.de
+ * mobilis project: https://github.com/mobilis
+ ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.android.ninecards.activity;
 
 import org.jivesoftware.smack.SmackAndroid;
@@ -25,32 +44,19 @@ import de.tudresden.inf.rn.mobilis.android.ninecards.game.ServerConnection;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.BackgroundService;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.ServiceConnector;
 
-/*******************************************************************************
- * Copyright (C) 2013 Technische Universität Dresden
+/**
+ * Initial view which serves as an entry point for the application.
  * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * @author Matthias Köngeter
  * 
- * 	http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * 
- * Dresden, University of Technology, Faculty of Computer Science
- * Computer Networks Group: http://www.rn.inf.tu-dresden.de
- * mobilis project: https://github.com/mobilis
- ******************************************************************************/
+ */
 public class MainActivity extends Activity
 {
 	
 	/** The connection to the background service. */
 	private ServiceConnector mBackgroundServiceConnector;
 	/** The connection to the XMPP server. */
-	private ServerConnection serverConnection;
+	private ServerConnection mServerConnection;
 
 	
 	/*
@@ -62,6 +68,8 @@ public class MainActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		// load connectivity settings even if settings activity is not created
 		PreferenceManager.setDefaultValues(this, R.xml.layout_settings, false);
 		
 		bindBackgroundService();
@@ -73,7 +81,7 @@ public class MainActivity extends Activity
 
 
 	/**
-	 * 
+	 * Needs to be called in the beginning to start and bind the background service.
 	 */
 	private void bindBackgroundService()
 	{
@@ -88,24 +96,26 @@ public class MainActivity extends Activity
 	}
 	
 	
-	/** The handler which is called if the XHuntService was bound. */
+	/**
+	 * The handler which is called after the background service was bound successfully.
+	 */
 	private Handler mBackgroundServiceBoundHandler = new Handler()
 	{
 		@Override
 		public void handleMessage(Message messg) {
-			serverConnection = mBackgroundServiceConnector.getBackgroundService().getServerConnection();
-			serverConnection.registerXmppExtensions();
+			mServerConnection = mBackgroundServiceConnector.getBackgroundService().getServerConnection();
+			mServerConnection.registerXmppExtensions();
 			mBackgroundServiceConnector.getBackgroundService().setGameState(new GameStateStart());
 		}
 	};
 
 	
 	/**
-	 * 
+	 * Needs to be called in the beginning to set button listeners.
 	 */
 	private void initComponents()
 	{
-		// 'Start' button
+		// 'Play' button
 		Button btn_Play = (Button) findViewById(R.id.act_start_btn_play);
 		btn_Play.setOnClickListener(new OnClickListener() {
 
@@ -113,13 +123,12 @@ public class MainActivity extends Activity
 			public void onClick(View v) {
 				
 				// connect to XMPP server if not done yet
-				if (!serverConnection.isConnected()) {
+				if (!mServerConnection.isConnected()) {
 					String server = mBackgroundServiceConnector.getBackgroundService().getXmppServerAddress();
-					String userJid = mBackgroundServiceConnector.getBackgroundService().getUserJid();
+					String userJid = mBackgroundServiceConnector.getBackgroundService().getUserJID();
 					String userPw = mBackgroundServiceConnector.getBackgroundService().getUserPassword();
 					
-					// if it fails, notify user
-					if(!serverConnection.connectToXmppServer(server, userJid, userPw)) {
+					if(!mServerConnection.connectToXmppServer(server, userJid, userPw)) {
 						Toast.makeText(MainActivity.this,
 								"Failed to connect to XMPP server.\nPlease check your settings!",
 								Toast.LENGTH_LONG).show();
@@ -128,8 +137,8 @@ public class MainActivity extends Activity
 					}
 				}
 				
-				// if successfully connected, request open games
-				serverConnection.sendServiceDiscovery(null);
+				// if successfully connected, check if server supports ninecards service
+				mServerConnection.sendServiceDiscovery(null);
 			}
 		});
 		
@@ -167,7 +176,9 @@ public class MainActivity extends Activity
 	}
 	
 	
-    /** Handler to handle MobilisServiceDiscoveryBeans. */
+    /**
+     * Handler to handle MobilisServiceDiscoveryBeans.
+     */
     private Handler mServiceDiscoveryResultHandler = new Handler()
     {
 		@Override
@@ -233,7 +244,7 @@ public class MainActivity extends Activity
 			unbindService(mBackgroundServiceConnector);
 		}
 		
-		// we need to call onDestroy() on SmackAndroid to unregister ConnectivityChangedReceiver.
+		// we need to call onDestroy() on SmackAndroid to unregister internal ConnectivityChangedReceiver.
 		// SmackAndroid uses the Singleton pattern, so we can just call init() to get an instance. 
 		SmackAndroid asmack = SmackAndroid.init(this);
 		asmack.onDestroy();
@@ -243,18 +254,19 @@ public class MainActivity extends Activity
 	
 	
 	/**
-	 * 
+	 * Internal class which represents the current state of the game.
+	 * Also responsible for processing messages from the mobilis server. 
 	 */
 	private class GameStateStart extends GameState
 	{
 		/*
 		 * (non-Javadoc)
-		 * @see de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState#processPacket(de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean)
+		 * @see de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState#processPacket(de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPBean)
 		 */
 		@Override
 		public void processPacket(XMPPBean inBean)
 		{
-		
+			
 			if(inBean.getType() == XMPPBean.TYPE_ERROR)
 				Log.e(this.getClass().getSimpleName(), "IQ Type ERROR: " + inBean.toXML());
 		
@@ -286,27 +298,36 @@ public class MainActivity extends Activity
 					}
 				}
 				
-				// If Mobilis Server doesn't respond, notify user
+				// if mobilis server doesn't respond, notify user
 				else if(bean.getType() == XMPPBean.TYPE_ERROR)
 					mServiceDiscoveryResultHandler.sendEmptyMessage(BackgroundService.CODE_SERVER_RESPONSE_ERROR);		
 			}
 			
-			// Other Beans of type get or set will be responded with an ERROR
+			// other beans of type get or set will be responded with an ERROR
 			else if(inBean.getType() == XMPPBean.TYPE_GET || inBean.getType() == XMPPBean.TYPE_SET) {
 				inBean.errorType = "wait";
 				inBean.errorCondition = "unexpected-request";
-				inBean.errorText = "This request is not supportet at this game state(main)";
+				inBean.errorText = "This request is not supportet at the current state of the game (start/uninitialized)";
 				
-				serverConnection.sendXMPPBeanError(inBean);
+				mServerConnection.sendXMPPBeanError(inBean);
 			}
 		}
 		
+		
+		/*
+		 * (non-Javadoc)
+		 * @see de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState#processChatMessage(de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPInfo)
+		 */
 		@Override
 		public void processChatMessage(XMPPInfo xmppInfo)
 		{}
 	}
 	
 	
+	/*
+	 * (non-Javadoc)
+	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+	 */
 	/*@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.

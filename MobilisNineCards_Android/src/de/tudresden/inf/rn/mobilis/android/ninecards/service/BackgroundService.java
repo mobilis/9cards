@@ -1,16 +1,3 @@
-package de.tudresden.inf.rn.mobilis.android.ninecards.service;
-
-import android.app.Service;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Binder;
-import android.os.IBinder;
-import android.util.Log;
-import de.tudresden.inf.rn.mobilis.android.ninecards.R;
-import de.tudresden.inf.rn.mobilis.android.ninecards.game.Game;
-import de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState;
-import de.tudresden.inf.rn.mobilis.android.ninecards.game.ServerConnection;
-
 /*******************************************************************************
  * Copyright (C) 2013 Technische Universität Dresden
  * 
@@ -30,26 +17,44 @@ import de.tudresden.inf.rn.mobilis.android.ninecards.game.ServerConnection;
  * Computer Networks Group: http://www.rn.inf.tu-dresden.de
  * mobilis project: https://github.com/mobilis
  ******************************************************************************/
+package de.tudresden.inf.rn.mobilis.android.ninecards.service;
+
+import android.app.Service;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Binder;
+import android.os.IBinder;
+import android.util.Log;
+import de.tudresden.inf.rn.mobilis.android.ninecards.R;
+import de.tudresden.inf.rn.mobilis.android.ninecards.game.Game;
+import de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState;
+import de.tudresden.inf.rn.mobilis.android.ninecards.game.ServerConnection;
+
+/**
+ * The application service running in the background.
+ * 
+ * @author Matthias Köngeter
+ *
+ */
 public class BackgroundService extends Service
 {
 
 	/** The connection to the XMPP Server. */
 	private ServerConnection mServerConnection;
-	/** The JID of the current Mobilis9Cards game service (running on server) */
-	private String gameServiceJid;
+	/** The JID of the current NineCards game service instance */
+	private String mGameServiceJid;
 
-	/** The Game instance. */
+	/** The game instance. */
 	private Game mGame;
-	/** The state of the game. */
-	private GameState gameState;
+	/** The current state of the game. */
+	private GameState mGameState;
 	
-	/** Defines path to shared preferences for 9Cards. */
+	/** Defines the path to the shared preferences. */
 	public static final String SHARED_PREF_KEY_FILENAME = "de.tudresden.inf.rn.mobilis.android.ninecards_prefs";
-	
 
 	/** Is used if Mobilis Server supports 9Cards Service. */
 	public static final int CODE_SERVICE_SUPPORTED = 0;
-	/** Is used if Mobilis Server doesn't supports 9Cards Service. */
+	/** Is used if Mobilis Server doesn't supports NineCards Service. */
 	public static final int CODE_SERVICE_NOT_AVAILABLE = 1;
 	/** Is used if contacting the Mobilis Server fails. */
 	public static final int CODE_SERVER_RESPONSE_ERROR = 2;
@@ -61,11 +66,11 @@ public class BackgroundService extends Service
 	/** Is used if contacting the Mobilis Server fails. */
 	public static final int CODE_DISCOVER_GAMES_FAILURE = 5;
 	
-	/** The code used by mUpdateUIHandler to signalize that the start button shall be enabled. */
+	/** The code used by the UpdateUIHandler to signalize that the start button shall be enabled. */
 	public static final int CODE_ENABLE_START_GAME_BUTTON = 6;
-	/** The code used for disabling start button, canceling waiting dialogue and enable cards. */
+	/** The code used for disabling the start button, canceling the waiting dialogue and enable all cards. */
 	public static final int CODE_START_GAME = 7;
-	/** The code used by mUpdateUIHandler to signalize that theplayers list shall be updated. */
+	/** The code used by the UpdateUIHandler to signalize that the players list shall be updated. */
 	public static final int CODE_UPDATE_GAME_PLAYERS_LIST = 8;
 	/** The code used for re-enabling the cards and updating the current round. */
 	public static final int CODE_START_NEW_ROUND = 9;
@@ -99,7 +104,7 @@ public class BackgroundService extends Service
 	
 	
 	/**
-	 * 
+	 * Class used by ServiceConnector to get the instance of this BackgroundService.
 	 */
 	public class LocalBinder extends Binder
 	{
@@ -126,10 +131,11 @@ public class BackgroundService extends Service
 // -------------------------------------------------------------------------------------------------------------------------------
 	
 	/**
-	 * Gets the own XMPP JID.
-	 * @return the own XMPP JID
+	 * Returns the own user's XMPP JID which he entered in the Settings view.
+	 * 
+	 * @return the own user's XMPP JID
 	 */
-	public String getUserJid()
+	public String getUserJID()
 	{
 		SharedPreferences prefs = getSharedPreferences("de.tudresden.inf.rn.mobilis.android.ninecards_preferences", MODE_PRIVATE);
 		return prefs.getString(getResources().getString(R.string.edit_text_pref_user_jid), null);
@@ -137,8 +143,9 @@ public class BackgroundService extends Service
 	
 	
 	/**
-	 * Gets the own XMPP password.
-	 * @return the own XMPP password
+	 * Returns the own user's password which he entered in the Settings view.
+	 * 
+	 * @return the own user's XMPP password
 	 */
 	public String getUserPassword()
 	{
@@ -148,8 +155,9 @@ public class BackgroundService extends Service
 	
 	
 	/**
+	 * Returns the own user's nickname which he entered in the Settings view.
 	 * 
-	 * @return
+	 * @return the own user's nickname
 	 */
 	public String getUserNick()
 	{
@@ -159,8 +167,9 @@ public class BackgroundService extends Service
 	
 	
 	/**
+	 * Returns the address of the XMPP server which was entered in the Settings view.
 	 * 
-	 * @return
+	 * @return the address of the XMPP server
 	 */
 	public String getXmppServerAddress()
 	{
@@ -170,8 +179,9 @@ public class BackgroundService extends Service
 	
     
     /**
+     * Returns the JID of the Mobilis Server which was entered in the Settings view.
      * 
-     * @return
+     * @return the JID of the Mobilis Server
      */
     public String getMobilisServerJID()
     {
@@ -181,29 +191,32 @@ public class BackgroundService extends Service
     
     
     /**
+     * Returns the JID of the game service instance.
      * 
-     * @return
+     * @return the JID of the game instance
      */
-    public String getGameServiceJid()
+    public String getGameServiceJID()
     {
-    	return gameServiceJid;
+    	return mGameServiceJid;
     }
     
     
     /**
+     * Sets the JID of the game service instance.
      * 
-     * @param gameServiceJid
+     * @param gameServiceJid the JID of the game instance
      */
-    public void setGameServiceJid(String gameServiceJid)
+    public void setGameServiceJID(String gameServiceJid)
     {
-    	this.gameServiceJid = gameServiceJid;
+    	this.mGameServiceJid = gameServiceJid;
     }
 
  // -------------------------------------------------------------------------------------------------------------------------------
 	
     /**
-     * Returns the connection to the XMPP server.
-     * @return
+     * Returns the instance of ServerConnection class.
+     * 
+     * @return the instance of ServerConnection class
      */
     public ServerConnection getServerConnection()
     {
@@ -212,8 +225,9 @@ public class BackgroundService extends Service
 
     
 	/**
+	 * Returns the instance of Game class.
 	 * 
-	 * @return
+	 * @return the current game object
 	 */
 	public Game getGame()
 	{
@@ -222,7 +236,9 @@ public class BackgroundService extends Service
 	
 	
 	/**
+	 * Instantiates a new game object.
 	 * 
+	 * @param name the name of the new game
 	 */
 	public void createGame(String name)
 	{
@@ -231,21 +247,23 @@ public class BackgroundService extends Service
 	
 	
 	/**
+	 * Returns the current GameState object which is needed to process messages.
 	 * 
-	 * @return
+	 * @return the current GameState object
 	 */
 	public GameState getGameState()
 	{
-		return gameState;
+		return mGameState;
 	}
 	
 	
 	/**
+	 * Sets the GameState which is needed to process messages.
 	 * 
-	 * @param state
+	 * @param state the new state of the game
 	 */
 	public void setGameState(GameState state)
 	{
-		this.gameState = state;
+		this.mGameState = state;
 	}
 }

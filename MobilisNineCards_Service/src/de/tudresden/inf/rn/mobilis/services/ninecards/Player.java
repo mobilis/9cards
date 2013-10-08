@@ -22,33 +22,35 @@ package de.tudresden.inf.rn.mobilis.services.ninecards;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
- * The Class for representing a specific player.
+ * The player class is used to store information about a specific player. 
+ * 
+ * @author Matthias Köngeter
+ *
  */
 public class Player
 {
-	/** The player's id in the muc room (example: room@conference.jabber.org/nick) */
-	private String fullID;
+	
+	/** The player's id in the muc room (example: room@conference.jabber.org/nick). */
+	private String id;
 
-	/** The cards (values from 1-9) which the player already used */
+	/** The cards (values from 1-9) which the player already used in the current game. */
 	private List<Integer> usedCards;
-	/** The number of rounds this player won during the game. */
-	private int roundsWon;
-	/** The card which was chosen for the current round; -1 if the player didn't chose yet. */
+	/** The number of rounds this player won in the current game. */
+	private int score;
+	/** The card which was chosen for the current round; -1 if the player didn't choose one yet. */
 	private int chosenCard;
 	
 	
 	/**
-	 * Initializes a new 9Cards Player.
+	 * The constructor for initializing a new player object.
 	 * 
-	 * @param fullID the player's id in the muc room (example: room@conference.jabber.org/nick)
-	 * @param isCreator true if this player is the owner of the game
+	 * @param id the player's id in the muc room (example: room@conference.jabber.org/nick)
 	 */
-	public Player(String fullID)
+	public Player(String id)
 	{
-		this.fullID = fullID;
-		this.roundsWon = 0;
+		this.id = id;
+		this.score = 0;
 		this.chosenCard = -1;
 		
 		this.usedCards = new ArrayList<Integer>(9);
@@ -56,9 +58,10 @@ public class Player
 	
 	
 	/**
-	 * Chosen card should be set to -1 at the beginning of each round,
-	 * and to the ID of the chosen card after the player chose one.
-	 * @param chosenCard
+	 * The chosen card value should be set to -1 at the beginning of each round,
+	 * and to the value of the chosen card after the player chose one.
+	 * 
+	 * @param chosenCard the value of the chosen card
 	 */
 	public void setChosenCard(int chosenCard)
 	{
@@ -67,7 +70,8 @@ public class Player
 	
 	
 	/**
-	 * Returns the ID of the card which was chosen for this round, or -1 if there isn't any yet.
+	 * Returns the value of the card which was chosen for this round, or -1 if there isn't any yet.
+	 * 
 	 * @return
 	 */
 	public int getChosenCard()
@@ -79,24 +83,26 @@ public class Player
 	/**
 	 * Increments the number of rounds won by this player by 1.
 	 */
-	public void incrementRoundsWon()
+	public void incrementScore()
 	{
-		roundsWon++;
+		score++;
 	}
 	
 	
 	/**
 	 * Returns the number of rounds of this game which this player has already won.
+	 * 
 	 * @return the number of rounds the player won
 	 */
-	public int getRoundsWon()
+	public int getScore()
 	{
-		return roundsWon;
+		return score;
 	}
 	
 	
 	/**
-	 * Returns a list containing the cards the player already used.
+	 * Returns a list containing the card values the player already used in the current game.
+	 * 
 	 * @return a list containing the card values which were already used
 	 */
 	public List<Integer> getUsedCards()
@@ -106,21 +112,23 @@ public class Player
 	
 
 	/**
-	 * Gets the id of the player in the muc room (example: room@conference.jabber.org/nick)
-	 * @return the id of the player
+	 * Returns the ID of the player in the multiuser chat room (example: room@conference.jabber.org/nick).
+	 * 
+	 * @return the ID of the player
 	 */
 	public String getID()
 	{
-		return fullID;
+		return id;
 	}
 	
 	
 	/**
-	 * Changes the id of the player in the muc room. Needed when he changes his nickname.
-	 * @param the new full id (example: room@conference.jabber.org/nick)
+	 * Changes the ID of the player in the multiuser chat room. Needed when he changes his nickname.
+	 * 
+	 * @param the new full ID (example: room@conference.jabber.org/nick)
 	 */
 	public void changeID(String newID)
 	{
-		this.fullID = newID;
+		this.id = newID;
 	}
 }

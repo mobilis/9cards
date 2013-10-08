@@ -28,25 +28,27 @@ import java.util.logging.Logger;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.PlayerInfo;
 
 /**
- * The game class represents a whole game. 
- * It organizes players, cards and the state of the game.
+ * The game class is used to store information about the current game.
+ * 
+ * @author Matthias Köngeter
+ *
  */
-
 public class Game
 {
-	/** The control. */
+	
+	/** The Ninecards/Mobilis Service instance. */
 	private NineCardsService mServiceInstance;
 	
 	/** The current round of the game. */
 	private int round;
-	/** The game players (ID in MUC room, player object) */
+	/** The game players with IDs in MUC room as keys and player objects as values. */
 	private HashMap<String, Player> gamePlayers;
 	/** The winner of a round, needed for repeated calls of "getRoundWinner()". */
 	private Player winnerOfRound;
 	/** The winner of the game, needed for repeated calls of "getGameWinner()". */
 	private Player winnerOfGame;
 	
-	/** The state of the game. */
+	/** The current state of the game. */
 	private State state;
 	/** The possible states of the game. */
 	public static enum State {
@@ -59,8 +61,9 @@ public class Game
 
 	
 	/**
-	 * Initializes the Game Component.
-	 * @param serviceInstance NineCardsController, who administrates the whole life cycle
+	 * The Constructor for initializing a new Game object.
+	 * 
+	 * @param serviceInstance the instance of the mobilis ninecards service
 	 */
 	public Game(NineCardsService serviceInstance)
 	{
@@ -69,7 +72,7 @@ public class Game
 		this.round = 0;
 		this.gamePlayers = new HashMap<String, Player>();
 		this.winnerOfRound = null;
-		winnerOfGame = null;
+		this.winnerOfGame = null;
         
 		this.state = State.UNINITIALIZED;
 	}
@@ -92,7 +95,8 @@ public class Game
 	
 	/**
 	 * Checks if all players chose a card.
-	 * @return true if all players chose a card.
+	 * 
+	 * @return true if all players chose a card, false if not.
 	 */
 	public boolean checkRoundOver()
 	{
@@ -108,7 +112,8 @@ public class Game
 	 * Returns the player that played the highest card in this round
 	 * or chooses one by random if more than one player played the same
 	 * highest card.
-	 * @return
+	 * 
+	 * @return the player who won the round
 	 */
 	public Player getRoundWinner()
 	{
@@ -145,7 +150,8 @@ public class Game
 	 * If there are more than one players with the same highest score,
 	 * one is chosen by random. If the end of the game is not reached yet,
 	 * null will be returned.
-	 * @return
+	 * 
+	 * @return the player who won the game
 	 */
 	public Player getGameWinner()
 	{
@@ -162,11 +168,11 @@ public class Game
 					potentialWinners.add(plr);
 				
 				// else if current player reached same score as potential winners, add him to them
-				else if (plr.getRoundsWon() == potentialWinners.get(0).getRoundsWon())
+				else if (plr.getScore() == potentialWinners.get(0).getScore())
 					potentialWinners.add(plr);
 				
 				// else if current player has reached higher score than potential winners, remove them and add him
-				else if (plr.getRoundsWon() > potentialWinners.get(0).getRoundsWon()) {
+				else if (plr.getScore() > potentialWinners.get(0).getScore()) {
 					potentialWinners.clear();
 					potentialWinners.add(plr);
 				}
@@ -182,6 +188,7 @@ public class Game
 	
 	/**
 	 * Returns a list containing a PlayerInfo Object for each player.
+	 * 
 	 * @return
 	 */
 	public List<PlayerInfo> getPlayerInfos()
@@ -194,7 +201,7 @@ public class Game
 			// put information into new PlayerInfo
 			PlayerInfo info = new PlayerInfo();
 			info.setId(plr.getID());
-			info.setScore(plr.getRoundsWon());
+			info.setScore(plr.getScore());
 			info.setUsedcards(plr.getUsedCards());
 			
 			// add PlayerInfo to list
@@ -206,7 +213,8 @@ public class Game
 
 	
 	/**
-	 * Adds a new player.
+	 * Adds a new player to the players list.
+	 * 
 	 * @param player the player to be added
 	 */
 	public void addPlayer(Player player)
@@ -217,34 +225,42 @@ public class Game
 	
 	
 	/**
-	 * Returns the player corresponding to the JabberID that is used.
-	 * @param jid The JabberID of the player.
-	 * @return Player the player that matches the JabberID.
+	 * Returns the player corresponding to the specified ID.
+	 * 
+	 * @param id the ID of the player (example: room@conference.jabber.org/nick)
+	 * @return Player the player that matches the JabberID
 	 */
-	public Player getPlayer(String jid)
+	public Player getPlayer(String id)
 	{
-		return gamePlayers.get(jid);
+		return gamePlayers.get(id);
 	}
 
 
 	/**
-	 * For getting a list containing players.
-	 * @return The list of players.
+	 * Returns a map containing all players of the game.
+	 * The player's ID is used as key, while the player object is the value.
+	 * 
+	 * @return the list of players
 	 */
 	public HashMap<String, Player> getPlayers()
 	{
 		return gamePlayers;
 	}
 	
+	
 	/**
-	 * Removes a player by using his JID. Also removes him from the chat.
-	 * @param fullID the JID of the player to be kicked
+	 * Removes the player corresponding to the specified ID. Also removes him from the chat.
+	 * If there's no player left in the game, the service will shut down.
+	 * 
+	 * @param id the ID of the player to be kicked (example: room@conference.jabber.org/nick)
+	 * @param reason the reason to be logged or displayed when removing him from the chat
+	 * @return the player object which was removed or null, if no player was found.
 	 */
-	public Player removePlayer(String fullID, String reason)
+	public Player removePlayer(String id, String reason)
 	{
-		Player player = gamePlayers.remove(fullID);
-		mServiceInstance.getMucConnection().removePlayerFromChat(fullID, reason);
-		LOGGER.info("Removed player " + fullID);
+		Player player = gamePlayers.remove(id);
+		mServiceInstance.getMucConnection().removePlayerFromChat(id, reason);
+		LOGGER.info("Removed player " + id);
 		
 		// shut down if there are no more players left
 		if(gamePlayers.values().size() == 0) {
@@ -255,9 +271,11 @@ public class Game
 		return player;
 	}
 	
+	
 	/**
-	 * Sets the current game state to a new one.
-	 * @param newState the next state for the state machine.
+	 * Sets the current game state to the specified one.
+	 * 
+	 * @param newState the new game state.
 	 */
 	public void setGameState(State newState)
 	{
@@ -265,8 +283,10 @@ public class Game
 		LOGGER.info("Game State set to " + newState);
 	}
 	
+	
 	/**
-	 * Gets the game state.
+	 * Returns the current game state.
+	 * 
 	 * @return the current game state
 	 */
 	public State getGameState()
@@ -274,9 +294,11 @@ public class Game
 		return state;
 	}
 
+	
 	/**
-	 * Gets the current round.
-	 * @return the round
+	 * Returns the current round.
+	 * 
+	 * @return the current round
 	 */
 	public int getRound()
 	{

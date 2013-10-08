@@ -1,3 +1,22 @@
+/*******************************************************************************
+ * Copyright (C) 2013 Technische Universität Dresden
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * Dresden, University of Technology, Faculty of Computer Science
+ * Computer Networks Group: http://www.rn.inf.tu-dresden.de
+ * mobilis project: https://github.com/mobilis
+ ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.android.ninecards.activity;
 
 import android.annotation.TargetApi;
@@ -22,40 +41,28 @@ import de.tudresden.inf.rn.mobilis.android.ninecards.game.ServerConnection;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.BackgroundService;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.ServiceConnector;
 
-/*******************************************************************************
- * Copyright (C) 2013 Technische Universität Dresden
+/**
+ * View used for creating a new game instance.
  * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- * 	http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * 
- * Dresden, University of Technology, Faculty of Computer Science
- * Computer Networks Group: http://www.rn.inf.tu-dresden.de
- * mobilis project: https://github.com/mobilis
- ******************************************************************************/
+ * @author Matthias Köngeter
+ *
+ */
 public class CreateGameActivity extends PreferenceActivity
 {
 	/** The connection to the background service. */
 	private ServiceConnector mBackgroundServiceConnector;
 	/** The connection to the XMPP server. */
-	private ServerConnection serverConnection;
+	private ServerConnection mServerConnection;
 	
-	/** The textfields to enter and safe the settings for a new game. */
+	/** The edit text preferences to enter and safe the settings for a new game. */
 	private EditTextPreference mEditGameName;
 	private EditTextPreference mEditMaxPlayers;
 	private EditTextPreference mEditRounds;
 	
 
-	/**
-	 * 
+	/*
+	 * (non-Javadoc)
+	 * @see android.preference.PreferenceActivity#onCreate(android.os.Bundle)
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -75,7 +82,7 @@ public class CreateGameActivity extends PreferenceActivity
 	
 	
 	/**
-	 * Bind background service using the mBackgroundServiceBoundHandler.
+	 * Needs to be called in the beginning to bind the background service.
 	 */
 	private void bindBackgroundService()
 	{
@@ -89,15 +96,17 @@ public class CreateGameActivity extends PreferenceActivity
 	}
 	
 	
-	/** The handler which is called if the XHuntService was bound. */
+	/**
+	 * The handler which is called after the background service was bound successfully.
+	 */
 	private Handler mBackgroundServiceBoundHandler = new Handler()
 	{
 		@Override
 		public void handleMessage(Message messg) {
 			mBackgroundServiceConnector.getBackgroundService().setGameState(new GameStateCreateGame());
-			serverConnection = mBackgroundServiceConnector.getBackgroundService().getServerConnection();
+			mServerConnection = mBackgroundServiceConnector.getBackgroundService().getServerConnection();
 			
-			// enable button for creating a new game service instance
+			// enable button for creating a new game service instance after background service was bound
 			Button btn_Create = (Button)findViewById(R.id.creategame_btn_create);
 			btn_Create.setEnabled(true);
 		}
@@ -105,19 +114,14 @@ public class CreateGameActivity extends PreferenceActivity
 	
 	
 	/**
-	 * Initialize all UI elements from resources.
+	 * Needs to be called in the beginning to initialize all UI elements.
 	 */
 	private void initComponents()
 	{
 		// The parameters for the new game 
-		mEditGameName = (EditTextPreference) getPreferenceScreen().findPreference(
-				getResources().getString(R.string.key_newgame_gamename));
-
-		mEditRounds = (EditTextPreference) getPreferenceScreen().findPreference(
-				getResources().getString(R.string.key_newgame_rounds));
-		
-		mEditMaxPlayers = (EditTextPreference) getPreferenceScreen().findPreference(
-				getResources().getString(R.string.key_newgame_maxplayers));
+		mEditGameName = (EditTextPreference) getPreferenceScreen().findPreference(getResources().getString(R.string.key_newgame_gamename));
+		mEditRounds = (EditTextPreference) getPreferenceScreen().findPreference(getResources().getString(R.string.key_newgame_rounds));
+		mEditMaxPlayers = (EditTextPreference) getPreferenceScreen().findPreference(getResources().getString(R.string.key_newgame_maxplayers));
 
 		updateSummaries();
 
@@ -131,7 +135,7 @@ public class CreateGameActivity extends PreferenceActivity
 				if(v instanceof Button)
 					((Button) v).setEnabled(false);
 				
-				serverConnection.sendCreateNewServiceInstance(
+				mServerConnection.sendCreateNewServiceInstance(
 						"http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService",
 						mEditGameName.getText(),
 						null);
@@ -141,8 +145,7 @@ public class CreateGameActivity extends PreferenceActivity
 	
 	
 	/**
-	 * Update summaries of all preference entries.
-	 * A summary displays the current value of a preference.
+	 * Update the summary of each edit text preference to have it show its current value
 	 */
 	private void updateSummaries()
 	{
@@ -157,8 +160,21 @@ public class CreateGameActivity extends PreferenceActivity
 	}
 	
 	
+    /**
+     * The handler used to configure the new game instance after it has been successfully created.
+     */
+    private Handler mCreateNewInstanceHandler = new Handler()
+    {
+		@Override
+		public void handleMessage(Message msg) {
+			configureGame();
+		}
+	};
+	
+	
 	/**
-	 * Creates the game using the configurable parameters.
+	 * Needs to be called after a new ninecards service instance was successfully created.
+	 * Configures the new service using the parameters entered by the user, then switches to play view.
 	 */
 	private void configureGame()
 	{
@@ -172,7 +188,7 @@ public class CreateGameActivity extends PreferenceActivity
 			maxplayers = Integer.valueOf(mEditMaxPlayers.getText());
 		} catch (Exception e) { Log.e(this.getClass().toString(), e.getMessage()); }
 		
-		serverConnection.sendGameConfiguration(
+		mServerConnection.sendGameConfiguration(
 				mBackgroundServiceConnector.getBackgroundService().getGame().getName(),
 				maxplayers,
 				rounds);
@@ -182,8 +198,8 @@ public class CreateGameActivity extends PreferenceActivity
 	}
 	
 	
-	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see android.app.Activity#onWindowFocusChanged(boolean)
 	 */
 	@Override
@@ -194,7 +210,8 @@ public class CreateGameActivity extends PreferenceActivity
 	}
 	
 	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see android.app.Activity#onResume()
 	 */
 	@Override
@@ -220,7 +237,8 @@ public class CreateGameActivity extends PreferenceActivity
 	
 	
 	/**
-	 *
+	 * Internal class which represents the current state of the game.
+	 * Also responsible for processing messages from the mobilis server. 
 	 */
 	private class GameStateCreateGame extends GameState
 	{
@@ -244,7 +262,7 @@ public class CreateGameActivity extends PreferenceActivity
 				CreateNewServiceInstanceBean bean = (CreateNewServiceInstanceBean)inBean;
 				
 				if((bean != null) && (bean.getType() != XMPPBean.TYPE_ERROR)) {
-					mBackgroundServiceConnector.getBackgroundService().setGameServiceJid(bean.jidOfNewService);
+					mBackgroundServiceConnector.getBackgroundService().setGameServiceJID(bean.jidOfNewService);
 					mCreateNewInstanceHandler.sendEmptyMessage(0);
 				}
 			}
@@ -255,27 +273,20 @@ public class CreateGameActivity extends PreferenceActivity
 				inBean.errorCondition = "unexpected-request";
 				inBean.errorText = "This request is not supportet at this game state(create)";
 				
-				serverConnection.sendXMPPBeanError(inBean);
+				mServerConnection.sendXMPPBeanError(inBean);
 			}			
 		}
 		
+		
+		/*
+		 * (non-Javadoc)
+		 * @see de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState#processChatMessage(de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPInfo)
+		 */
 		@Override
 		public void processChatMessage(XMPPInfo xmppInfo)
 		{}
 	}
-	
-	
-    /** The handler for the CreateNewServiceInstanceBean to create a new Game instance if
-     * the new service instance was successfully created. */
-    private Handler mCreateNewInstanceHandler = new Handler()
-    {
-		@Override
-		public void handleMessage(Message msg) {
-			configureGame();
-		}
-	};
-	
-	
+		
 
 	/**
 	 * Set up the {@link android.app.ActionBar}, if the API is available.
@@ -288,15 +299,25 @@ public class CreateGameActivity extends PreferenceActivity
 		}
 	}
 
+	
+	/*
+	 * (non-Javadoc)
+	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+	 */
 	/*@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.create_game, menu);
 		return true;
-	}
+	}*/
 
-	@Override
+	
+	/*
+	 * (non-Javadoc)
+	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
+	 */
+	/*@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
 		switch (item.getItemId()) {

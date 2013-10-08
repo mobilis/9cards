@@ -1,3 +1,22 @@
+/*******************************************************************************
+ * Copyright (C) 2013 Technische Universität Dresden
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * Dresden, University of Technology, Faculty of Computer Science
+ * Computer Networks Group: http://www.rn.inf.tu-dresden.de
+ * mobilis project: https://github.com/mobilis
+ ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.services.ninecards.communication;
 
 import java.util.Iterator;
@@ -25,15 +44,22 @@ import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.GameOverMessage;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.RoundCompleteMessage;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
 
+/**
+ * This class is responsible for managing multiuser and private chat communication.
+ * 
+ * @author Matthias Köngeter
+ *
+ */
 public class MucConnection implements PacketListener, MessageListener
 {
-	/** The Mobilis Service 9Cards Instance */
+
+	/** The NineCards game service instance. */
 	private NineCardsService mServiceInstance;
-	/** The class which processes chat packets. */
-	private MucPacketProcessor packetProcessor;
-	/** The Multi User Chat Instance */
+	/** The MucPacketProcessor object which is responsible for processing chat messages. */
+	private MucPacketProcessor mPacketProcessor;
+	/** The multiuser chat Instance */
 	private MultiUserChat muc;
-	/** The password for re-entering the muc room after it was locked. */
+	/** The password for re-entering the muc room after it has been locked. */
 	private String mucPw;
 
 	/** The class specific Logger object. */
@@ -41,21 +67,19 @@ public class MucConnection implements PacketListener, MessageListener
 	
 	
 	/**
-	 * Standard Constructor, calls createMultiUserChat() and adds a listener for new users.
-	 * @param serviceInstance
-	 * @throws Exception
+	 * The constructor for creating a new instance of MucConnection.
+	 * 
+	 * @param serviceInstance the ninecards game service instance
 	 */
-	public MucConnection(NineCardsService serviceInstance) throws Exception
+	public MucConnection(NineCardsService serviceInstance)
 	{
 		this.mServiceInstance = serviceInstance;
-		this.packetProcessor = new MucPacketProcessor(mServiceInstance);
+		this.mPacketProcessor = new MucPacketProcessor(mServiceInstance);
 	}
 	
 	
 	/**
-	 * Creates a new MUC room.
-	 * 
-	 * @throws XMPPException
+	 * Creates a new multiuser chat room.
 	 */
 	public void createMultiUserChat()
 	{
@@ -101,8 +125,9 @@ public class MucConnection implements PacketListener, MessageListener
 	
 	
 	/**
+	 * Sends a groupchat message to the multiuser chat room.
 	 * 
-	 * @param message
+	 * @param message the message to be sent
 	 */
 	public void sendMessagetoMuc(XMPPInfo message)
 	{
@@ -124,8 +149,8 @@ public class MucConnection implements PacketListener, MessageListener
 	
 	
 	/**
-	 * Prevents new players from joining by setting a secret password for muc. This is necessary because for maxusers,
-	 * Smack only values out of { 10, 20, 30, 50, 100, None } (see http://xmpp.org/extensions/xep-0045.html#roomconfig)
+	 * Prevents new players from joining by setting a secret password for muc. This is necessary because for the maximum number of users,
+	 * Smack only allows values out of { 10, 20, 30, 50, 100, None } (see http://xmpp.org/extensions/xep-0045.html#roomconfig).
 	 */
 	public void lockMuc()
 	{
@@ -150,7 +175,7 @@ public class MucConnection implements PacketListener, MessageListener
 	
 	
 	/**
-	 * Returns the password for re-entering the muc room after it was locked.
+	 * Returns the password for the multiuser chat room after it was locked.
 	 * @return
 	 */
 	public String getMucPw()
@@ -176,7 +201,7 @@ public class MucConnection implements PacketListener, MessageListener
 			if(mesg.getBody() != null) {
 				try {
 					LOGGER.info("processing incoming groupchat packet: " + mesg.getFrom() + " - " + mesg.getBody());
-					packetProcessor.processPacket(mesg);
+					mPacketProcessor.processPacket(mesg);
 				} catch (Exception e) {
 					LOGGER.severe("failed to process incoming chat package (" + e.getClass() + " - " + e.getMessage() + ")");
 				}
@@ -199,7 +224,7 @@ public class MucConnection implements PacketListener, MessageListener
 				if(mesg.getFrom() == null)
 					mesg.setFrom(chat.getParticipant());
 				LOGGER.info("processing incoming private chat message: " + mesg.getFrom() + " - " + mesg.getBody());
-				packetProcessor.processPacket(mesg);
+				mPacketProcessor.processPacket(mesg);
 			} catch (Exception e) {
 				LOGGER.severe("failed to process incoming chat package (" + e.getClass() + " - " + e.getMessage() + ")");
 			}
@@ -208,12 +233,14 @@ public class MucConnection implements PacketListener, MessageListener
 	
 	
 	/**
-	 * Kicks a player from the chat.
-	 * @param fullID The ID of the player (example: room@conference.jabber.org/nick)
+	 * Removes a player from the chat.
+	 * 
+	 * @param id the ID of the player (example: room@conference.jabber.org/nick)
+	 * @param reason the reason for kicking the player
 	 */
-	public void removePlayerFromChat(String fullID, String reason)
+	public void removePlayerFromChat(String id, String reason)
 	{
-		String nick = StringUtils.parseResource(fullID);
+		String nick = StringUtils.parseResource(id);
 		try {
 			muc.kickParticipant(nick, reason);
 			LOGGER.info("kicked player " + nick + " from chat (reason: " + reason + ")");
@@ -224,8 +251,9 @@ public class MucConnection implements PacketListener, MessageListener
 
 	
 	/**
-	 * Closes the MultiUserChat.
-	 * @throws XMPPException the XMPP exception
+	 * Closes the multiuser chat.
+	 * 
+	 * @param reason the reason for closing the chat
 	 */
 	public void closeMultiUserChat(String reason)
 	{
@@ -242,13 +270,14 @@ public class MucConnection implements PacketListener, MessageListener
 	
 	
 	/**
+	 * Determines whether the player corresponding to the specified ID has admin affiliation in the muc room.
 	 * 
-	 * @param fullID
-	 * @return
+	 * @param id the id of the player
+	 * @return true if player is admin, else if not
 	 */
-	public boolean isAdmin(String fullID)
+	public boolean isAdmin(String id)
 	{
-		String nick = StringUtils.parseResource(fullID);
+		String nick = StringUtils.parseResource(id);
 		boolean res = false;
 		
 		try {
@@ -256,7 +285,7 @@ public class MucConnection implements PacketListener, MessageListener
 				if(aff.getNick().equals(nick))
 					res = true;	
 		} catch(Exception e) {
-			LOGGER.severe("Failed to determine whether " + fullID + "is admin");
+			LOGGER.severe("Failed to determine whether " + id + "is admin");
 		}
 		
 		return res;
@@ -264,13 +293,14 @@ public class MucConnection implements PacketListener, MessageListener
 	
 	
 	/**
+	 * Returns the full JID of the user corresponding to the specified ID.
 	 * 
-	 * @param fullID The ID of the player (example: room@conference.jabber.org/nick)
-	 * @return the bare XMPP user ID of the user (e.g. "user@host.org")
+	 * @param id the ID of the player (example: room@conference.jabber.org/nick)
+	 * @return the bare XMPP user ID of the user (e.g. user@host.org)
 	 */
-	private String getJid(String fullID)
+	private String getJID(String id)
 	{
-		String nick = StringUtils.parseResource(fullID);
+		String nick = StringUtils.parseResource(id);
 		String jid = null;
 		
 		try {
@@ -278,7 +308,7 @@ public class MucConnection implements PacketListener, MessageListener
 				if(occ.getNick().equals(nick))
 					jid = occ.getJid();
 		} catch (XMPPException e) {
-			LOGGER.severe("Failed to get JID of player " + fullID + " (" + e.getMessage() + " / " + e.getXMPPError());
+			LOGGER.severe("Failed to get JID of player " + id + " (" + e.getMessage() + " / " + e.getXMPPError());
 		}
 		
 		return jid;
@@ -286,7 +316,8 @@ public class MucConnection implements PacketListener, MessageListener
 	
 	
 	/**
-	 * 
+	 * Checks if all players have chosen a card, and if true, sends a RoundCompleteMessage to all players before
+	 * starting a new round. If the end of the game is reached, a GameOverMessage is sent instead.
 	 */
 	public void checkRoundOver()
 	{
@@ -294,14 +325,14 @@ public class MucConnection implements PacketListener, MessageListener
 		if(mServiceInstance.getGame().checkRoundOver()) {
 			
 			// if true, get winner and increment his score
-			mServiceInstance.getGame().getRoundWinner().incrementRoundsWon();
+			mServiceInstance.getGame().getRoundWinner().incrementScore();
 			
 			// check if end of game is reached
 			if(mServiceInstance.getGame().getRound() == mServiceInstance.getSettings().getRounds()) {
 				sendMessagetoMuc(
 						new GameOverMessage(
 								mServiceInstance.getGame().getGameWinner().getID(),
-								mServiceInstance.getGame().getGameWinner().getRoundsWon(),
+								mServiceInstance.getGame().getGameWinner().getScore(),
 								mServiceInstance.getGame().getPlayerInfos()));
 			}
 			
@@ -319,7 +350,7 @@ public class MucConnection implements PacketListener, MessageListener
 	
 	
 	/**
-	 * Handles players who leave the room on their own or are kicked.
+	 * Handles players who leave the room on their own or are being kicked.
 	 */
 	private ParticipantStatusListener mParticipantStatusListener = new ParticipantStatusListener()
 	{
@@ -365,19 +396,19 @@ public class MucConnection implements PacketListener, MessageListener
 				if(!mServiceInstance.getGame().getPlayers().containsKey(participant)) {
 					mServiceInstance.getGame().addPlayer(new Player(participant));
 					
-					// if he's the first one, he is the creator of the game and will be assigned admin affiliation
+					// if he's the first one, he is the creator of the game and will be assigned administrator affiliation
 					if (mServiceInstance.getGame().getPlayers().size() == 1) {
-						try { muc.grantAdmin(getJid(participant)); }
+						try { muc.grantAdmin(getJID(participant)); }
 						catch (Exception e) { LOGGER.severe("Failed to assign admin affiliation (" + e.getMessage() + ")"); };
 					}
 
 					// if he's a regular player, he'll be assigned membership affiliation which provides less rights
 					else {
-						try { muc.grantMembership(getJid(participant)); }
+						try { muc.grantMembership(getJID(participant)); }
 						catch (Exception e) { LOGGER.severe("Failed to assign member affiliation (" + e.getMessage() + ")"); };
 					}
 					
-					// if max. number of players is reached, close MUC to prevent further joining
+					// if the maximum number of players is reached, close the multiuser chat room to prevent further joining
 					if(mServiceInstance.getGame().getPlayers().size() == mServiceInstance.getSettings().getMaxPlayers())
 						lockMuc();
 				}
@@ -385,7 +416,6 @@ public class MucConnection implements PacketListener, MessageListener
 		}
 		
 		
-
 		@Override
 		public void nicknameChanged(String participant, String newNickname)
 		{

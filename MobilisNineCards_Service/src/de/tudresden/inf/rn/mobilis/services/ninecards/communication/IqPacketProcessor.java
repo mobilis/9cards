@@ -24,15 +24,23 @@ import de.tudresden.inf.rn.mobilis.services.ninecards.NineCardsService;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.ConfigureGameRequest;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
+/**
+ * This class is responsible for processing incoming packets of type 'IQ'.
+ * 
+ * @author Matthias Köngeter
+ *
+ */
 public class IqPacketProcessor
 {
-	/**	The 9Cards service instance. */
+	
+	/**	The ninecards game service instance. */
 	private NineCardsService mServiceInstance;
 	
 	
 	/**
+	 * The constructor for creating a new IqPacketProcessor instance.
 	 * 
-	 * @param connection
+	 * @param serviceInstance the ninecards game service instance
 	 */
 	public IqPacketProcessor(NineCardsService serviceInstance)
 	{
@@ -41,8 +49,11 @@ public class IqPacketProcessor
 	
 	
 	/**
+	 * This method analyzes the type of a message and then parses it into a ConfigureGameRequest
+	 * before it is passed to the corresponding method. If the type is not 'ConfigureGameRequest',
+	 * an error response message will be sent.
 	 * 
-	 * @param inBean
+	 * @param inBean the bean to be parsed
 	 */
 	public void processPacket(XMPPBean inBean)
 	{
@@ -60,8 +71,10 @@ public class IqPacketProcessor
 	
 	
 	/**
+	 * This method checks whether the game has already been initialized, and if that's not the case,
+	 * settings are configured and the multiuser chat is created.
 	 * 
-	 * @param inBean
+	 * @param inBean the ConfigureGameRequest to be processed
 	 */
 	private void onConfigureGame(ConfigureGameRequest inBean)
 	{

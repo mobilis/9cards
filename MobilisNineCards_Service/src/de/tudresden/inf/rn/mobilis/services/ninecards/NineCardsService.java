@@ -30,23 +30,31 @@ import de.tudresden.inf.rn.mobilis.server.services.MobilisService;
 import de.tudresden.inf.rn.mobilis.services.ninecards.communication.IqConnection;
 import de.tudresden.inf.rn.mobilis.services.ninecards.communication.MucConnection;
 
+/**
+ * This class extends MobilisService and manages the whole game service lifecycle.
+ * 
+ * @author Matthias Köngeter
+ *
+ */
 public class NineCardsService extends MobilisService
 {
-	/** The raw XMPP connection wrapper for this service. */
+	
+	/** The class for managing IQ communication. */
 	private IqConnection mIqConnection;
-	/** The class for MUC management. */
+	/** The class for multiuser and private chat communication. */
 	private MucConnection mMucConnection;
 	
-	/** The actual game instance. */
+	/** The game instance. */
 	private Game mGame;
-	/** The Settings which contains game specific configuration. */
+	/** The settings object which contains game specific configuration. */
 	private Settings mSettings;
 	
 	/** The class specific Logger object. */
 	private final static Logger LOGGER = Logger.getLogger(NineCardsService.class.getCanonicalName());
 	
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see de.tudresden.inf.rn.mobilis.server.services.MobilisService#startup(de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent)
 	 */
 	@Override
@@ -75,16 +83,21 @@ public class NineCardsService extends MobilisService
 			this.shutdown();
 		}
 		
-		PacketTypeFilter mesFil = new PacketTypeFilter(Message.class);		
-		getAgent().getConnection().addPacketListener(mMucConnection, mesFil);		
-
-		PacketTypeFilter locFil = new PacketTypeFilter(IQ.class);		
-		getAgent().getConnection().addPacketListener(mIqConnection, locFil);	
+		// set packet filters, ignore packets of type presence
+		PacketTypeFilter iqFilter = new PacketTypeFilter(IQ.class);		
+		getAgent().getConnection().addPacketListener(mIqConnection, iqFilter);
+		
+		PacketTypeFilter mesgFilter = new PacketTypeFilter(Message.class);		
+		getAgent().getConnection().addPacketListener(mMucConnection, mesgFilter);		
 		
 		LOGGER.info("PacketListeners successfully registered (IQListener and MessageListener");
 	}
 	
 	
+	/*
+	 * (non-Javadoc)
+	 * @see de.tudresden.inf.rn.mobilis.server.services.MobilisService#shutdown()
+	 */
 	@Override
 	public void shutdown()
 	{
@@ -92,9 +105,9 @@ public class NineCardsService extends MobilisService
 		
 		if (mGame != null)
 			for (String playerJID : mGame.getPlayers().keySet())
-				mGame.removePlayer(playerJID, "shutting down 9cards service");
+				mGame.removePlayer(playerJID, "shutting down ninecards service");
 		
-		mMucConnection.closeMultiUserChat("shutting down 9cards service");
+		mMucConnection.closeMultiUserChat("shutting down ninecards service");
 
 		try {
 			super.shutdown();			
@@ -105,35 +118,42 @@ public class NineCardsService extends MobilisService
 	
 	
 	/**
-	 * Gets the IqConnection for this service. This is a wrapper for the raw XMPP connection.
-	 * @return the iq connection
+	 * Returns the IqConnection object.
+	 * 
+	 * @return the IQ communication wrapper
 	 */
 	public IqConnection getIqConnection()
 	{
 		return mIqConnection;
 	}
 	
+	
 	/**
-	 * Gets the MucConnection for this service. This is a wrapper for the muc connection.
-	 * @return the muc connection
+	 * Returns the MucConnection object.
+	 * 
+	 * @return the MUC communication wrapper
 	 */
 	public MucConnection getMucConnection()
 	{
 		return mMucConnection;
 	}
 	
+	
 	/**
-	 * Gets the actual game instance.
-	 * @return the actual game instance
+	 * Returns the game instance.
+	 * 
+	 * @return the game instance
 	 */
 	public Game getGame()
 	{
 		return mGame;
 	}
 	
+	
 	/**
-	 * Gets the Settings.
-	 * @return the Settings
+	 * Returns the Settings object.
+	 * 
+	 * @return the Settings object
 	 */
 	public Settings getSettings()
 	{

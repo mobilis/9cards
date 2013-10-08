@@ -21,9 +21,11 @@ package de.tudresden.inf.rn.mobilis.services.ninecards;
 
 import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
 
-
 /**
- * The Class Settings contains global setting for the game.
+ * This class contains global settings for the game.
+ * 
+ * @author Matthias Köngeter
+ *
  */
 public class Settings
 {
@@ -34,12 +36,13 @@ public class Settings
 	/** The amount of rounds for this game. */
 	private int rounds;
 	
-	/** The chat id. */
+	/** The chat ID. */
 	private String chatID;
 	
 	
 	/**
-	 * Initializes the Settings with predefined values.
+	 * Initializes the settings with predefined values.
+	 * 
 	 * @param agent the MobilisAgent which contains XMPP specific attributes.
 	 */
 	public Settings(MobilisAgent agent)
@@ -57,18 +60,20 @@ public class Settings
 	}
 	
 	
-	
 	/**
-	 * Gets the game name.
-	 * @return the game name
+	 * Returns the game name.
+	 * 
+	 * @return the name of the game
 	 */
 	public String getGameName()
 	{
 		return gameName;
 	}
 	
+	
 	/**
 	 * Sets the game name.
+	 * 
 	 * @param gameName the new game name
 	 */
 	public void setGameName(String gameName)
@@ -77,9 +82,11 @@ public class Settings
 			this.gameName = gameName;
 	}
 
+	
 	/**
-	 * Sets the max players.
-	 * @param maxPlayer the new max players
+	 * Sets the maximum number of players.
+	 * 
+	 * @param maxPlayer the new maximum number of players
 	 */
 	public void setMaxPlayers(int maxPlayers)
 	{
@@ -87,9 +94,11 @@ public class Settings
 			this.maxPlayers = maxPlayers;
 	}
 
+	
 	/**
-	 * Gets the max players.
-	 * @return the max players
+	 * Returns the maximum number of players.
+	 * 
+	 * @return the maximum number of players
 	 */
 	public int getMaxPlayers()
 	{
@@ -98,17 +107,9 @@ public class Settings
 
 	
 	/**
-	 * Sets the chat id.
-	 * @param chatID the new chat id
-	 */
-	public void setChatID(String chatID)
-	{
-		this.chatID = chatID;
-	}
-	
-	/**
-	 * Gets the chat id.
-	 * @return the chat id
+	 * Returns the chat ID.
+	 * 
+	 * @return the chat ID
 	 */
 	public String getChatID()
 	{
@@ -117,8 +118,9 @@ public class Settings
 	
 
 	/**
-	 * Sets the rounds.
-	 * @param rounds the new rounds
+	 * Sets the number of rounds to be played.
+	 * 
+	 * @param rounds the new number of rounds
 	 */
 	public void setRounds(int rounds)
 	{
@@ -128,9 +130,9 @@ public class Settings
 
 
 	/**
-	 * Gets the rounds.
+	 * Returns the number of rounds to be played.
 	 *
-	 * @return the rounds
+	 * @return the number of rounds rounds
 	 */
 	public int getRounds()
 	{

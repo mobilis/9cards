@@ -39,29 +39,28 @@ import de.tudresden.inf.rn.mobilis.xmpp.server.BeanIQAdapter;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanProviderAdapter;
 
 /**
- * The class for handling the raw XMPP bean connection.
+ * This class is responsible for managing raw XMPP bean communication.
  * 
- * Also implements the listener interface for receiving IQ events. The class that is interested in processing a IQ
- * event implements this interface, and the object created with that class is registered with a component using the
- * component's addIQListener() method. When the IQ event occurs, that object's appropriate method is invoked.
- * @see IQEvent
+ * @author Matthias Köngeter
+ *
  */
 public class IqConnection implements PacketListener
 {
-	/** The NineCards service. */
-	private NineCardsService mServiceInstance;
-	/** The class which processes iq packets. */
-	private IqPacketProcessor packetProcessor;
 	
-	/** The prototypes of registered XMPPBeans used for this service. */
-	private Map<String,Map<String,XMPPBean>> beanPrototypes
+	/** The NineCards game service instance. */
+	private NineCardsService mServiceInstance;
+	/** The IqPacketProcessor object which is responsible for processing IQ packets. */
+	private IqPacketProcessor mPacketProcessor;
+	
+	/** The prototypes of XMPPBeans which need to be registered. */
+	private Map<String, Map<String, XMPPBean>> mBeanPrototypes
 		= Collections.synchronizedMap(new HashMap<String,Map<String,XMPPBean>>());
 	
-	/** The proxy used for instantiating requests and responses. */
+	/** The proxy used for sending requests and responses. */
 	private MobilisNineCardsProxy _proxy;
 	
-	/** The waiting callbacks which are invoked later */
-	private Map<String, IXMPPCallback<? extends XMPPBean>> _waitingCallbacks 
+	/** The waiting callbacks which are to be invoked if a response is received. */
+	private Map<String, IXMPPCallback<? extends XMPPBean>> mWaitingCallbacks 
 		= new HashMap<String, IXMPPCallback<? extends XMPPBean>>();
 	
 	/** The class specific Logger object. */
@@ -69,19 +68,24 @@ public class IqConnection implements PacketListener
 	
 	
 	/**
-	 * Instantiates a new Connection.
-	 * @param serviceInstance the NineCards service
+	 * Constructor for instantiating a new IqConnection object.
+	 * 
+	 * @param serviceInstance the ninecards game service instance
 	 */
 	public IqConnection(NineCardsService serviceInstance)
 	{
 		this.mServiceInstance = serviceInstance;
-		this.packetProcessor = new IqPacketProcessor(mServiceInstance);
+		this.mPacketProcessor = new IqPacketProcessor(mServiceInstance);
 		this._proxy = new MobilisNineCardsProxy(_proxyOutgoingMapper);
 		
 		registerXMPPExtensions();
 	}
 	
 	
+	/*
+	 * (non-Javadoc)
+	 * @see org.jivesoftware.smack.PacketListener#processPacket(org.jivesoftware.smack.packet.Packet)
+	 */
 	@Override
 	public void processPacket(Packet packet)
 	{
@@ -91,14 +95,12 @@ public class IqConnection implements PacketListener
 			// Convert packet to @see XMPPBean
 			XMPPBean xmppBean = unpackBeanIQAdapter((BeanIQAdapter) packet);
 			
-			// If Bean is of type ERROR it will be logged
 			if(xmppBean.getType() == XMPPBean.TYPE_ERROR)
 				LOGGER.severe("ERROR: Bean of Type ERROR received: " + beanToString(xmppBean));
 			
-	    	// Else handle it in IqPacketProcessor
 			else {
 				LOGGER.info("processing incoming iq packet: " + beanToString(xmppBean));
-				packetProcessor.processPacket(xmppBean);
+				mPacketProcessor.processPacket(xmppBean);
 			}
 		}
 	}
@@ -107,7 +109,7 @@ public class IqConnection implements PacketListener
 	/**
 	 * Converts an XMPPBean to a string.
 	 *
-	 * @param bean the XMPPBean
+	 * @param bean the XMPPBean to be transformed into a string
 	 * @return the XMPPBean as string
 	 */
 	private String beanToString(XMPPBean bean)
@@ -133,17 +135,28 @@ public class IqConnection implements PacketListener
 	}
 	
 	
+	/**
+	 * Returns the instance of MobilisNineCardsProxy.
+	 * 
+	 * @return the MobilisNineCardsProxy object
+	 */
 	public MobilisNineCardsProxy getProxy()
 	{
 		return _proxy;
 	}
 	
 	
+	/**
+	 * Invokes a callback corresponding to the bean's ID
+	 * 
+	 * @param inBean the bean to whose ID a callback shall be invoked
+	 * @return true if a corresponding callback was found, else if not
+	 */
 	@SuppressWarnings("unchecked")
 	public boolean handleCallback(XMPPBean inBean)
 	{
 		@SuppressWarnings("rawtypes")
-		IXMPPCallback callback = _waitingCallbacks.get(inBean.getId());
+		IXMPPCallback callback = mWaitingCallbacks.get(inBean.getId());
 
 		if (callback != null)
 			callback.invoke( inBean );
@@ -153,7 +166,8 @@ public class IqConnection implements PacketListener
 	
 	
 	/**
-	 * Checks if 9Cards service is connected to XMPP server.
+	 * Checks if ninecards service is connected to XMPP server.
+	 * 
 	 * @return true, if is connected
 	 */
 	public boolean isConnected()
@@ -165,7 +179,7 @@ public class IqConnection implements PacketListener
 	
 	
 	/**
-	 * Register all XMBBBeabs labeled as XMPP extensions.
+	 * Register XMPPBeans. In this scenario we only have ConfigureGameRequest and ConfigureGameResponse.
 	 */
 	private void registerXMPPExtensions()
 	{		
@@ -181,16 +195,16 @@ public class IqConnection implements PacketListener
 	 */
 	private void registerXMPPBean(XMPPBean prototype)
 	{
-		// add XMPPBean to service provider to enable it in XMPP
+		// add XMPPBean to service provider
 		(new BeanProviderAdapter(new ProxyBean(prototype.getNamespace(), prototype.getChildElement()))).addToProviderManager();
 		
 		// add the prototype of the XMPPBean to the managed list of prototypes
-		synchronized (this.beanPrototypes) {
-			if (!this.beanPrototypes.keySet().contains(prototype.getNamespace()))
-				this.beanPrototypes.put(prototype.getNamespace(), 
+		synchronized (this.mBeanPrototypes) {
+			if (!this.mBeanPrototypes.keySet().contains(prototype.getNamespace()))
+				this.mBeanPrototypes.put(prototype.getNamespace(), 
 						Collections.synchronizedMap( new HashMap<String,XMPPBean>() ));
 			
-			this.beanPrototypes.get(prototype.getNamespace())
+			this.mBeanPrototypes.get(prototype.getNamespace())
 				.put(prototype.getChildElement(), prototype);
 		}
 	}
@@ -201,37 +215,22 @@ public class IqConnection implements PacketListener
 	 * This function should be used for all classes to send a XMPPBean.
 	 *
 	 * @param bean the XMPPBean to send
-	 * @return true, if sending was successful
+	 * @return true, if sending was successful and false, if not
 	 */
 	private boolean sendXMPPBean(XMPPBean bean)
 	{
-		bean.setFrom(mServiceInstance.getAgent().getFullJid());
-		sendBean(bean);
-
-		return true;
-	}
-	
-	
-	/**
-	 * Send a single XMPPBean using the routing information determined in the XMPPBean itself. 
-	 * This function doesn't store the XMPPBean to send in the list of waiting XMPPBeans 
-	 * mWatingForResultBeans, so there will be no check for response. This function can 
-	 * only be used by this Connection class is not qualified for normal usage of sending 
-	 * XMPPBeans by other classes like the GameState classes.
-	 *
-	 * @param bean the XMPPBean to send
-	 */
-	private void sendBean(XMPPBean bean)
-	{
-		// just send the XMPPBean if XMPP connection is established and no FileTransfer is active
 		if((mServiceInstance.getAgent() != null)
 				&& (mServiceInstance.getAgent().getConnection() != null)
-				&& (mServiceInstance.getAgent().getConnection().isConnected()) ) {
-			
-			// send XMPPBean
+				&& (mServiceInstance.getAgent().getConnection().isConnected())) {
+
+			bean.setFrom(mServiceInstance.getAgent().getFullJid());
 			mServiceInstance.getAgent().getConnection().sendPacket(new BeanIQAdapter(bean));
 			LOGGER.info("sent IQ: " + beanToString(bean));
+			
+			return true;
 		}
+
+		else return false;
 	}
 	
 	
@@ -240,7 +239,7 @@ public class IqConnection implements PacketListener
 	 *
 	 * @param resultBean the error XMPPBean with the specific error information
 	 * @param fromBean the original XMPPBean
-	 * @return true, if sending successful
+	 * @return true, if sending successful and false, if sending failed
 	 */
 	public boolean sendXMPPBeanError(XMPPBean resultBean, XMPPBean fromBean)
 	{
@@ -254,19 +253,19 @@ public class IqConnection implements PacketListener
 	
 	/**
 	 * Extracts an XMPPBean out of a given BeanIQAdapter.
-	 * @param adapter
-	 * @return
+	 * 
+	 * @param adapter the BeanIQAdapter from which the XMPPBean shall be extracted
+	 * @return the unpacked XMPPBean
 	 */
 	public XMPPBean unpackBeanIQAdapter(BeanIQAdapter adapter)
 	{
 		XMPPBean unpackedBean = null;
 		
-		if( beanPrototypes.containsKey( adapter.getNamespace() )
-				&& beanPrototypes.get( adapter.getNamespace() )
-					.containsKey( adapter.getChildElement() )){
-			unpackedBean = adapter.unpackProxyBean( 
-					beanPrototypes.get( adapter.getNamespace() )
-						.get( adapter.getChildElement() ).clone() );
+		if(mBeanPrototypes.containsKey(adapter.getNamespace())
+				&& mBeanPrototypes.get(adapter.getNamespace()).containsKey(adapter.getChildElement())) {
+			
+			unpackedBean = adapter.unpackProxyBean(
+					mBeanPrototypes.get(adapter.getNamespace()).get(adapter.getChildElement()).clone());
 		}
 		
 		return unpackedBean;
@@ -287,7 +286,7 @@ public class IqConnection implements PacketListener
 		@Override
 		public void sendXMPPBean(XMPPBean out, IXMPPCallback<? extends XMPPBean> callback)
 		{
-			_waitingCallbacks.put(out.getId(), callback);
+			mWaitingCallbacks.put(out.getId(), callback);
 			sendXMPPBean(out);
 		}
 	};
