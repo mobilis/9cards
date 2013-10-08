@@ -37,11 +37,20 @@ var ninecards = {
 		} else {
 
 			var settings = jQuery.jStorage.get('settings');
+
 			MX.core.connect(
 				settings.gameserver,
 				settings.jid,
 				settings.password,
 				function(status) {
+					switch (status) {
+						case MX.core.Status.CONNECTED:
+							ninecards.queryGames();
+							break;
+						case MX.core.Status.AUTHFAIL:
+							ninecards.disconnectOnError();
+							break;
+					}
 					if (status == MX.core.Status.CONNECTED) {
 						ninecards.queryGames();
 					}
@@ -52,7 +61,26 @@ var ninecards = {
 	},
 
 
-
+	disconnectOnError : function(){
+        $('#error-popup').popup({
+            afteropen: function( event, ui ) {
+                $(this).find('h1').html('Error');
+                $(this).find('.ui-content h3').html('Authentication Fail');
+                $(this).find('.ui-content p').html('Please check the settings');
+            },
+            afterclose: function( event, ui ) {
+                MX.connection.disconnect();
+                jQuery.mobile.changePage('#start', {
+                    transition: 'slide',
+                    reverse: true,
+                    changeHash: true
+                });
+            }
+        });
+        $('#error-popup').popup('open', {
+            positionTo: 'window'
+        });
+	},
 
 
 	createGame : function(gameName, maxPlayers, numberOfRounds) {
