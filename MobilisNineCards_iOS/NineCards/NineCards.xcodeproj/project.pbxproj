@@ -1,0 +1,517 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0C5C870D1806988100C6B371 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C5C870C1806988100C6B371 /* Foundation.framework */; };
+		0C5C870F1806988100C6B371 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C5C870E1806988100C6B371 /* CoreGraphics.framework */; };
+		0C5C87111806988100C6B371 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C5C87101806988100C6B371 /* UIKit.framework */; };
+		0C5C87171806988100C6B371 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0C5C87151806988100C6B371 /* InfoPlist.strings */; };
+		0C5C87191806988100C6B371 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C5C87181806988100C6B371 /* main.m */; };
+		0C5C871D1806988100C6B371 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C5C871C1806988100C6B371 /* AppDelegate.m */; };
+		0C5C87201806988100C6B371 /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0C5C871E1806988100C6B371 /* Main_iPhone.storyboard */; };
+		0C5C87231806988100C6B371 /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0C5C87211806988100C6B371 /* Main_iPad.storyboard */; };
+		0C5C87261806988100C6B371 /* GameListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C5C87251806988100C6B371 /* GameListViewController.m */; };
+		0C5C87281806988100C6B371 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0C5C87271806988100C6B371 /* Images.xcassets */; };
+		0C5C872F1806988100C6B371 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C5C872E1806988100C6B371 /* XCTest.framework */; };
+		0C5C87301806988100C6B371 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C5C870C1806988100C6B371 /* Foundation.framework */; };
+		0C5C87311806988100C6B371 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C5C87101806988100C6B371 /* UIKit.framework */; };
+		0C5C87391806988100C6B371 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0C5C87371806988100C6B371 /* InfoPlist.strings */; };
+		0C5C873B1806988100C6B371 /* NineCardsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C5C873A1806988100C6B371 /* NineCardsTests.m */; };
+		0C5C874D1806B7C300C6B371 /* GameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C5C874C1806B7C300C6B371 /* GameViewController.m */; };
+		0C5C874F1806C12100C6B371 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C5C874E1806C12100C6B371 /* QuartzCore.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		0C5C87321806988100C6B371 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0C5C87011806988000C6B371 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0C5C87081806988100C6B371;
+			remoteInfo = NineCards;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0C5C87091806988100C6B371 /* NineCards.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NineCards.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0C5C870C1806988100C6B371 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		0C5C870E1806988100C6B371 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		0C5C87101806988100C6B371 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		0C5C87141806988100C6B371 /* NineCards-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NineCards-Info.plist"; sourceTree = "<group>"; };
+		0C5C87161806988100C6B371 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		0C5C87181806988100C6B371 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		0C5C871A1806988100C6B371 /* NineCards-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NineCards-Prefix.pch"; sourceTree = "<group>"; };
+		0C5C871B1806988100C6B371 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		0C5C871C1806988100C6B371 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		0C5C871F1806988100C6B371 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPhone.storyboard; sourceTree = "<group>"; };
+		0C5C87221806988100C6B371 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
+		0C5C87241806988100C6B371 /* GameListViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameListViewController.h; sourceTree = "<group>"; };
+		0C5C87251806988100C6B371 /* GameListViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GameListViewController.m; sourceTree = "<group>"; };
+		0C5C87271806988100C6B371 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		0C5C872D1806988100C6B371 /* NineCardsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NineCardsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0C5C872E1806988100C6B371 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		0C5C87361806988100C6B371 /* NineCardsTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NineCardsTests-Info.plist"; sourceTree = "<group>"; };
+		0C5C87381806988100C6B371 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		0C5C873A1806988100C6B371 /* NineCardsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NineCardsTests.m; sourceTree = "<group>"; };
+		0C5C874B1806B7C300C6B371 /* GameViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameViewController.h; sourceTree = "<group>"; };
+		0C5C874C1806B7C300C6B371 /* GameViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameViewController.m; sourceTree = "<group>"; };
+		0C5C874E1806C12100C6B371 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		0C5C87061806988100C6B371 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0C5C874F1806C12100C6B371 /* QuartzCore.framework in Frameworks */,
+				0C5C870F1806988100C6B371 /* CoreGraphics.framework in Frameworks */,
+				0C5C87111806988100C6B371 /* UIKit.framework in Frameworks */,
+				0C5C870D1806988100C6B371 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0C5C872A1806988100C6B371 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0C5C872F1806988100C6B371 /* XCTest.framework in Frameworks */,
+				0C5C87311806988100C6B371 /* UIKit.framework in Frameworks */,
+				0C5C87301806988100C6B371 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0C5C87001806988000C6B371 = {
+			isa = PBXGroup;
+			children = (
+				0C5C87121806988100C6B371 /* NineCards */,
+				0C5C87341806988100C6B371 /* NineCardsTests */,
+				0C5C870B1806988100C6B371 /* Frameworks */,
+				0C5C870A1806988100C6B371 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		0C5C870A1806988100C6B371 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0C5C87091806988100C6B371 /* NineCards.app */,
+				0C5C872D1806988100C6B371 /* NineCardsTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0C5C870B1806988100C6B371 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0C5C874E1806C12100C6B371 /* QuartzCore.framework */,
+				0C5C870C1806988100C6B371 /* Foundation.framework */,
+				0C5C870E1806988100C6B371 /* CoreGraphics.framework */,
+				0C5C87101806988100C6B371 /* UIKit.framework */,
+				0C5C872E1806988100C6B371 /* XCTest.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		0C5C87121806988100C6B371 /* NineCards */ = {
+			isa = PBXGroup;
+			children = (
+				0C5C8745180698CB00C6B371 /* Controllers */,
+				0C5C8744180698C400C6B371 /* Views */,
+				0C5C871B1806988100C6B371 /* AppDelegate.h */,
+				0C5C871C1806988100C6B371 /* AppDelegate.m */,
+				0C5C87271806988100C6B371 /* Images.xcassets */,
+				0C5C87131806988100C6B371 /* Supporting Files */,
+			);
+			path = NineCards;
+			sourceTree = "<group>";
+		};
+		0C5C87131806988100C6B371 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				0C5C87141806988100C6B371 /* NineCards-Info.plist */,
+				0C5C87151806988100C6B371 /* InfoPlist.strings */,
+				0C5C87181806988100C6B371 /* main.m */,
+				0C5C871A1806988100C6B371 /* NineCards-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		0C5C87341806988100C6B371 /* NineCardsTests */ = {
+			isa = PBXGroup;
+			children = (
+				0C5C873A1806988100C6B371 /* NineCardsTests.m */,
+				0C5C87351806988100C6B371 /* Supporting Files */,
+			);
+			path = NineCardsTests;
+			sourceTree = "<group>";
+		};
+		0C5C87351806988100C6B371 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				0C5C87361806988100C6B371 /* NineCardsTests-Info.plist */,
+				0C5C87371806988100C6B371 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		0C5C8744180698C400C6B371 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				0C5C871E1806988100C6B371 /* Main_iPhone.storyboard */,
+				0C5C87211806988100C6B371 /* Main_iPad.storyboard */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		0C5C8745180698CB00C6B371 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				0C5C87241806988100C6B371 /* GameListViewController.h */,
+				0C5C87251806988100C6B371 /* GameListViewController.m */,
+				0C5C874B1806B7C300C6B371 /* GameViewController.h */,
+				0C5C874C1806B7C300C6B371 /* GameViewController.m */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0C5C87081806988100C6B371 /* NineCards */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0C5C873E1806988100C6B371 /* Build configuration list for PBXNativeTarget "NineCards" */;
+			buildPhases = (
+				0C5C87051806988100C6B371 /* Sources */,
+				0C5C87061806988100C6B371 /* Frameworks */,
+				0C5C87071806988100C6B371 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NineCards;
+			productName = NineCards;
+			productReference = 0C5C87091806988100C6B371 /* NineCards.app */;
+			productType = "com.apple.product-type.application";
+		};
+		0C5C872C1806988100C6B371 /* NineCardsTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0C5C87411806988100C6B371 /* Build configuration list for PBXNativeTarget "NineCardsTests" */;
+			buildPhases = (
+				0C5C87291806988100C6B371 /* Sources */,
+				0C5C872A1806988100C6B371 /* Frameworks */,
+				0C5C872B1806988100C6B371 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0C5C87331806988100C6B371 /* PBXTargetDependency */,
+			);
+			name = NineCardsTests;
+			productName = NineCardsTests;
+			productReference = 0C5C872D1806988100C6B371 /* NineCardsTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0C5C87011806988000C6B371 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0500;
+				ORGANIZATIONNAME = Mobilis;
+				TargetAttributes = {
+					0C5C872C1806988100C6B371 = {
+						TestTargetID = 0C5C87081806988100C6B371;
+					};
+				};
+			};
+			buildConfigurationList = 0C5C87041806988000C6B371 /* Build configuration list for PBXProject "NineCards" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 0C5C87001806988000C6B371;
+			productRefGroup = 0C5C870A1806988100C6B371 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				0C5C87081806988100C6B371 /* NineCards */,
+				0C5C872C1806988100C6B371 /* NineCardsTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		0C5C87071806988100C6B371 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0C5C87231806988100C6B371 /* Main_iPad.storyboard in Resources */,
+				0C5C87281806988100C6B371 /* Images.xcassets in Resources */,
+				0C5C87201806988100C6B371 /* Main_iPhone.storyboard in Resources */,
+				0C5C87171806988100C6B371 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0C5C872B1806988100C6B371 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0C5C87391806988100C6B371 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0C5C87051806988100C6B371 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0C5C874D1806B7C300C6B371 /* GameViewController.m in Sources */,
+				0C5C87261806988100C6B371 /* GameListViewController.m in Sources */,
+				0C5C871D1806988100C6B371 /* AppDelegate.m in Sources */,
+				0C5C87191806988100C6B371 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0C5C87291806988100C6B371 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0C5C873B1806988100C6B371 /* NineCardsTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0C5C87331806988100C6B371 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0C5C87081806988100C6B371 /* NineCards */;
+			targetProxy = 0C5C87321806988100C6B371 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		0C5C87151806988100C6B371 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				0C5C87161806988100C6B371 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		0C5C871E1806988100C6B371 /* Main_iPhone.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				0C5C871F1806988100C6B371 /* Base */,
+			);
+			name = Main_iPhone.storyboard;
+			sourceTree = "<group>";
+		};
+		0C5C87211806988100C6B371 /* Main_iPad.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				0C5C87221806988100C6B371 /* Base */,
+			);
+			name = Main_iPad.storyboard;
+			sourceTree = "<group>";
+		};
+		0C5C87371806988100C6B371 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				0C5C87381806988100C6B371 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		0C5C873C1806988100C6B371 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		0C5C873D1806988100C6B371 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		0C5C873F1806988100C6B371 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "NineCards/NineCards-Prefix.pch";
+				INFOPLIST_FILE = "NineCards/NineCards-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		0C5C87401806988100C6B371 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "NineCards/NineCards-Prefix.pch";
+				INFOPLIST_FILE = "NineCards/NineCards-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		0C5C87421806988100C6B371 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/NineCards.app/NineCards";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "NineCards/NineCards-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "NineCardsTests/NineCardsTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		0C5C87431806988100C6B371 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/NineCards.app/NineCards";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "NineCards/NineCards-Prefix.pch";
+				INFOPLIST_FILE = "NineCardsTests/NineCardsTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0C5C87041806988000C6B371 /* Build configuration list for PBXProject "NineCards" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0C5C873C1806988100C6B371 /* Debug */,
+				0C5C873D1806988100C6B371 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0C5C873E1806988100C6B371 /* Build configuration list for PBXNativeTarget "NineCards" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0C5C873F1806988100C6B371 /* Debug */,
+				0C5C87401806988100C6B371 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		0C5C87411806988100C6B371 /* Build configuration list for PBXNativeTarget "NineCardsTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0C5C87421806988100C6B371 /* Debug */,
+				0C5C87431806988100C6B371 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0C5C87011806988000C6B371 /* Project object */;
+}
