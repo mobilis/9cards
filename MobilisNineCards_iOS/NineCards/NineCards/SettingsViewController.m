@@ -47,6 +47,16 @@
 	tvCtr.tableView.delegate = self;
 	tvCtr.tableView.dataSource = self;
 	[self addChildViewController:tvCtr];
+
+    [self loadStoredAccountData];
+}
+- (void)loadStoredAccountData
+{
+    Account *account = [AccountManager account];
+    self.hostName = account.hostName;
+    self.jid = account.jid;
+    self.password = account.password;
+    self.port = account.port;
 }
 
 - (void)didReceiveMemoryWarning
