@@ -251,7 +251,7 @@
 				ORGANIZATIONNAME = Mobilis;
 				TargetAttributes = {
 					0C5C872C1806988100C6B371 = {
-						TestTargetID = 0C5C87081806988100C6B371;
+						TestTargetID = 0C5C87081806988100C6B371 /* NineCards */;
 					};
 				};
 			};

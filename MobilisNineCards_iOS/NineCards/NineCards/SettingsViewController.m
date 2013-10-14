@@ -8,6 +8,8 @@
 
 #import "SettingsViewController.h"
 #import "TextFieldCell.h"
+#import "MXiConnectionHandler.h"
+#import "AccountManager.h"
 
 @interface SettingsViewController ()
 @property (retain) NSString *jid;
@@ -145,21 +147,21 @@
 
 - (IBAction)saveSettings:(UIBarButtonItem *)sender
 {
-//	Account *account = [Account new];
-//    account.jid = self.jid;
-//    account.password = self.password;
-//    account.hostName = self.hostName;
-//    account.port = self.port;
-//    [AccountManager storeAccount:account];
-//    [[MXiConnectionHandler sharedInstance] reconnectWithJID:account.jid
-//                                                   password:account.password
-//                                                   hostName:account.hostName
-//                                                       port:account.port
-//                                       authtenticationBlock:^(BOOL success) {
-//										   // TODO: trigger reload of data in other views
-//										   // implement some kind of notification mechanism or something
-//										   NSLog(@"Reconnection from SettingsView successfull? %c", success);
-//									   }];
+	Account *account = [Account new];
+    account.jid = self.jid;
+    account.password = self.password;
+    account.hostName = self.hostName;
+    account.port = self.port;
+    [AccountManager storeAccount:account];
+    [[MXiConnectionHandler sharedInstance] reconnectWithJID:account.jid
+                                                   password:account.password
+                                                   hostName:account.hostName
+                                                       port:account.port
+                                        authenticationBlock:^(BOOL success) {
+										   // TODO: trigger reload of data in other views
+										   // implement some kind of notification mechanism or something
+										   NSLog(@"Reconnection from SettingsView successfull? %c", success);
+									   }];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
