@@ -20,6 +20,8 @@
 @property (weak) UITextField *hostNameField;
 @property (weak) UITextField *portField;
 
+@property (retain) UITableViewController *tvCtr;
+
 - (IBAction)cancel:(UIBarButtonItem *)sender;
 - (IBAction)saveSettings:(UIBarButtonItem *)sender;
 
@@ -40,11 +42,12 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
-	UITableViewController *tvCtr = [[UITableViewController alloc] init];
-	tvCtr.tableView = self.tableView;
-	tvCtr.tableView.delegate = self;
-	tvCtr.tableView.dataSource = self;
-	[self addChildViewController:tvCtr];
+		self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"LaunchImage"]];
+	_tvCtr = [[UITableViewController alloc] init];
+	_tvCtr.tableView = self.tableView;
+	_tvCtr.tableView.delegate = self;
+	_tvCtr.tableView.dataSource = self;
+	[self addChildViewController:_tvCtr];
 }
 
 - (void)didReceiveMemoryWarning
@@ -105,18 +108,15 @@
 	switch (section) {
 		case 0:
 			return @"Host";
-			break;
 		case 1:
 			return @"Your Account (JID)";
-			break;
 		case 2:
 			return @"Password";
-			break;
 		case 3:
 			return @"Port";
-			break;
+		default:
+			return @"";
 	}
-	return @"";
 }
 
 #pragma mark - UITableViewDelegate

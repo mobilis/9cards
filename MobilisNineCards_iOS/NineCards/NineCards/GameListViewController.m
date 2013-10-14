@@ -8,7 +8,8 @@
 
 #import "GameListViewController.h"
 
-@interface GameListViewController ()
+@interface GameListViewController ()<UITableViewDataSource, UITableViewDelegate>
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 @end
 
@@ -17,7 +18,12 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+	self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"LaunchImage"]];
+	UITableViewController *tvCtr = [[UITableViewController alloc] init];
+	tvCtr.tableView = self.tableView;
+	tvCtr.tableView.delegate = self;
+	tvCtr.tableView.dataSource = self;
+	[self addChildViewController:tvCtr];
 }
 
 - (void)didReceiveMemoryWarning

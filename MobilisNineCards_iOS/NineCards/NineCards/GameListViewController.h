@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface GameListViewController : UITableViewController
+@interface GameListViewController : UIViewController
 
 @end

@@ -27,6 +27,7 @@
 		0C66D02318084DE900044B28 /* CreateGameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C66D02218084DE900044B28 /* CreateGameViewController.m */; };
 		0CF033CF18083CC000C1FE0F /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF033CE18083CC000C1FE0F /* SettingsViewController.m */; };
 		0CF033D218083D5200C1FE0F /* TextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF033D118083D5200C1FE0F /* TextFieldCell.m */; };
+		0CFEBBB6180C8FAD00631DD2 /* StartViewController_iPad.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CFEBBB5180C8FAD00631DD2 /* StartViewController_iPad.m */; };
 		EAAF1D87FD8B459FB2E1C965 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 201482854538406FBF9698BD /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -70,6 +71,8 @@
 		0CF033CE18083CC000C1FE0F /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		0CF033D018083D5200C1FE0F /* TextFieldCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextFieldCell.h; sourceTree = "<group>"; };
 		0CF033D118083D5200C1FE0F /* TextFieldCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextFieldCell.m; sourceTree = "<group>"; };
+		0CFEBBB4180C8FAD00631DD2 /* StartViewController_iPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StartViewController_iPad.h; sourceTree = "<group>"; };
+		0CFEBBB5180C8FAD00631DD2 /* StartViewController_iPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StartViewController_iPad.m; sourceTree = "<group>"; };
 		201482854538406FBF9698BD /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		38D6716BF7E24CD28EC41FF0 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -197,6 +200,8 @@
 				0CF033CE18083CC000C1FE0F /* SettingsViewController.m */,
 				0C66D02118084DE900044B28 /* CreateGameViewController.h */,
 				0C66D02218084DE900044B28 /* CreateGameViewController.m */,
+				0CFEBBB4180C8FAD00631DD2 /* StartViewController_iPad.h */,
+				0CFEBBB5180C8FAD00631DD2 /* StartViewController_iPad.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -341,6 +346,7 @@
 				0C5C871D1806988100C6B371 /* AppDelegate.m in Sources */,
 				0C66D02318084DE900044B28 /* CreateGameViewController.m in Sources */,
 				0C5C87191806988100C6B371 /* main.m in Sources */,
+				0CFEBBB6180C8FAD00631DD2 /* StartViewController_iPad.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
