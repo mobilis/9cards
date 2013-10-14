@@ -8,6 +8,8 @@
 
 #import "SettingsViewController.h"
 #import "TextFieldCell.h"
+#import "MXiConnectionHandler.h"
+#import "AccountManager.h"
 
 @interface SettingsViewController ()
 @property (retain) NSString *jid;
@@ -42,12 +44,22 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
-		self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"LaunchImage"]];
+	self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"LaunchImage"]];
 	_tvCtr = [[UITableViewController alloc] init];
 	_tvCtr.tableView = self.tableView;
 	_tvCtr.tableView.delegate = self;
 	_tvCtr.tableView.dataSource = self;
 	[self addChildViewController:_tvCtr];
+
+    [self loadStoredAccountData];
+}
+- (void)loadStoredAccountData
+{
+    Account *account = [AccountManager account];
+    self.hostName = account.hostName;
+    self.jid = account.jid;
+    self.password = account.password;
+    self.port = account.port;
 }
 
 - (void)didReceiveMemoryWarning
@@ -99,6 +111,7 @@
 			tf.keyboardType = UIKeyboardTypeNumberPad;
 			tf.text = [NSString stringWithFormat:@"%@", self.port];
 			break;
+        default: break;
 	}
 	return cell;
 }
@@ -114,8 +127,7 @@
 			return @"Password";
 		case 3:
 			return @"Port";
-		default:
-			return @"";
+        default: break;
 	}
 }
 
@@ -145,21 +157,21 @@
 
 - (IBAction)saveSettings:(UIBarButtonItem *)sender
 {
-//	Account *account = [Account new];
-//    account.jid = self.jid;
-//    account.password = self.password;
-//    account.hostName = self.hostName;
-//    account.port = self.port;
-//    [AccountManager storeAccount:account];
-//    [[MXiConnectionHandler sharedInstance] reconnectWithJID:account.jid
-//                                                   password:account.password
-//                                                   hostName:account.hostName
-//                                                       port:account.port
-//                                       authtenticationBlock:^(BOOL success) {
-//										   // TODO: trigger reload of data in other views
-//										   // implement some kind of notification mechanism or something
-//										   NSLog(@"Reconnection from SettingsView successfull? %c", success);
-//									   }];
+	Account *account = [Account new];
+    account.jid = self.jid;
+    account.password = self.password;
+    account.hostName = self.hostName;
+    account.port = self.port;
+    [AccountManager storeAccount:account];
+    [[MXiConnectionHandler sharedInstance] reconnectWithJID:account.jid
+                                                   password:account.password
+                                                   hostName:account.hostName
+                                                       port:account.port
+                                        authenticationBlock:^(BOOL success) {
+										   // TODO: trigger reload of data in other views
+										   // implement some kind of notification mechanism or something
+										   NSLog(@"Reconnection from SettingsView successfull? %c", success);
+									   }];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
