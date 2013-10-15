@@ -22,6 +22,8 @@
 @property (weak) UITextField *hostNameField;
 @property (weak) UITextField *portField;
 
+@property (retain) UITableViewController *tvCtr;
+
 - (IBAction)cancel:(UIBarButtonItem *)sender;
 - (IBAction)saveSettings:(UIBarButtonItem *)sender;
 
@@ -42,11 +44,12 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
-	UITableViewController *tvCtr = [[UITableViewController alloc] init];
-	tvCtr.tableView = self.tableView;
-	tvCtr.tableView.delegate = self;
-	tvCtr.tableView.dataSource = self;
-	[self addChildViewController:tvCtr];
+	self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"LaunchImage"]];
+	_tvCtr = [[UITableViewController alloc] init];
+	_tvCtr.tableView = self.tableView;
+	_tvCtr.tableView.delegate = self;
+	_tvCtr.tableView.dataSource = self;
+	[self addChildViewController:_tvCtr];
 
     [self loadStoredAccountData];
 }
@@ -126,7 +129,6 @@
 			return @"Port";
         default: break;
 	}
-	return @"";
 }
 
 #pragma mark - UITableViewDelegate

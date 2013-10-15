@@ -1,18 +1,47 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4451" systemVersion="13A461" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4510" systemVersion="12F37" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3676"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3742"/>
     </dependencies>
     <scenes>
-        <!--class Prefix:identifier View Controller-->
+        <!--Start View Controller i Pad-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="StartViewController_iPad" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="0o7-9J-CPm"/>
+                        <viewControllerLayoutGuide type="bottom" id="v1n-0h-ppW"/>
+                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="20" width="768" height="1004"/>
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Ov7-GR-OxS">
+                                <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            </imageView>
+                            <view alpha="0.5" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="u4H-tx-dZY">
+                                <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                            </view>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="u4H-tx-dZY" firstAttribute="centerY" secondItem="Ov7-GR-OxS" secondAttribute="centerY" id="2ta-b4-NQQ"/>
+                            <constraint firstItem="u4H-tx-dZY" firstAttribute="width" secondItem="Ov7-GR-OxS" secondAttribute="width" id="Dyd-d7-Aiw"/>
+                            <constraint firstItem="v1n-0h-ppW" firstAttribute="top" secondItem="Ov7-GR-OxS" secondAttribute="bottom" id="JxN-AV-We2"/>
+                            <constraint firstItem="Ov7-GR-OxS" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="KN0-L6-4ju"/>
+                            <constraint firstItem="u4H-tx-dZY" firstAttribute="centerX" secondItem="Ov7-GR-OxS" secondAttribute="centerX" id="XLA-x6-Dd9"/>
+                            <constraint firstItem="u4H-tx-dZY" firstAttribute="height" secondItem="Ov7-GR-OxS" secondAttribute="height" id="e5u-WK-4O6"/>
+                            <constraint firstItem="Ov7-GR-OxS" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="xeG-aY-D9c"/>
+                            <constraint firstAttribute="trailing" secondItem="Ov7-GR-OxS" secondAttribute="trailing" id="zs8-cQ-7My"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="backgroundImageView" destination="Ov7-GR-OxS" id="jeC-2M-U7e"/>
+                        <outlet property="layerView" destination="u4H-tx-dZY" id="t7L-Xf-ogm"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
