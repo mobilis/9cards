@@ -19,11 +19,13 @@
  ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.services.ninecards;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.PacketExtension;
 
 import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
 import de.tudresden.inf.rn.mobilis.server.services.MobilisService;
@@ -158,5 +160,12 @@ public class NineCardsService extends MobilisService
 	public Settings getSettings()
 	{
 		return mSettings;
+	}
+
+
+	@Override
+	public List<PacketExtension> getNodePacketExtensions() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
