@@ -6,16 +6,43 @@
 //  Copyright (c) 2013 Mobilis. All rights reserved.
 //
 
+#import <MobilisMXi/MXi/Account.h>
+#import <MobilisMXi/MXi/AccountManager.h>
+#import <MobilisMXi/MXi/MXiConnectionHandler.h>
 #import "AppDelegate.h"
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    // Override point for customization after application launch.
+    Account *account = nil;
+    if ([self validateAccountInformation:&account]) {
+        [[MXiConnectionHandler sharedInstance] launchConnectionWithJID:account.jid
+                                                              password:account.password
+                                                              hostName:account.hostName
+                                                                  port:account.port
+                                                   authenticationBlock:^(BOOL b)
+                                                   {
+                                                       NSLog(@"Connection establishment was %i",b);
+                                                   }];
+    } else {
+        NSLog(@"No account information stored. Go to Settings.");
+    }
+
     return YES;
 }
-							
+
+- (BOOL)validateAccountInformation:(Account * __autoreleasing *)account
+{
+    Account *storedAccount = [AccountManager account];
+    if (![storedAccount.jid isEqualToString:@""] && ![storedAccount.hostName isEqualToString:@""]) {
+        *account = storedAccount;
+        return YES;
+    }
+
+    return NO;
+}
+
 - (void)applicationWillResignActive:(UIApplication *)application
 {
 	// Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
