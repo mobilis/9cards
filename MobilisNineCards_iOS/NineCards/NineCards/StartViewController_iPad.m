@@ -40,8 +40,7 @@
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
 	[UIView transitionWithView:self.backgroundImageView duration:duration options:UIViewAnimationOptionLayoutSubviews animations:^{
-		self.backgroundImageView.image = [UIImage imageNamed:@"LaunchImage"];
-		#warning wrong image set
+
 	} completion:nil];
 }
 

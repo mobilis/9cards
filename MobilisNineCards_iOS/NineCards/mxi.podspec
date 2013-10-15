@@ -6,7 +6,7 @@
 #
 Pod::Spec.new do |s|
   s.name         = "MobilisMXi"
-  s.version      = "0.1.0"
+  s.version      = "0.2.0"
   s.summary      = "iOS / OSX Client Library for Mobilis based Services"
   s.homepage     = "http://mobilis.inf.tu-dresden.de"
 
@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
 
   # Specify the location from where the source should be retrieved.
   #
-  s.source       = { :git => "https://bitbucket.org/mwwm/mxi.git" }
+  s.source       = { :git => "https://github.com/mobilis/mobilis.git", :branch => 'MXi_DM' }
 
 
   # ――― MULTI-PLATFORM VALUES ――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -43,8 +43,7 @@ Pod::Spec.new do |s|
   # added to the Pods project. If the pattern is a directory then the
   # path will automatically have '*.{h,m,mm,c,cpp}' appended.
   #
-  s.source_files = 'MXi'
-  # s.exclude_files = ''
+  s.source_files = 'MXi/MXi'
 
   # A list of file patterns which select the header files that should be
   # made available to the application. If the pattern is a directory then the
@@ -70,6 +69,13 @@ Pod::Spec.new do |s|
   # If this Pod uses ARC, specify it like so.
   #
   s.requires_arc = true
+  non_arc_files = 'MXi/MXi/IncomingBeanDetection.m'
+
+  s.exclude_files = non_arc_files
+  s.subspec 'no-arc' do |sna|
+    sna.requires_arc = false
+    sna.source_files = non_arc_files
+  end
 
   # If you need to specify any other build settings, add them to the
   # xcconfig hash.

@@ -28,6 +28,8 @@
 		0CF033CF18083CC000C1FE0F /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF033CE18083CC000C1FE0F /* SettingsViewController.m */; };
 		0CF033D218083D5200C1FE0F /* TextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF033D118083D5200C1FE0F /* TextFieldCell.m */; };
 		0CFEBBB6180C8FAD00631DD2 /* StartViewController_iPad.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CFEBBB5180C8FAD00631DD2 /* StartViewController_iPad.m */; };
+		0CFEBBBE180D346D00631DD2 /* 9Cards-BG-iPad.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CFEBBBC180D346D00631DD2 /* 9Cards-BG-iPad.png */; };
+		0CFEBBBF180D346D00631DD2 /* 9Cards-BG-iPad@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CFEBBBD180D346D00631DD2 /* 9Cards-BG-iPad@2x.png */; };
 		EAAF1D87FD8B459FB2E1C965 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 201482854538406FBF9698BD /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -73,6 +75,8 @@
 		0CF033D118083D5200C1FE0F /* TextFieldCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextFieldCell.m; sourceTree = "<group>"; };
 		0CFEBBB4180C8FAD00631DD2 /* StartViewController_iPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StartViewController_iPad.h; sourceTree = "<group>"; };
 		0CFEBBB5180C8FAD00631DD2 /* StartViewController_iPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StartViewController_iPad.m; sourceTree = "<group>"; };
+		0CFEBBBC180D346D00631DD2 /* 9Cards-BG-iPad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "9Cards-BG-iPad.png"; path = "Images/9Cards-BG-iPad.png"; sourceTree = "<group>"; };
+		0CFEBBBD180D346D00631DD2 /* 9Cards-BG-iPad@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "9Cards-BG-iPad@2x.png"; path = "Images/9Cards-BG-iPad@2x.png"; sourceTree = "<group>"; };
 		201482854538406FBF9698BD /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		38D6716BF7E24CD28EC41FF0 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -139,6 +143,7 @@
 		0C5C87121806988100C6B371 /* NineCards */ = {
 			isa = PBXGroup;
 			children = (
+				0CFEBBBB180D319200631DD2 /* Images */,
 				0C5C8745180698CB00C6B371 /* Controllers */,
 				0C5C8744180698C400C6B371 /* Views */,
 				0C5C871B1806988100C6B371 /* AppDelegate.h */,
@@ -204,6 +209,15 @@
 				0CFEBBB5180C8FAD00631DD2 /* StartViewController_iPad.m */,
 			);
 			name = Controllers;
+			sourceTree = "<group>";
+		};
+		0CFEBBBB180D319200631DD2 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				0CFEBBBC180D346D00631DD2 /* 9Cards-BG-iPad.png */,
+				0CFEBBBD180D346D00631DD2 /* 9Cards-BG-iPad@2x.png */,
+			);
+			name = Images;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -285,8 +299,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C5C87231806988100C6B371 /* Main_iPad.storyboard in Resources */,
+				0CFEBBBF180D346D00631DD2 /* 9Cards-BG-iPad@2x.png in Resources */,
 				0C5C87281806988100C6B371 /* Images.xcassets in Resources */,
 				0C5C87201806988100C6B371 /* Main_iPhone.storyboard in Resources */,
+				0CFEBBBE180D346D00631DD2 /* 9Cards-BG-iPad.png in Resources */,
 				0C5C87171806988100C6B371 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -127,7 +127,8 @@
 			return @"Password";
 		case 3:
 			return @"Port";
-        default: break;
+        default:
+			return @"";
 	}
 }
 
