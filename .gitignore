@@ -24,3 +24,4 @@ proguard/
 *.iws
 MobilisNineCards_iOS/NineCards/NineCards.xcworkspace/contents.xcworkspacedata
 MobilisNineCards_iOS/NineCards/NineCards.xcworkspace/xcshareddata/NineCards.xccheckout
+.classpath
