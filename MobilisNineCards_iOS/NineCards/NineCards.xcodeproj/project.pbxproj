@@ -30,6 +30,14 @@
 		0CFEBBB6180C8FAD00631DD2 /* StartViewController_iPad.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CFEBBB5180C8FAD00631DD2 /* StartViewController_iPad.m */; };
 		0CFEBBBE180D346D00631DD2 /* 9Cards-BG-iPad.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CFEBBBC180D346D00631DD2 /* 9Cards-BG-iPad.png */; };
 		0CFEBBBF180D346D00631DD2 /* 9Cards-BG-iPad@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CFEBBBD180D346D00631DD2 /* 9Cards-BG-iPad@2x.png */; };
+		BF8CB25D253FE7F53718C5DC /* GameOverMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CB0C818E406A8842E8111 /* GameOverMessage.m */; };
+		BF8CB332BFD951164EBA5B99 /* CardPlayedMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CB13C0F0DA5D226EDCEBE /* CardPlayedMessage.m */; };
+		BF8CB7FB7A452FC8022AA89E /* RoundCompleteMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CBDC29A7A2F5950529C86 /* RoundCompleteMessage.m */; };
+		BF8CB8F91E8B484C2A45B7FB /* PlayerInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CB4168DC46DDB5C62E976 /* PlayerInfo.m */; };
+		BF8CBAA5FAE16A280ECDAC57 /* StartGameMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CB5A415A60865B797F832 /* StartGameMessage.m */; };
+		BF8CBCC6232F6855ECF1E334 /* ConfigureGameResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CB1D49EEA7A572593CFDC /* ConfigureGameResponse.m */; };
+		BF8CBD1A178A1036AC0AE64E /* ConfigureGameRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CBBE600492B98F33C9A8E /* ConfigureGameRequest.m */; };
+		BF8CBD678D7166BC39F8D869 /* PlayCardMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CBE6470A28025CEA6A5E1 /* PlayCardMessage.m */; };
 		EAAF1D87FD8B459FB2E1C965 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 201482854538406FBF9698BD /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -79,6 +87,22 @@
 		0CFEBBBD180D346D00631DD2 /* 9Cards-BG-iPad@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "9Cards-BG-iPad@2x.png"; path = "Images/9Cards-BG-iPad@2x.png"; sourceTree = "<group>"; };
 		201482854538406FBF9698BD /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		38D6716BF7E24CD28EC41FF0 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
+		BF8CB0A720CE579AE6AE27D3 /* GameOverMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameOverMessage.h; sourceTree = "<group>"; };
+		BF8CB0C818E406A8842E8111 /* GameOverMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameOverMessage.m; sourceTree = "<group>"; };
+		BF8CB0D87C5E36E9110BC480 /* PlayCardMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayCardMessage.h; sourceTree = "<group>"; };
+		BF8CB13C0F0DA5D226EDCEBE /* CardPlayedMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CardPlayedMessage.m; sourceTree = "<group>"; };
+		BF8CB1D49EEA7A572593CFDC /* ConfigureGameResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigureGameResponse.m; sourceTree = "<group>"; };
+		BF8CB4168DC46DDB5C62E976 /* PlayerInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerInfo.m; sourceTree = "<group>"; };
+		BF8CB5A415A60865B797F832 /* StartGameMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StartGameMessage.m; sourceTree = "<group>"; };
+		BF8CB60FFED84F6B86707F82 /* ConfigureGameResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigureGameResponse.h; sourceTree = "<group>"; };
+		BF8CB9757B6F63C0DA5E8598 /* PlayerInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerInfo.h; sourceTree = "<group>"; };
+		BF8CB9FF65CEC580F9DD53D1 /* ConfigureGameRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigureGameRequest.h; sourceTree = "<group>"; };
+		BF8CBBE600492B98F33C9A8E /* ConfigureGameRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigureGameRequest.m; sourceTree = "<group>"; };
+		BF8CBBF15E4E738FFD707811 /* RoundCompleteMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoundCompleteMessage.h; sourceTree = "<group>"; };
+		BF8CBDC29A7A2F5950529C86 /* RoundCompleteMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RoundCompleteMessage.m; sourceTree = "<group>"; };
+		BF8CBE6470A28025CEA6A5E1 /* PlayCardMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayCardMessage.m; sourceTree = "<group>"; };
+		BF8CBF714526D0AF8DDD4EE3 /* StartGameMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StartGameMessage.h; sourceTree = "<group>"; };
+		BF8CBFB35C4ECE6650B205C5 /* CardPlayedMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CardPlayedMessage.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -150,6 +174,7 @@
 				0C5C871C1806988100C6B371 /* AppDelegate.m */,
 				0C5C87271806988100C6B371 /* Images.xcassets */,
 				0C5C87131806988100C6B371 /* Supporting Files */,
+				BF8CB60FE278B02A25291DD0 /* Beans */,
 			);
 			path = NineCards;
 			sourceTree = "<group>";
@@ -218,6 +243,29 @@
 				0CFEBBBD180D346D00631DD2 /* 9Cards-BG-iPad@2x.png */,
 			);
 			name = Images;
+			sourceTree = "<group>";
+		};
+		BF8CB60FE278B02A25291DD0 /* Beans */ = {
+			isa = PBXGroup;
+			children = (
+				BF8CBFB35C4ECE6650B205C5 /* CardPlayedMessage.h */,
+				BF8CB13C0F0DA5D226EDCEBE /* CardPlayedMessage.m */,
+				BF8CB9FF65CEC580F9DD53D1 /* ConfigureGameRequest.h */,
+				BF8CBBE600492B98F33C9A8E /* ConfigureGameRequest.m */,
+				BF8CB60FFED84F6B86707F82 /* ConfigureGameResponse.h */,
+				BF8CB1D49EEA7A572593CFDC /* ConfigureGameResponse.m */,
+				BF8CB0A720CE579AE6AE27D3 /* GameOverMessage.h */,
+				BF8CB0C818E406A8842E8111 /* GameOverMessage.m */,
+				BF8CB0D87C5E36E9110BC480 /* PlayCardMessage.h */,
+				BF8CBE6470A28025CEA6A5E1 /* PlayCardMessage.m */,
+				BF8CB9757B6F63C0DA5E8598 /* PlayerInfo.h */,
+				BF8CB4168DC46DDB5C62E976 /* PlayerInfo.m */,
+				BF8CBBF15E4E738FFD707811 /* RoundCompleteMessage.h */,
+				BF8CBDC29A7A2F5950529C86 /* RoundCompleteMessage.m */,
+				BF8CBF714526D0AF8DDD4EE3 /* StartGameMessage.h */,
+				BF8CB5A415A60865B797F832 /* StartGameMessage.m */,
+			);
+			path = Beans;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -363,6 +411,14 @@
 				0C66D02318084DE900044B28 /* CreateGameViewController.m in Sources */,
 				0C5C87191806988100C6B371 /* main.m in Sources */,
 				0CFEBBB6180C8FAD00631DD2 /* StartViewController_iPad.m in Sources */,
+				BF8CB332BFD951164EBA5B99 /* CardPlayedMessage.m in Sources */,
+				BF8CBD1A178A1036AC0AE64E /* ConfigureGameRequest.m in Sources */,
+				BF8CBCC6232F6855ECF1E334 /* ConfigureGameResponse.m in Sources */,
+				BF8CB25D253FE7F53718C5DC /* GameOverMessage.m in Sources */,
+				BF8CBD678D7166BC39F8D869 /* PlayCardMessage.m in Sources */,
+				BF8CB8F91E8B484C2A45B7FB /* PlayerInfo.m in Sources */,
+				BF8CB7FB7A452FC8022AA89E /* RoundCompleteMessage.m in Sources */,
+				BF8CBAA5FAE16A280ECDAC57 /* StartGameMessage.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
