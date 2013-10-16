@@ -4,10 +4,10 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3742"/>
     </dependencies>
     <scenes>
-        <!--Game List View Controller - 9Cards-->
+        <!--Start View Controller i Phone - 9Cards-->
         <scene sceneID="OEM-39-XVX">
             <objects>
-                <viewController id="hWC-mN-PzL" customClass="GameListViewController" sceneMemberID="viewController">
+                <viewController id="hWC-mN-PzL" customClass="StartViewController_iPhone" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="ykv-UG-2an"/>
                         <viewControllerLayoutGuide type="bottom" id="oLK-hW-LzP"/>
@@ -66,10 +66,14 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="tableView" destination="SoJ-gA-oHC" id="Ja8-7K-e9o"/>
+                        <outlet property="tableView" destination="SoJ-gA-oHC" id="dgX-8e-kxN"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="pfc-bJ-fJb" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="ULB-bs-r7y">
+                    <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                </imageView>
             </objects>
             <point key="canvasLocation" x="324" y="56"/>
         </scene>

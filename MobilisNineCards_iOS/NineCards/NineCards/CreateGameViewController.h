@@ -8,6 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
-@interface CreateGameViewController : UIViewController
+@protocol CreateGameDelegate <NSObject>
+
+- (void) gameCreated;
+
+@end
+
+@interface CreateGameViewController : UIViewController<CreateGameDelegate>
+
+@property (weak) id<CreateGameDelegate> delegate;
 
 @end

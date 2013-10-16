@@ -18,6 +18,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *startGameButton;
 
 - (IBAction)createGame:(id)sender;
+- (IBAction)cancelGameCreation:(UIBarButtonItem *)sender;
 
 @end
 
@@ -46,7 +47,25 @@
 - (IBAction)createGame:(id)sender {
     [[MXiConnectionHandler sharedInstance] createServiceWithCompletionBlock:^(NSString *serviceJID)
     {
-        NSLog(@"Service with JID %@ created", serviceJID);
+		NSLog(@"Service with JID %@ created", serviceJID);
+		if(_delegate)
+		{
+			[_delegate gameCreated];
+		}
+		else
+		{
+			[self gameCreated];
+		}
     }];
+}
+
+- (IBAction)cancelGameCreation:(UIBarButtonItem *)sender {
+	[self dismissViewControllerAnimated:YES completion:nil];
+}
+	   
+#pragma mark - CreateGameDelegate
+-(void)gameCreated
+{
+	[self performSegueWithIdentifier:@"JoinGame" sender:nil];
 }
 @end

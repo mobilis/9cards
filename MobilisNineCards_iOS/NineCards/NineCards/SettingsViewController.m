@@ -23,6 +23,8 @@
 @property (weak) UITextField *portField;
 
 @property (retain) UITableViewController *tvCtr;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet UINavigationBar *navigationBar;
 
 - (IBAction)cancel:(UIBarButtonItem *)sender;
 - (IBAction)saveSettings:(UIBarButtonItem *)sender;

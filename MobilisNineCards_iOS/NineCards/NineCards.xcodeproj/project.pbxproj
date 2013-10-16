@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0C16BC0E180D56E8000DA30A /* 9Cards-BG-iPhone-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C16BC0C180D56E8000DA30A /* 9Cards-BG-iPhone-568h@2x.png */; };
+		0C16BC0F180D56E8000DA30A /* 9Cards-BG-iPhone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C16BC0D180D56E8000DA30A /* 9Cards-BG-iPhone@2x.png */; };
 		0C5C870D1806988100C6B371 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C5C870C1806988100C6B371 /* Foundation.framework */; };
 		0C5C870F1806988100C6B371 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C5C870E1806988100C6B371 /* CoreGraphics.framework */; };
 		0C5C87111806988100C6B371 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C5C87101806988100C6B371 /* UIKit.framework */; };
@@ -15,7 +17,7 @@
 		0C5C871D1806988100C6B371 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C5C871C1806988100C6B371 /* AppDelegate.m */; };
 		0C5C87201806988100C6B371 /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0C5C871E1806988100C6B371 /* Main_iPhone.storyboard */; };
 		0C5C87231806988100C6B371 /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0C5C87211806988100C6B371 /* Main_iPad.storyboard */; };
-		0C5C87261806988100C6B371 /* GameListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C5C87251806988100C6B371 /* GameListViewController.m */; };
+		0C5C87261806988100C6B371 /* GameListTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C5C87251806988100C6B371 /* GameListTableViewController.m */; };
 		0C5C87281806988100C6B371 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0C5C87271806988100C6B371 /* Images.xcassets */; };
 		0C5C872F1806988100C6B371 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C5C872E1806988100C6B371 /* XCTest.framework */; };
 		0C5C87301806988100C6B371 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C5C870C1806988100C6B371 /* Foundation.framework */; };
@@ -25,11 +27,14 @@
 		0C5C874D1806B7C300C6B371 /* GameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C5C874C1806B7C300C6B371 /* GameViewController.m */; };
 		0C5C874F1806C12100C6B371 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C5C874E1806C12100C6B371 /* QuartzCore.framework */; };
 		0C66D02318084DE900044B28 /* CreateGameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C66D02218084DE900044B28 /* CreateGameViewController.m */; };
+		0C7E38F8180D5CD5009F9158 /* StartViewController_iPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C7E38F7180D5CD5009F9158 /* StartViewController_iPhone.m */; };
+		0C7E3918180EB87F009F9158 /* 9Cards-BGL-iPad.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E3914180EB87F009F9158 /* 9Cards-BGL-iPad.png */; };
+		0C7E3919180EB87F009F9158 /* 9Cards-BGL-iPad@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E3915180EB87F009F9158 /* 9Cards-BGL-iPad@2x.png */; };
+		0C7E391A180EB87F009F9158 /* 9Cards-BGP-iPad.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E3916180EB87F009F9158 /* 9Cards-BGP-iPad.png */; };
+		0C7E391B180EB87F009F9158 /* 9Cards-BGP-iPad@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E3917180EB87F009F9158 /* 9Cards-BGP-iPad@2x.png */; };
 		0CF033CF18083CC000C1FE0F /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF033CE18083CC000C1FE0F /* SettingsViewController.m */; };
 		0CF033D218083D5200C1FE0F /* TextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF033D118083D5200C1FE0F /* TextFieldCell.m */; };
 		0CFEBBB6180C8FAD00631DD2 /* StartViewController_iPad.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CFEBBB5180C8FAD00631DD2 /* StartViewController_iPad.m */; };
-		0CFEBBBE180D346D00631DD2 /* 9Cards-BG-iPad.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CFEBBBC180D346D00631DD2 /* 9Cards-BG-iPad.png */; };
-		0CFEBBBF180D346D00631DD2 /* 9Cards-BG-iPad@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CFEBBBD180D346D00631DD2 /* 9Cards-BG-iPad@2x.png */; };
 		5B1C401F180E94A60029030E /* Settings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5B1C401E180E94A60029030E /* Settings.plist */; };
 		BF8CB25D253FE7F53718C5DC /* GameOverMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CB0C818E406A8842E8111 /* GameOverMessage.m */; };
 		BF8CB332BFD951164EBA5B99 /* CardPlayedMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CB13C0F0DA5D226EDCEBE /* CardPlayedMessage.m */; };
@@ -53,6 +58,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0C16BC0C180D56E8000DA30A /* 9Cards-BG-iPhone-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "9Cards-BG-iPhone-568h@2x.png"; path = "Images/9Cards-BG-iPhone-568h@2x.png"; sourceTree = "<group>"; };
+		0C16BC0D180D56E8000DA30A /* 9Cards-BG-iPhone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "9Cards-BG-iPhone@2x.png"; path = "Images/9Cards-BG-iPhone@2x.png"; sourceTree = "<group>"; };
 		0C5C87091806988100C6B371 /* NineCards.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NineCards.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C5C870C1806988100C6B371 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		0C5C870E1806988100C6B371 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -65,8 +72,8 @@
 		0C5C871C1806988100C6B371 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		0C5C871F1806988100C6B371 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPhone.storyboard; sourceTree = "<group>"; };
 		0C5C87221806988100C6B371 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
-		0C5C87241806988100C6B371 /* GameListViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameListViewController.h; sourceTree = "<group>"; };
-		0C5C87251806988100C6B371 /* GameListViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GameListViewController.m; sourceTree = "<group>"; };
+		0C5C87241806988100C6B371 /* GameListTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameListTableViewController.h; sourceTree = "<group>"; };
+		0C5C87251806988100C6B371 /* GameListTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GameListTableViewController.m; sourceTree = "<group>"; };
 		0C5C87271806988100C6B371 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		0C5C872D1806988100C6B371 /* NineCardsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NineCardsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C5C872E1806988100C6B371 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -78,14 +85,18 @@
 		0C5C874E1806C12100C6B371 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		0C66D02118084DE900044B28 /* CreateGameViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreateGameViewController.h; sourceTree = "<group>"; };
 		0C66D02218084DE900044B28 /* CreateGameViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CreateGameViewController.m; sourceTree = "<group>"; };
+		0C7E38F6180D5CD5009F9158 /* StartViewController_iPhone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StartViewController_iPhone.h; sourceTree = "<group>"; };
+		0C7E38F7180D5CD5009F9158 /* StartViewController_iPhone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StartViewController_iPhone.m; sourceTree = "<group>"; };
+		0C7E3914180EB87F009F9158 /* 9Cards-BGL-iPad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "9Cards-BGL-iPad.png"; path = "Images/9Cards-BGL-iPad.png"; sourceTree = "<group>"; };
+		0C7E3915180EB87F009F9158 /* 9Cards-BGL-iPad@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "9Cards-BGL-iPad@2x.png"; path = "Images/9Cards-BGL-iPad@2x.png"; sourceTree = "<group>"; };
+		0C7E3916180EB87F009F9158 /* 9Cards-BGP-iPad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "9Cards-BGP-iPad.png"; path = "Images/9Cards-BGP-iPad.png"; sourceTree = "<group>"; };
+		0C7E3917180EB87F009F9158 /* 9Cards-BGP-iPad@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "9Cards-BGP-iPad@2x.png"; path = "Images/9Cards-BGP-iPad@2x.png"; sourceTree = "<group>"; };
 		0CF033CD18083CC000C1FE0F /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		0CF033CE18083CC000C1FE0F /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		0CF033D018083D5200C1FE0F /* TextFieldCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextFieldCell.h; sourceTree = "<group>"; };
 		0CF033D118083D5200C1FE0F /* TextFieldCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextFieldCell.m; sourceTree = "<group>"; };
 		0CFEBBB4180C8FAD00631DD2 /* StartViewController_iPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StartViewController_iPad.h; sourceTree = "<group>"; };
 		0CFEBBB5180C8FAD00631DD2 /* StartViewController_iPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StartViewController_iPad.m; sourceTree = "<group>"; };
-		0CFEBBBC180D346D00631DD2 /* 9Cards-BG-iPad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "9Cards-BG-iPad.png"; path = "Images/9Cards-BG-iPad.png"; sourceTree = "<group>"; };
-		0CFEBBBD180D346D00631DD2 /* 9Cards-BG-iPad@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "9Cards-BG-iPad@2x.png"; path = "Images/9Cards-BG-iPad@2x.png"; sourceTree = "<group>"; };
 		201482854538406FBF9698BD /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		38D6716BF7E24CD28EC41FF0 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 		5B1C401E180E94A60029030E /* Settings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Settings.plist; sourceTree = "<group>"; };
@@ -225,8 +236,8 @@
 		0C5C8745180698CB00C6B371 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				0C5C87241806988100C6B371 /* GameListViewController.h */,
-				0C5C87251806988100C6B371 /* GameListViewController.m */,
+				0C5C87241806988100C6B371 /* GameListTableViewController.h */,
+				0C5C87251806988100C6B371 /* GameListTableViewController.m */,
 				0C5C874B1806B7C300C6B371 /* GameViewController.h */,
 				0C5C874C1806B7C300C6B371 /* GameViewController.m */,
 				0CF033CD18083CC000C1FE0F /* SettingsViewController.h */,
@@ -235,6 +246,8 @@
 				0C66D02218084DE900044B28 /* CreateGameViewController.m */,
 				0CFEBBB4180C8FAD00631DD2 /* StartViewController_iPad.h */,
 				0CFEBBB5180C8FAD00631DD2 /* StartViewController_iPad.m */,
+				0C7E38F6180D5CD5009F9158 /* StartViewController_iPhone.h */,
+				0C7E38F7180D5CD5009F9158 /* StartViewController_iPhone.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -242,8 +255,12 @@
 		0CFEBBBB180D319200631DD2 /* Images */ = {
 			isa = PBXGroup;
 			children = (
-				0CFEBBBC180D346D00631DD2 /* 9Cards-BG-iPad.png */,
-				0CFEBBBD180D346D00631DD2 /* 9Cards-BG-iPad@2x.png */,
+				0C7E3914180EB87F009F9158 /* 9Cards-BGL-iPad.png */,
+				0C7E3915180EB87F009F9158 /* 9Cards-BGL-iPad@2x.png */,
+				0C7E3916180EB87F009F9158 /* 9Cards-BGP-iPad.png */,
+				0C7E3917180EB87F009F9158 /* 9Cards-BGP-iPad@2x.png */,
+				0C16BC0C180D56E8000DA30A /* 9Cards-BG-iPhone-568h@2x.png */,
+				0C16BC0D180D56E8000DA30A /* 9Cards-BG-iPhone@2x.png */,
 			);
 			name = Images;
 			sourceTree = "<group>";
@@ -349,12 +366,16 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0C16BC0F180D56E8000DA30A /* 9Cards-BG-iPhone@2x.png in Resources */,
 				0C5C87231806988100C6B371 /* Main_iPad.storyboard in Resources */,
-				0CFEBBBF180D346D00631DD2 /* 9Cards-BG-iPad@2x.png in Resources */,
+				0C16BC0E180D56E8000DA30A /* 9Cards-BG-iPhone-568h@2x.png in Resources */,
 				0C5C87281806988100C6B371 /* Images.xcassets in Resources */,
 				0C5C87201806988100C6B371 /* Main_iPhone.storyboard in Resources */,
 				5B1C401F180E94A60029030E /* Settings.plist in Resources */,
-				0CFEBBBE180D346D00631DD2 /* 9Cards-BG-iPad.png in Resources */,
+				0C7E3918180EB87F009F9158 /* 9Cards-BGL-iPad.png in Resources */,
+				0C7E391B180EB87F009F9158 /* 9Cards-BGP-iPad@2x.png in Resources */,
+				0C7E391A180EB87F009F9158 /* 9Cards-BGP-iPad.png in Resources */,
+				0C7E3919180EB87F009F9158 /* 9Cards-BGL-iPad@2x.png in Resources */,
 				0C5C87171806988100C6B371 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -408,7 +429,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C5C874D1806B7C300C6B371 /* GameViewController.m in Sources */,
-				0C5C87261806988100C6B371 /* GameListViewController.m in Sources */,
+				0C5C87261806988100C6B371 /* GameListTableViewController.m in Sources */,
+				0C7E38F8180D5CD5009F9158 /* StartViewController_iPhone.m in Sources */,
 				0CF033CF18083CC000C1FE0F /* SettingsViewController.m in Sources */,
 				0CF033D218083D5200C1FE0F /* TextFieldCell.m in Sources */,
 				0C5C871D1806988100C6B371 /* AppDelegate.m in Sources */,

@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Mobilis. All rights reserved.
 //
 
+<<<<<<< Updated upstream:MobilisNineCards_iOS/NineCards/NineCards/GameListViewController.m
 #import <MobilisMXi/MXi/MXiConnectionHandler.h>
 #import "GameListViewController.h"
 
@@ -13,16 +14,22 @@
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (strong, nonatomic) NSArray *availableGames;
+=======
+#import "GameListTableViewController.h"
+
+@interface GameListTableViewController ()
+>>>>>>> Stashed changes:MobilisNineCards_iOS/NineCards/NineCards/GameListTableViewController.m
 
 @end
 
-@implementation GameListViewController
+@implementation GameListTableViewController
 
 static void *KVOContext = &KVOContext;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+<<<<<<< Updated upstream:MobilisNineCards_iOS/NineCards/NineCards/GameListViewController.m
 	self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"LaunchImage"]];
 	UITableViewController *tvCtr = [[UITableViewController alloc] init];
 	tvCtr.tableView = self.tableView;
@@ -35,6 +42,8 @@ static void *KVOContext = &KVOContext;
                                             forKeyPath:@"discoveredServiceInstances"
                                                options:NSKeyValueObservingOptionNew
                                                context:KVOContext];
+=======
+>>>>>>> Stashed changes:MobilisNineCards_iOS/NineCards/NineCards/GameListTableViewController.m
 }
 
 - (void)didReceiveMemoryWarning
@@ -67,6 +76,7 @@ static void *KVOContext = &KVOContext;
 	return cell;
 }
 
+<<<<<<< Updated upstream:MobilisNineCards_iOS/NineCards/NineCards/GameListViewController.m
 #pragma mark - KVO Compliance
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -77,4 +87,6 @@ static void *KVOContext = &KVOContext;
     }
 }
 
+=======
+>>>>>>> Stashed changes:MobilisNineCards_iOS/NineCards/NineCards/GameListTableViewController.m
 @end

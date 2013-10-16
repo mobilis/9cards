@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface StartViewController_iPad : UIViewController
+@interface StartViewController_iPad : UIViewController <UINavigationBarDelegate>
 
 @end

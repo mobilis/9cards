@@ -7,10 +7,14 @@
 //
 
 #import "StartViewController_iPad.h"
+#import "GameListTableViewController.h"
 
 @interface StartViewController_iPad ()
 @property (weak, nonatomic) IBOutlet UIImageView *backgroundImageView;
 @property (weak, nonatomic) IBOutlet UIView *layerView;
+@property (weak, nonatomic) IBOutlet UITableView *gameListTableView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *gameListTableViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *gameListTableViewWidthConstraint;
 
 @end
 
@@ -28,7 +32,19 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view.
+	GameListTableViewController *gameList = [GameListTableViewController new];
+	gameList.tableView = self.gameListTableView;
+	gameList.tableView.delegate = gameList;
+	gameList.tableView.dataSource = gameList;
+	
+	NSString *imageName;
+	if (UIInterfaceOrientationIsLandscape(self.interfaceOrientation)) {
+		imageName = @"9Cards-BGL-iPad";
+	} else {
+		imageName = @"9Cards-BGP-iPad";
+	}
+	self.backgroundImageView.image = [UIImage imageNamed:imageName];
+	[self addChildViewController:gameList];
 }
 
 - (void)didReceiveMemoryWarning
@@ -39,9 +55,29 @@
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-	[UIView transitionWithView:self.backgroundImageView duration:duration options:UIViewAnimationOptionLayoutSubviews animations:^{
+	CGFloat height, width;
+	NSString *imageName;
+	CGSize screenSize = [UIScreen mainScreen].bounds.size;
+	if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
+		height = screenSize.width / 3;
+		width = screenSize.height / 3;
+		imageName = @"9Cards-BGL-iPad";
+	} else {
+		height = screenSize.height / 3;
+		width = screenSize.width / 3;
+		imageName = @"9Cards-BGP-iPad";
+	}
+	[UIView animateWithDuration:duration
+					 animations:^{
+						 [self.view layoutIfNeeded];
+						 self.backgroundImageView.image = [UIImage imageNamed:imageName];
+	}];
+}
 
-	} completion:nil];
+#pragma mark - UINavigationBarDelegate
+-(UIBarPosition)positionForBar:(id<UIBarPositioning>)bar
+{
+	return UIBarPositionTopAttached;
 }
 
 @end
