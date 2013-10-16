@@ -28,3 +28,4 @@ MobilisNineCards_iOS/NineCards/NineCards.xcworkspace/xcshareddata/NineCards.xcch
 *.out.xml
 
 build.sh
+MobilisNineCards_Service/dist
