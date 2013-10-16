@@ -6,14 +6,19 @@
 //  Copyright (c) 2013 Mobilis. All rights reserved.
 //
 
+#import <MobilisMXi/MXi/MXiConnectionHandler.h>
 #import "GameListViewController.h"
 
 @interface GameListViewController ()<UITableViewDataSource, UITableViewDelegate>
+
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (strong, nonatomic) NSArray *availableGames;
 
 @end
 
 @implementation GameListViewController
+
+static void *KVOContext = &KVOContext;
 
 - (void)viewDidLoad
 {
@@ -24,6 +29,12 @@
 	tvCtr.tableView.delegate = self;
 	tvCtr.tableView.dataSource = self;
 	[self addChildViewController:tvCtr];
+
+    self.availableGames = [NSArray new];
+    [[MXiConnectionHandler sharedInstance] addObserver:self
+                                            forKeyPath:@"discoveredServiceInstances"
+                                               options:NSKeyValueObservingOptionNew
+                                               context:KVOContext];
 }
 
 - (void)didReceiveMemoryWarning
@@ -40,7 +51,7 @@
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-	return 1;
+	return self.availableGames ? self.availableGames.count : 0;
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -49,11 +60,21 @@
 	if (!cell) {
 		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"GameCell"];
 	}
-	
-	cell.textLabel.text = @"Test";
+
+    MXiService *service = [self.availableGames objectAtIndex:indexPath.row];
+    cell.textLabel.text = service.name;
 	
 	return cell;
 }
 
+#pragma mark - KVO Compliance
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"discoveredServiceInstances"] && context == KVOContext) {
+        self.availableGames = [[MXiConnectionHandler sharedInstance] discoveredServiceInstances];
+        [self.tableView reloadData];
+    }
+}
 
 @end

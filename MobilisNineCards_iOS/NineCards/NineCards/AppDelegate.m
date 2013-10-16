@@ -20,11 +20,12 @@
         [[MXiConnectionHandler sharedInstance] launchConnectionWithJID:account.jid
                                                               password:account.password
                                                               hostName:account.hostName
+                                                           serviceType:MULTI
                                                                   port:account.port
                                                    authenticationBlock:^(BOOL b)
-                                                   {
-                                                       NSLog(@"Connection establishment was %i",b);
-                                                   }];
+        {
+            NSLog(@"Connection establishment was %i", b);
+        }];
     } else {
         NSLog(@"No account information stored. Go to Settings.");
     }

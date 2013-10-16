@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Mobilis. All rights reserved.
 //
 
+#import <MobilisMXi/MXi/MXiConnectionHandler.h>
 #import "CreateGameViewController.h"
 
 @interface CreateGameViewController ()
@@ -15,6 +16,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *gamePlayerLabel;
 @property (weak, nonatomic) IBOutlet UILabel *gameRoundsLabel;
 @property (weak, nonatomic) IBOutlet UIButton *startGameButton;
+
+- (IBAction)createGame:(id)sender;
 
 @end
 
@@ -40,4 +43,10 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (IBAction)createGame:(id)sender {
+    [[MXiConnectionHandler sharedInstance] createServiceWithCompletionBlock:^(NSString *serviceJID)
+    {
+        NSLog(@"Service with JID %@ created", serviceJID);
+    }];
+}
 @end
