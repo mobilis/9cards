@@ -25,3 +25,6 @@ proguard/
 MobilisNineCards_iOS/NineCards/NineCards.xcworkspace/contents.xcworkspacedata
 MobilisNineCards_iOS/NineCards/NineCards.xcworkspace/xcshareddata/NineCards.xccheckout
 .classpath
+*.out.xml
+
+build.sh
