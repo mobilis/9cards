@@ -1,6 +1,8 @@
-@interface StartGameMessage : NSObject
+#import <Mxi/Mxi.h>
 
-@property (nonatomic) NSInteger rounds;
+@interface StartGameMessage : NSObject <MXiIncomingBean, MXiOutgoingBean>
+
+@property (nonatomic) NSNumber* rounds;
 @property (nonatomic, strong) NSString* password;
 
 @end

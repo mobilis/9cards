@@ -1,6 +1,8 @@
-@interface PlayCardMessage : NSObject
+#import <Mxi/Mxi.h>
 
-@property (nonatomic) NSInteger round;
-@property (nonatomic) NSInteger card;
+@interface PlayCardMessage : NSObject <MXiIncomingBean, MXiOutgoingBean>
+
+@property (nonatomic) NSNumber* round;
+@property (nonatomic) NSNumber* card;
 
 @end

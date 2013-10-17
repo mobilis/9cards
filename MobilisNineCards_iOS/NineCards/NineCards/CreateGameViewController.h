@@ -7,10 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "Game.h"
 @protocol CreateGameDelegate <NSObject>
 
-- (void) gameCreated;
+- (void) gameCreated:(Game *)game;
 
 @end
 

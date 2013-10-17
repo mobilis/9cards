@@ -1,7 +1,9 @@
-@interface PlayerInfo : NSObject
+#import <Mxi/Mxi.h>
+
+@interface PlayerInfo : NSObject <MXiIncomingBean, MXiOutgoingBean>
 
 @property (nonatomic, strong) NSString* id;
-@property (nonatomic) NSInteger score;
+@property (nonatomic) NSNumber* score;
 @property (nonatomic, strong) NSMutableArray* usedcards;
 
 @end

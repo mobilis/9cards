@@ -6,19 +6,13 @@
 //  Copyright (c) 2013 Mobilis. All rights reserved.
 //
 
-<<<<<<< Updated upstream:MobilisNineCards_iOS/NineCards/NineCards/GameListViewController.m
 #import <MobilisMXi/MXi/MXiConnectionHandler.h>
-#import "GameListViewController.h"
+#import "GameListTableViewController.h"
 
-@interface GameListViewController ()<UITableViewDataSource, UITableViewDelegate>
+@interface GameListTableViewController ()<UITableViewDataSource, UITableViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (strong, nonatomic) NSArray *availableGames;
-=======
-#import "GameListTableViewController.h"
-
-@interface GameListTableViewController ()
->>>>>>> Stashed changes:MobilisNineCards_iOS/NineCards/NineCards/GameListTableViewController.m
 
 @end
 
@@ -29,21 +23,11 @@ static void *KVOContext = &KVOContext;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-<<<<<<< Updated upstream:MobilisNineCards_iOS/NineCards/NineCards/GameListViewController.m
-	self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"LaunchImage"]];
-	UITableViewController *tvCtr = [[UITableViewController alloc] init];
-	tvCtr.tableView = self.tableView;
-	tvCtr.tableView.delegate = self;
-	tvCtr.tableView.dataSource = self;
-	[self addChildViewController:tvCtr];
-
     self.availableGames = [NSArray new];
     [[MXiConnectionHandler sharedInstance] addObserver:self
                                             forKeyPath:@"discoveredServiceInstances"
                                                options:NSKeyValueObservingOptionNew
                                                context:KVOContext];
-=======
->>>>>>> Stashed changes:MobilisNineCards_iOS/NineCards/NineCards/GameListTableViewController.m
 }
 
 - (void)didReceiveMemoryWarning
@@ -76,9 +60,7 @@ static void *KVOContext = &KVOContext;
 	return cell;
 }
 
-<<<<<<< Updated upstream:MobilisNineCards_iOS/NineCards/NineCards/GameListViewController.m
 #pragma mark - KVO Compliance
-
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if ([keyPath isEqualToString:@"discoveredServiceInstances"] && context == KVOContext) {
@@ -87,6 +69,4 @@ static void *KVOContext = &KVOContext;
     }
 }
 
-=======
->>>>>>> Stashed changes:MobilisNineCards_iOS/NineCards/NineCards/GameListTableViewController.m
 @end

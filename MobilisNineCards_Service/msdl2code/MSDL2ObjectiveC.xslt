@@ -43,7 +43,7 @@
 </xsl:text>
 
 <xsl:for-each select="/msdl:description/msdl:types/xs:schema/xs:element[@name = $className]/xs:complexType/xs:sequence/xs:element">
-	<xsl:if test="starts-with(./@type, $serviceXMLNS)">
+	<xsl:if test="not(starts-with(./@type, 'xs'))">
 		<xsl:text>#import "</xsl:text><xsl:value-of select="substring-after(./@type, ':')" />
 		<xsl:text>.h"</xsl:text><xsl:value-of select="$newline" />
 	</xsl:if>
@@ -81,15 +81,15 @@
 									<xsl:text>, strong) NSString*</xsl:text>
 								</xsl:when>
 								<xsl:when test="./@type = 'xs:int'">
-									<xsl:text>) NSInteger</xsl:text>
+									<xsl:text>) NSNumber*</xsl:text>
 								</xsl:when>
 								<xsl:when test="./@type = 'xs:long'">
-									<xsl:text>) NSInteger</xsl:text>
+									<xsl:text>) NSNumber*</xsl:text>
 								</xsl:when>
 								<xsl:when test="./@type = 'xs:boolean'">
 									<xsl:text>) BOOL</xsl:text>
 								</xsl:when>
-								<xsl:when test="starts-with(./@type, $serviceXMLNS)">
+								<xsl:when test="not(starts-with(./@type, 'xs'))">
 									<xsl:text>, strong) </xsl:text><xsl:value-of select="substring-after(./@type, ':')" /><xsl:text>*</xsl:text>
 								</xsl:when>
 								<xsl:otherwise>
@@ -110,7 +110,7 @@
 
 				</xsl:for-each>
 <xsl:text>
-- (id)init;
+- (instancetype)init;
 
 @end</xsl:text>
 			</xsl:result-document>
@@ -163,7 +163,7 @@
 								<xsl:when test="./@type">
 									<!-- Element type that is defined externally -->
 									<xsl:choose>
-										<xsl:when test="starts-with(./@type, $serviceXMLNS)">
+										<xsl:when test="not(starts-with(./@type, 'xs'))">
 											<!-- Custom type -->
 											<xsl:call-template name="convertToCustomNamedAtomicElement">
 												<xsl:with-param name="elementName" select="$elementName" />
@@ -244,7 +244,7 @@
 													<xsl:with-param name="type" select="./@type" />
 												</xsl:call-template>
 											</xsl:when>
-											<xsl:when test="starts-with(./@type, $serviceXMLNS)">
+											<xsl:otherwise>
 												<!-- custom type -->
 												<xsl:call-template name="convertFromCustomNamedAtomicElement">
 													<xsl:with-param name="indent" select="$tab" />
@@ -255,10 +255,6 @@
 													<xsl:with-param name="xmlVariableName" select="'xml'" />
 													<xsl:with-param name="objectToWorkOn" select="'self'" />
 												</xsl:call-template>
-											</xsl:when>
-											<xsl:otherwise>
-												<!-- unknown type -->
-												<xsl:text>&lt;unknown&gt;</xsl:text>
 											</xsl:otherwise>
 										</xsl:choose>
 									</xsl:when>
@@ -326,7 +322,7 @@
 				<xsl:result-document href="{concat($outputFolder, $className, '.h')}">
 <!-- Imports -->
 <xsl:for-each select="/msdl:description/msdl:types/xs:schema/xs:complexType[@name = $className]/xs:sequence/xs:element">
-	<xsl:if test="starts-with(./@type, $serviceXMLNS)">
+	<xsl:if test="not(starts-with(./@type, 'xs'))">
 		<xsl:text>#import "</xsl:text><xsl:value-of select="substring-after(./@type, ':')" />
 		<xsl:text>.h"</xsl:text><xsl:value-of select="$newline" />
 
@@ -356,7 +352,9 @@
 </xsl:for-each>
 
 <!-- Class definition -->
-<xsl:text>@interface </xsl:text><xsl:value-of select="$className" /><xsl:text> : NSObject</xsl:text>
+<xsl:text>#import &lt;Mxi/Mxi.h&gt;
+
+@interface </xsl:text><xsl:value-of select="$className" /><xsl:text> : NSObject &lt;MXiIncomingBean, MXiOutgoingBean&gt;</xsl:text>
 <xsl:value-of select="$newline" /><xsl:value-of select="$newline" />
 
 <!-- Properties -->
@@ -373,15 +371,15 @@
 					<xsl:text>, strong) NSString*</xsl:text>
 				</xsl:when>
 				<xsl:when test="./@type = 'xs:int'">
-					<xsl:text>) NSInteger</xsl:text>
+					<xsl:text>) NSNumber*</xsl:text>
 				</xsl:when>
 				<xsl:when test="./@type = 'xs:long'">
-					<xsl:text>) NSInteger</xsl:text>
+					<xsl:text>) NSNumber*</xsl:text>
 				</xsl:when>
 				<xsl:when test="./@type = 'xs:boolean'">
 					<xsl:text>) BOOL</xsl:text>
 				</xsl:when>
-				<xsl:when test="starts-with(./@type, $serviceXMLNS)">
+				<xsl:when test="not(starts-with(./@type, 'xs'))">
 					<xsl:text>, strong) </xsl:text><xsl:value-of select="substring-after(./@type, ':')" /><xsl:text>*</xsl:text>
 				</xsl:when>
 				<xsl:otherwise>
@@ -416,8 +414,151 @@
 
 <!-- Class definition -->
 <xsl:text>@implementation </xsl:text><xsl:value-of select="$className" />
-<xsl:value-of select="$newline" /><xsl:value-of select="$newline" />
+<!-- Changed by Markus Wutzler to support MUC Message Detection & Generation -->
+<xsl:text>
 
+- (NSXMLElement* )toXML {
+	NSXMLElement* beanElement = [NSXMLElement elementWithName:[[self class] elementName]
+														xmlns:[[self class] iqNamespace]];
+
+</xsl:text>
+
+				<xsl:for-each select="/msdl:description/msdl:types/xs:schema/xs:complexType[@name = $className]/xs:sequence/xs:element">
+					<xsl:variable name="elementName" select="concat(./@name, 'Element')" />
+					<xsl:choose>
+						<xsl:when test="./@maxOccurs != '1'">
+							<!-- NSArray -->
+							<xsl:call-template name="convertToListElement">
+								<xsl:with-param name="elementName" select="$elementName" />
+								<xsl:with-param name="elementToAddTo" select="'beanElement'" />
+								<xsl:with-param name="collectionName" select="concat('[self ', ./@name, ']')" />
+								<xsl:with-param name="indent" select="$tab" />
+							</xsl:call-template>
+						</xsl:when>
+						<xsl:otherwise>
+							<!-- Atomic type -->
+							<xsl:choose>
+								<xsl:when test="./@type">
+									<!-- Element type that is defined externally -->
+									<xsl:choose>
+										<xsl:when test="not(starts-with(./@type, 'xs'))">
+											<!-- Custom type -->
+											<xsl:call-template name="convertToCustomNamedAtomicElement">
+												<xsl:with-param name="elementName" select="$elementName" />
+												<xsl:with-param name="indent" select="$tab" />
+												<xsl:with-param name="elementToAddTo" select="'beanElement'" />
+												<xsl:with-param name="wholeName" select="concat('[self ', ./@name, ']')" />
+											</xsl:call-template>
+										</xsl:when>
+										<xsl:otherwise>
+											<!-- Simple type -->
+											<xsl:call-template name="convertToSimpleAtomicXMLElement">
+												<xsl:with-param name="elementName" select="$elementName" />
+												<xsl:with-param name="typeName" select="./@type" />
+												<xsl:with-param name="valueName" select="concat('[self ', ./@name, ']')" />
+												<xsl:with-param name="elementToAddTo" select="'beanElement'" />
+												<xsl:with-param name="indent" select="$tab" />
+											</xsl:call-template>
+										</xsl:otherwise>
+									</xsl:choose>
+								</xsl:when>
+								<xsl:otherwise>
+									<!-- Element structure is defined with complexType subelement -->
+									<xsl:call-template name="convertToCustomAnonymousAtomicElement">
+										<xsl:with-param name="elementName" select="$elementName" />
+										<xsl:with-param name="wholeName" select="concat('[self ', ./@name, ']')" />
+										<xsl:with-param name="elementToAddTo" select="'beanElement'" />
+										<xsl:with-param name="collectionName" select="concat('[self ', ./@name, ']')" />
+										<xsl:with-param name="indent" select="$tab" />
+									</xsl:call-template>
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:otherwise>
+					</xsl:choose>
+
+					<xsl:value-of select="$newline" />
+
+				</xsl:for-each>
+
+<xsl:text>	return beanElement;
+}
+
+- (void)fromXML:(NSXMLElement* )xml {
+</xsl:text>
+
+					<xsl:for-each select="/msdl:description/msdl:types/xs:schema/xs:complexType[@name = $className]/xs:sequence/xs:element">
+						<xsl:variable name="elementName" select="concat(./@name, 'Element')" />
+
+						<xsl:choose>
+							<xsl:when test="./@maxOccurs != '1'">
+								<!-- array -->
+								<xsl:call-template name="convertFromListElement">
+									<xsl:with-param name="indent" select="$tab" />
+									<xsl:with-param name="memberName" select="./@name" />
+									<xsl:with-param name="objectToWorkOn" select="'self'" />
+									<xsl:with-param name="xmlVariableName" select="'xml'" />
+									<xsl:with-param name="type" select="./@type" />
+								</xsl:call-template>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:choose>
+									<xsl:when test="./@type">
+										<xsl:choose>
+											<xsl:when test="starts-with(./@type, 'xs:')">
+												<!-- simple type -->
+												<xsl:call-template name="convertFromSimpleAtomicXMLElement">
+													<xsl:with-param name="indent" select="$tab" />
+													<xsl:with-param name="objectToWorkOn" select="'self'" />
+													<xsl:with-param name="memberName" select="./@name" />
+													<xsl:with-param name="codeElementName" select="concat(./@name, 'Element')" />
+													<xsl:with-param name="xmlElementName" select="./@name" />
+													<xsl:with-param name="xmlVariableName" select="'xml'" />
+													<xsl:with-param name="type" select="./@type" />
+												</xsl:call-template>
+											</xsl:when>
+											<xsl:otherwise>
+												<!-- custom type -->
+												<xsl:call-template name="convertFromCustomNamedAtomicElement">
+													<xsl:with-param name="indent" select="$tab" />
+													<xsl:with-param name="memberName" select="./@name" />
+													<xsl:with-param name="type" select="./@type" />
+													<xsl:with-param name="codeElementName" select="concat(./@name, 'Element')" />
+													<xsl:with-param name="xmlElementName" select="./@name" />
+													<xsl:with-param name="xmlVariableName" select="'xml'" />
+													<xsl:with-param name="objectToWorkOn" select="'self'" />
+												</xsl:call-template>
+											</xsl:otherwise>
+										</xsl:choose>
+									</xsl:when>
+									<xsl:otherwise>
+										<!-- anomymous -->
+										<xsl:call-template name="convertFromCustomAnonymousAtomicElement">
+											<xsl:with-param name="memberName" select="./@name" />
+											<xsl:with-param name="objectToWorkOn" select="'self'" />
+											<xsl:with-param name="codeElementName" select="concat(./@name, 'Element')" />
+											<xsl:with-param name="xmlVariableName" select="'xml'" />
+											<xsl:with-param name="indent" select="$tab" />
+											<xsl:with-param name="xmlElementName" select="./@name" />
+										</xsl:call-template>
+									</xsl:otherwise>
+								</xsl:choose>
+							</xsl:otherwise>
+						</xsl:choose>
+
+						<xsl:value-of select="$newline" />
+						<xsl:if test="position() != last()">
+							<xsl:value-of select="$newline" />
+						</xsl:if>
+
+					</xsl:for-each>
+
+<xsl:text>}
+
++ (NSString* )elementName {
+	return @"</xsl:text><xsl:value-of select="$className" /><xsl:text>";
+}
+</xsl:text>
+<!-- END: Changed by Markus Wutzler to support MUC Message Detection & Generation -->
 <!-- End of class definition -->
 <xsl:text>@end</xsl:text>
 				</xsl:result-document>
@@ -477,15 +618,15 @@
 								<xsl:text>, strong) NSString*</xsl:text>
 							</xsl:when>
 							<xsl:when test="./@type = 'xs:int'">
-								<xsl:text>) NSInteger</xsl:text>
+								<xsl:text>) NSNumber*</xsl:text>
 							</xsl:when>
 							<xsl:when test="./@type = 'xs:long'">
-								<xsl:text>) NSInteger</xsl:text>
+								<xsl:text>) NSNumber*</xsl:text>
 							</xsl:when>
 							<xsl:when test="./@type = 'xs:boolean'">
 								<xsl:text>) BOOL</xsl:text>
 							</xsl:when>
-							<xsl:when test="starts-with(./@type, $serviceXMLNS)">
+							<xsl:when test="not(starts-with(./@type, 'xs'))">
 								<xsl:text>, strong) </xsl:text><xsl:value-of select="substring-after(./@type, ':')" /><xsl:text>*</xsl:text>
 							</xsl:when>
 							<xsl:otherwise>
@@ -538,7 +679,7 @@
 		<xsl:param name="typeName" as="xs:string" />
 		<xsl:param name="elementToAddTo" as="xs:string" />
 		<xsl:param name="indent" as="xs:string" />
-		
+
 		<xsl:value-of select="$indent" /><xsl:text>NSXMLElement* </xsl:text><xsl:value-of select="$elementName" />
 		<xsl:text> = [NSXMLElement elementWithName:@"</xsl:text><xsl:value-of select="./@name" />
 		<xsl:text>"];</xsl:text>
@@ -552,9 +693,9 @@
 				<xsl:value-of select="$valueName" />
 			</xsl:when>
 			<xsl:when test="$typeName = 'xs:int' or $typeName = 'xs:long'">
-				<xsl:text>[NSString stringWithFormat:@"%d", </xsl:text>
+				<xsl:text>[NSString stringWithFormat:@"%f", [</xsl:text>
 				<xsl:value-of select="$valueName" />
-				<xsl:text>]</xsl:text>
+				<xsl:text> floatValue]]</xsl:text>
 			</xsl:when>
 			<xsl:when test="$typeName = 'xs:boolean'">
 				<xsl:value-of select="$valueName" />
@@ -619,7 +760,7 @@
 						<xsl:when test="./@type">
 							<!-- Simple atomic type -->
 							<xsl:choose>
-								<xsl:when test="starts-with(./@type, $serviceXMLNS)">
+								<xsl:when test="not(starts-with(./@type, 'xs'))">
 									<!-- Custom atomic named type -->
 									<xsl:choose>
 										<xsl:when test="$collectionName">
@@ -751,7 +892,7 @@
 						<xsl:when test="./@type">
 							<!-- Simple atomic type -->
 							<xsl:choose>
-								<xsl:when test="starts-with(./@type, $serviceXMLNS)">
+								<xsl:when test="not(starts-with(./@type, 'xs'))">
 									<!-- Custom atomic named type -->
 									<xsl:choose>
 										<xsl:when test="$collectionName">
@@ -856,20 +997,17 @@
 						<xsl:text>NSString* </xsl:text>
 					</xsl:when>
 					<xsl:when test="./@type = 'xs:int'">
-						<xsl:text>NSInteger </xsl:text>
+						<xsl:text>NSNumber* </xsl:text>
 					</xsl:when>
 					<xsl:when test="./@type = 'xs:long'">
-						<xsl:text>NSInteger </xsl:text>
+						<xsl:text>NSNumber* </xsl:text>
 					</xsl:when>
 					<xsl:when test="./@type = 'xs:boolean'">
 						<xsl:text>BOOL </xsl:text>
 					</xsl:when>
-					<xsl:when test="starts-with(./@type, $serviceXMLNS)">
+					<xsl:otherwise>
 						<xsl:value-of select="substring-after(./@type, ':')" />
 						<xsl:text>* </xsl:text>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:text>&lt;unknown&gt; </xsl:text>
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:when>
@@ -895,7 +1033,7 @@
 			<xsl:when test="./@type">
 				<!-- Atomic type -->
 				<xsl:choose>
-					<xsl:when test="starts-with(./@type, $serviceXMLNS)">
+					<xsl:when test="not(starts-with(./@type, 'xs'))">
 						<!-- Custom type -->
 						<xsl:call-template name="convertToCustomNamedAtomicElement">
 							<xsl:with-param name="elementName" select="$elementName" />
@@ -980,8 +1118,8 @@
 				<xsl:text> stringValue]</xsl:text>
 			</xsl:when>
 			<xsl:when test="$type = 'xs:int' or $type = 'xs:long'">
-				<xsl:text>[[</xsl:text><xsl:value-of select="$codeElementName" />
-				<xsl:text> stringValue] integerValue]</xsl:text>
+				<xsl:text>[NSNumber numberWithFloat:[[</xsl:text><xsl:value-of select="$codeElementName" />
+				<xsl:text> stringValue] floatValue]]</xsl:text>
 			</xsl:when>
 			<xsl:when test="$type = 'xs:boolean'">
 				<xsl:text>[[[</xsl:text><xsl:value-of select="$codeElementName" />
@@ -1013,8 +1151,8 @@
 				<xsl:text> stringValue]</xsl:text>
 			</xsl:when>
 			<xsl:when test="$type = 'xs:int' or $type = 'xs:long'">
-				<xsl:text>[[</xsl:text><xsl:value-of select="$codeElementName" />
-				<xsl:text> stringValue] integerValue]</xsl:text>
+				<xsl:text>[NSNumber numberWithFloat:[[</xsl:text><xsl:value-of select="$codeElementName" />
+				<xsl:text> stringValue] floatValue]]</xsl:text>
 			</xsl:when>
 			<xsl:when test="$type = 'xs:boolean'">
 				<xsl:text>[[[</xsl:text><xsl:value-of select="$codeElementName" />
@@ -1085,7 +1223,7 @@
 										<xsl:with-param name="objectToWorkOn" select="concat('[', $objectToWorkOn, ' ', $memberName, ']')" />
 									</xsl:call-template>
 								</xsl:when>
-								<xsl:when test="starts-with(./@type, $serviceXMLNS)">
+								<xsl:otherwise>
 									<!-- custom type -->
 									<xsl:call-template name="convertFromCustomNamedAtomicElement">
 										<xsl:with-param name="xmlVariableName" select="$codeElementName" />
@@ -1096,10 +1234,6 @@
 										<xsl:with-param name="indent" select="$indent" />
 										<xsl:with-param name="objectToWorkOn" select="concat('[', $objectToWorkOn, ' ', $memberName, ']')" />
 									</xsl:call-template>
-								</xsl:when>
-								<xsl:otherwise>
-									<!-- unknown -->
-									<xsl:text>&lt;unknown&gt;</xsl:text>
 								</xsl:otherwise>
 							</xsl:choose>
 						</xsl:when>
@@ -1157,7 +1291,7 @@
 					<xsl:choose>
 						<xsl:when test="./@type">
 							<xsl:choose>
-								<xsl:when test="starts-with(./@type, $serviceXMLNS)">
+								<xsl:when test="not(starts-with(./@type, 'xs'))">
 								<!-- Custom type -->
 									<xsl:call-template name="convertFromCustomNamedAtomicElement">
 										<xsl:with-param name="objectToWorkOn" select="$memberObjectName" />
@@ -1277,7 +1411,7 @@
 										<xsl:with-param name="objectToWorkOn" select="concat('[', $objectToWorkOn, ' ', $memberName, ']')" />
 									</xsl:call-template>
 								</xsl:when>
-								<xsl:when test="starts-with(./@type, $serviceXMLNS)">
+								<xsl:otherwise>
 									<!-- custom type -->
 									<xsl:call-template name="convertFromCustomNamedAtomicElement">
 										<xsl:with-param name="xmlVariableName" select="$codeElementName" />
@@ -1288,10 +1422,6 @@
 										<xsl:with-param name="indent" select="$indent" />
 										<xsl:with-param name="objectToWorkOn" select="concat('[', $objectToWorkOn, ' ', $memberName, ']')" />
 									</xsl:call-template>
-								</xsl:when>
-								<xsl:otherwise>
-									<!-- unknown -->
-									<xsl:text>&lt;unknown&gt;</xsl:text>
 								</xsl:otherwise>
 							</xsl:choose>
 						</xsl:when>
@@ -1364,7 +1494,7 @@
 					<xsl:choose>
 						<xsl:when test="./@type">
 							<xsl:choose>
-								<xsl:when test="starts-with(./@type, $serviceXMLNS)">
+								<xsl:when test="not(starts-with(./@type, 'xs'))">
 									<!-- Custom type -->
 									<xsl:call-template name="convertFromCustomNamedAtomicElement">
 										<xsl:with-param name="objectToWorkOn" select="$memberObjectName" />
@@ -1462,7 +1592,7 @@
 							<xsl:with-param name="indent" select="concat($tab, $indent)" />
 						</xsl:call-template>
 					</xsl:when>
-					<xsl:when test="starts-with($type, $serviceXMLNS)">
+					<xsl:otherwise>
 						<!-- custom type -->
 						<xsl:call-template name="convertFromCustomNamedAtomicElementInsideArray">
 							<xsl:with-param name="memberName" select="$memberName" />
@@ -1471,10 +1601,6 @@
 							<xsl:with-param name="objectToWorkOn" select="$objectToWorkOn" />
 							<xsl:with-param name="type" select="$type" />
 						</xsl:call-template>
-					</xsl:when>
-					<xsl:otherwise>
-						<!-- unknown -->
-						<xsl:text>&lt;unknown&gt;</xsl:text>
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:when>

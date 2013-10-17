@@ -1,7 +1,11 @@
-@interface GameOverMessage : NSObject
+#import "PlayerInfo.h"
+
+#import <Mxi/Mxi.h>
+
+@interface GameOverMessage : NSObject <MXiIncomingBean, MXiOutgoingBean>
 
 @property (nonatomic, strong) NSString* winner;
-@property (nonatomic) NSInteger score;
+@property (nonatomic) NSNumber* score;
 @property (nonatomic, strong) NSMutableArray* PlayerInfos;
 
 @end

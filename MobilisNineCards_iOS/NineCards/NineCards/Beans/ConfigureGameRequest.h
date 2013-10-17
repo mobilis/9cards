@@ -3,9 +3,9 @@
 @interface ConfigureGameRequest : MXiBean <MXiOutgoingBean>
 
 @property (nonatomic, strong) NSString* gamename;
-@property (nonatomic) NSInteger players;
-@property (nonatomic) NSInteger rounds;
+@property (nonatomic) NSNumber* players;
+@property (nonatomic) NSNumber* rounds;
 
-- (id)init;
+- (instancetype)init;
 
 @end

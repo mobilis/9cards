@@ -3,6 +3,6 @@
 @interface ConfigureGameResponse : MXiBean <MXiIncomingBean>
 
 
-- (id)init;
+- (instancetype)init;
 
 @end

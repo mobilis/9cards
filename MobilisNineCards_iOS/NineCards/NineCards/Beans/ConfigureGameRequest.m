@@ -17,11 +17,11 @@
 	[beanElement addChild:gamenameElement];
 
 	NSXMLElement* playersElement = [NSXMLElement elementWithName:@"players"];
-	[playersElement setStringValue:[NSString stringWithFormat:@"%d", [self players]]];
+	[playersElement setStringValue:[NSString stringWithFormat:@"%f", [[self players] floatValue]]];
 	[beanElement addChild:playersElement];
 
 	NSXMLElement* roundsElement = [NSXMLElement elementWithName:@"rounds"];
-	[roundsElement setStringValue:[NSString stringWithFormat:@"%d", [self rounds]]];
+	[roundsElement setStringValue:[NSString stringWithFormat:@"%f", [[self rounds] floatValue]]];
 	[beanElement addChild:roundsElement];
 
 	return beanElement;
