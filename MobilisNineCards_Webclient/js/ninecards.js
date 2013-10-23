@@ -504,15 +504,19 @@ var ninecards = {
 
 	fillSettingsForm : function(){
 
-		var settings = jQuery.jStorage.get('settings');
+	    if ( !jQuery.jStorage.index().length ){
 
-		$('#settings-form #username').val(settings.username);
-		$('#settings-form #jid').val(settings.jid);
-		$('#settings-form #password').val(settings.password);
-		$('#settings-form #gameserver').val(settings.gameserver);
-		$('#settings-form #chatservice').val(settings.chatservice);
-		$('#settings-form #coordinator').val(settings.coordinator);
+			var settings = jQuery.jStorage.get('settings');
+			console.log(settings);
+			// $('#settings-form #username').val(settings.username);
+			// $('#settings-form #jid').val(settings.jid);
+			// $('#settings-form #password').val(settings.password);
+			// $('#settings-form #gameserver').val(settings.gameserver);
+			// $('#settings-form #chatservice').val(settings.chatservice);
+			// $('#settings-form #coordinator').val(settings.coordinator);
+		} else {
 
+		}
 	},
 
 
@@ -769,13 +773,30 @@ $( window ).on('beforeunload', function() {
 
 /* Development Hooks */
 
-$(document).on('ready', function(){
+var dev = {
 
-    if ( !jQuery.jStorage.index().length ){
+	flushStorageData : function(){
+		jQuery.jStorage.flush();
 
-        $.getJSON('settings.json', function(data){
-            jQuery.jStorage.set('settings', data);
+	}
+}
+
+$(document).on('vclick', '#load-defaults-button', function() {
+
+    $.getJSON('settings.json', function(data){
+        console.log(data);
+        $.each(data, function(key,value){
+        	console.log(key,value);
+        	$('#settings-form #'+key).val(value);
         });
+    });
 
-    }
+});
+
+$(document).on('vclick', '#flush-settings-button', function(event) {
+
+	event.preventDefault();
+	dev.flushStorageData();
+	return false;
+
 });
