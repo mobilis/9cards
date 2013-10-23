@@ -166,36 +166,6 @@ var ninecards = {
 
 
 
-	leaveMuc : function(room, onLeft){
-		MX.connection.muc.leave(
-			room,
-			jQuery.jStorage.get('settings').username
-		);
-		onLeft();
-	},
-
-
-
-	leaveGame : function(){
-		ninecards.leaveMuc(
-			jQuery.jStorage.get('chatroom'),
-			function(){
-				$('#players-list').empty();
-				$('#startgame-button').remove();
-				jQuery.mobile.changePage(
-					'#games', {
-						transition: 'slide',
-						reverse: true,
-						changeHash: true
-					}
-				);
-				console.log('left game');
-			}
-		);
-	},
-
-
-
 	onMessage : function (message){
 
 		// console.log(message);
@@ -488,7 +458,66 @@ var ninecards = {
 	disableButton : function(button){
 			$('a[data-id='+button+']').addClass('ui-disabled');
 			console.log('button', button, 'disabled');
+	},
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	/* game functions */
+
+	leaveGame : function(){
+		ninecards.leaveMuc(
+			jQuery.jStorage.get('chatroom'),
+			'left Game',
+			function(){
+				$('#players-list').empty();
+				$('#startgame-button').remove();
+				$('#numpad a').each(function(){
+					$(this).addClass('ui-disabled');
+				});
+
+				jQuery.mobile.changePage(
+					'#games', {
+						transition: 'slide',
+						reverse: true,
+						changeHash: true
+					}
+				);
+			}
+		);
+	},
+
+
+
+
+	/* core functions */
+
+	leaveMuc : function(room, exitMessage, onLeft){
+		MX.connection.muc.leave(
+			room,
+			jQuery.jStorage.get('settings').username //,
+			// onLeft,  TODO muc.leave() callback not working?
+			// exitMessage
+		);
+		onLeft();
 	}
+
+
+
 
 }
 
@@ -614,6 +643,23 @@ $(document).on('vclick', '#numpad a', function(card) {
 	return false;
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* jQuery game handlers */
+
 $(document).on('vclick', '#startgame-button', function(event){
 
 	event.preventDefault();
@@ -623,6 +669,7 @@ $(document).on('vclick', '#startgame-button', function(event){
 
 });
 
+
 $(document).on('vclick', '#exitgame-button', function(event){
 
 	event.preventDefault();
@@ -630,6 +677,7 @@ $(document).on('vclick', '#exitgame-button', function(event){
 	return false;
 
 });
+
 
 $(document).on('vclick', '#exitgames-button', function(event){
 
@@ -644,4 +692,51 @@ $(document).on('vclick', '#exitgames-button', function(event){
 	);
 	return false;
 
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* jQuery core handlers */
+
+$( window ).on('beforeunload', function() {
+	MX.core.disconnect('Browser Window Closed');
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Development Hooks */
+
+$(document).on('ready', function(){
+
+    if ( !jQuery.jStorage.index().length ){
+
+        $.getJSON('settings.json', function(data){
+            jQuery.jStorage.set('settings', data);
+        });
+
+    }
 });
