@@ -477,7 +477,7 @@ var ninecards = {
 
 
 
-	/* game functions */
+	/* application-specific functions */
 
 	leaveGame : function(){
 		ninecards.leaveMuc(
@@ -500,6 +500,24 @@ var ninecards = {
 			}
 		);
 	},
+
+
+	fillSettingsForm : function(){
+
+		var settings = jQuery.jStorage.get('settings');
+
+		$('#settings-form #username').val(settings.username);
+		$('#settings-form #jid').val(settings.jid);
+		$('#settings-form #password').val(settings.password);
+		$('#settings-form #gameserver').val(settings.gameserver);
+		$('#settings-form #chatservice').val(settings.chatservice);
+		$('#settings-form #coordinator').val(settings.coordinator);
+
+	},
+
+
+
+
 
 
 
@@ -530,39 +548,37 @@ var ninecards = {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* jQuery Event Handlers */
 
-$(document).on('pageshow', '#settings', function() {
-
-	var settings = jQuery.jStorage.get('settings');
-
-	$('#settings-form #username').val(settings.username);
-	$('#settings-form #jid').val(settings.jid);
-	$('#settings-form #password').val(settings.password);
-	$('#settings-form #gameserver').val(settings.gameserver);
-	$('#settings-form #chatservice').val(settings.chatservice);
-	$('#settings-form #coordinator').val(settings.coordinator);
-
-	return true;
-});
 
 
-
-
-$(document).on('pageshow', '#games', function(){
-
-	ninecards.queryGames();
-
-});
-
-
-
-
-$(document).on('vclick', '#refresh-games-button', function() {
-
-	ninecards.queryGames();
-
-});
 
 
 
@@ -658,7 +674,30 @@ $(document).on('vclick', '#numpad a', function(card) {
 
 
 
-/* jQuery game handlers */
+/* jQuery application-specific handlers */
+
+$(document).on('pageshow', '#settings', function() {
+
+	ninecards.fillSettingsForm();
+
+});
+
+
+$(document).on('pageshow', '#games', function(){
+
+	ninecards.queryGames();
+
+});
+
+
+$(document).on('vclick', '#refresh-games-button', function(event) {
+
+	event.preventDefault();
+	ninecards.queryGames();
+	return false;
+
+});
+
 
 $(document).on('vclick', '#startgame-button', function(event){
 
