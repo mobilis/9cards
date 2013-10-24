@@ -9,12 +9,15 @@
 #import "StartViewController_iPad.h"
 #import "GameListTableViewController.h"
 
-@interface StartViewController_iPad ()
+#import "CreateGameViewController.h"
+#import "GameViewController.h"
+
+#import <DDLog.h>
+
+@interface StartViewController_iPad () <CreateGameDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *backgroundImageView;
 @property (weak, nonatomic) IBOutlet UIView *layerView;
 @property (weak, nonatomic) IBOutlet UITableView *gameListTableView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *gameListTableViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *gameListTableViewWidthConstraint;
 
 @end
 
@@ -36,6 +39,7 @@
 	gameList.tableView = self.gameListTableView;
 	gameList.tableView.delegate = gameList;
 	gameList.tableView.dataSource = gameList;
+	[gameList viewDidLoad];
 	
 	NSString *imageName;
 	if (UIInterfaceOrientationIsLandscape(self.interfaceOrientation)) {
@@ -50,21 +54,14 @@
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-	CGFloat height, width;
 	NSString *imageName;
-	CGSize screenSize = [UIScreen mainScreen].bounds.size;
 	if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
-		height = screenSize.width / 3;
-		width = screenSize.height / 3;
 		imageName = @"9Cards-BGL-iPad";
 	} else {
-		height = screenSize.height / 3;
-		width = screenSize.width / 3;
 		imageName = @"9Cards-BGP-iPad";
 	}
 	[UIView animateWithDuration:duration
@@ -74,10 +71,29 @@
 	}];
 }
 
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+	if ([segue.identifier isEqualToString:@"CreateGame"]) {
+		((CreateGameViewController *)segue.destinationViewController).delegate = self;
+	} else if ([segue.identifier isEqualToString:@"JoinGame"]) {
+		if([sender class] == [Game class]) {
+			((GameViewController*)segue.destinationViewController).game = sender;
+		} else {
+			NSLog(@"%@", [[sender class] description]);
+		}
+	}
+}
+
 #pragma mark - UINavigationBarDelegate
 -(UIBarPosition)positionForBar:(id<UIBarPositioning>)bar
 {
 	return UIBarPositionTopAttached;
+}
+
+#pragma mark - Create Game Delegate
+- (void)gameCreated:(Game *)game
+{
+	[self performSegueWithIdentifier:@"JoinGame" sender:game];
 }
 
 @end

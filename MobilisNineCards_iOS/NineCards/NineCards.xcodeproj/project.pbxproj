@@ -7,8 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0C07CF8618190FE900F07113 /* NSString+StringUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C07CF8518190FE900F07113 /* NSString+StringUtils.m */; };
 		0C16BC0E180D56E8000DA30A /* 9Cards-BG-iPhone-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C16BC0C180D56E8000DA30A /* 9Cards-BG-iPhone-568h@2x.png */; };
 		0C16BC0F180D56E8000DA30A /* 9Cards-BG-iPhone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C16BC0D180D56E8000DA30A /* 9Cards-BG-iPhone@2x.png */; };
+		0C40AB5C1816631600CA06A5 /* CardButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C40AB5B1816631600CA06A5 /* CardButton.m */; };
 		0C5C870D1806988100C6B371 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C5C870C1806988100C6B371 /* Foundation.framework */; };
 		0C5C870F1806988100C6B371 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C5C870E1806988100C6B371 /* CoreGraphics.framework */; };
 		0C5C87111806988100C6B371 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C5C87101806988100C6B371 /* UIKit.framework */; };
@@ -33,6 +35,24 @@
 		0C7E391A180EB87F009F9158 /* 9Cards-BGP-iPad.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E3916180EB87F009F9158 /* 9Cards-BGP-iPad.png */; };
 		0C7E391B180EB87F009F9158 /* 9Cards-BGP-iPad@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E3917180EB87F009F9158 /* 9Cards-BGP-iPad@2x.png */; };
 		0C7E391F180FD04D009F9158 /* Game.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C7E391E180FD04D009F9158 /* Game.m */; };
+		0C7E393618102755009F9158 /* card1.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E392418102755009F9158 /* card1.png */; };
+		0C7E393718102755009F9158 /* card1@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E392518102755009F9158 /* card1@2x.png */; };
+		0C7E393818102755009F9158 /* card2.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E392618102755009F9158 /* card2.png */; };
+		0C7E393918102755009F9158 /* card2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E392718102755009F9158 /* card2@2x.png */; };
+		0C7E393A18102755009F9158 /* card3.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E392818102755009F9158 /* card3.png */; };
+		0C7E393B18102755009F9158 /* card3@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E392918102755009F9158 /* card3@2x.png */; };
+		0C7E393C18102755009F9158 /* card4.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E392A18102755009F9158 /* card4.png */; };
+		0C7E393D18102755009F9158 /* card4@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E392B18102755009F9158 /* card4@2x.png */; };
+		0C7E393E18102755009F9158 /* card5.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E392C18102755009F9158 /* card5.png */; };
+		0C7E393F18102755009F9158 /* card5@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E392D18102755009F9158 /* card5@2x.png */; };
+		0C7E394018102755009F9158 /* card6.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E392E18102755009F9158 /* card6.png */; };
+		0C7E394118102755009F9158 /* card6@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E392F18102755009F9158 /* card6@2x.png */; };
+		0C7E394218102755009F9158 /* card7.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E393018102755009F9158 /* card7.png */; };
+		0C7E394318102755009F9158 /* card7@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E393118102755009F9158 /* card7@2x.png */; };
+		0C7E394418102755009F9158 /* card8.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E393218102755009F9158 /* card8.png */; };
+		0C7E394518102755009F9158 /* card8@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E393318102755009F9158 /* card8@2x.png */; };
+		0C7E394618102755009F9158 /* card9.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E393418102755009F9158 /* card9.png */; };
+		0C7E394718102755009F9158 /* card9@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E393518102755009F9158 /* card9@2x.png */; };
 		0CF033CF18083CC000C1FE0F /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF033CE18083CC000C1FE0F /* SettingsViewController.m */; };
 		0CF033D218083D5200C1FE0F /* TextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF033D118083D5200C1FE0F /* TextFieldCell.m */; };
 		0CFEBBB6180C8FAD00631DD2 /* StartViewController_iPad.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CFEBBB5180C8FAD00631DD2 /* StartViewController_iPad.m */; };
@@ -60,8 +80,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0C07CF8418190FE900F07113 /* NSString+StringUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+StringUtils.h"; path = "Categories/NSString+StringUtils.h"; sourceTree = "<group>"; };
+		0C07CF8518190FE900F07113 /* NSString+StringUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+StringUtils.m"; path = "Categories/NSString+StringUtils.m"; sourceTree = "<group>"; };
 		0C16BC0C180D56E8000DA30A /* 9Cards-BG-iPhone-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "9Cards-BG-iPhone-568h@2x.png"; path = "Images/9Cards-BG-iPhone-568h@2x.png"; sourceTree = "<group>"; };
 		0C16BC0D180D56E8000DA30A /* 9Cards-BG-iPhone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "9Cards-BG-iPhone@2x.png"; path = "Images/9Cards-BG-iPhone@2x.png"; sourceTree = "<group>"; };
+		0C40AB5A1816631600CA06A5 /* CardButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CardButton.h; sourceTree = "<group>"; };
+		0C40AB5B1816631600CA06A5 /* CardButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CardButton.m; sourceTree = "<group>"; };
 		0C5C87091806988100C6B371 /* NineCards.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NineCards.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C5C870C1806988100C6B371 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		0C5C870E1806988100C6B371 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -95,6 +119,24 @@
 		0C7E3917180EB87F009F9158 /* 9Cards-BGP-iPad@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "9Cards-BGP-iPad@2x.png"; path = "Images/9Cards-BGP-iPad@2x.png"; sourceTree = "<group>"; };
 		0C7E391D180FD04D009F9158 /* Game.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Game.h; sourceTree = "<group>"; };
 		0C7E391E180FD04D009F9158 /* Game.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Game.m; sourceTree = "<group>"; };
+		0C7E392418102755009F9158 /* card1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = card1.png; sourceTree = "<group>"; };
+		0C7E392518102755009F9158 /* card1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card1@2x.png"; sourceTree = "<group>"; };
+		0C7E392618102755009F9158 /* card2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = card2.png; sourceTree = "<group>"; };
+		0C7E392718102755009F9158 /* card2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card2@2x.png"; sourceTree = "<group>"; };
+		0C7E392818102755009F9158 /* card3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = card3.png; sourceTree = "<group>"; };
+		0C7E392918102755009F9158 /* card3@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card3@2x.png"; sourceTree = "<group>"; };
+		0C7E392A18102755009F9158 /* card4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = card4.png; sourceTree = "<group>"; };
+		0C7E392B18102755009F9158 /* card4@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card4@2x.png"; sourceTree = "<group>"; };
+		0C7E392C18102755009F9158 /* card5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = card5.png; sourceTree = "<group>"; };
+		0C7E392D18102755009F9158 /* card5@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card5@2x.png"; sourceTree = "<group>"; };
+		0C7E392E18102755009F9158 /* card6.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = card6.png; sourceTree = "<group>"; };
+		0C7E392F18102755009F9158 /* card6@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card6@2x.png"; sourceTree = "<group>"; };
+		0C7E393018102755009F9158 /* card7.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = card7.png; sourceTree = "<group>"; };
+		0C7E393118102755009F9158 /* card7@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card7@2x.png"; sourceTree = "<group>"; };
+		0C7E393218102755009F9158 /* card8.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = card8.png; sourceTree = "<group>"; };
+		0C7E393318102755009F9158 /* card8@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card8@2x.png"; sourceTree = "<group>"; };
+		0C7E393418102755009F9158 /* card9.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = card9.png; sourceTree = "<group>"; };
+		0C7E393518102755009F9158 /* card9@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card9@2x.png"; sourceTree = "<group>"; };
 		0CF033CD18083CC000C1FE0F /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		0CF033CE18083CC000C1FE0F /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		0CF033D018083D5200C1FE0F /* TextFieldCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextFieldCell.h; sourceTree = "<group>"; };
@@ -194,6 +236,8 @@
 				0C5C87271806988100C6B371 /* Images.xcassets */,
 				0C5C87131806988100C6B371 /* Supporting Files */,
 				BF8CB60FE278B02A25291DD0 /* Beans */,
+				0C07CF8418190FE900F07113 /* NSString+StringUtils.h */,
+				0C07CF8518190FE900F07113 /* NSString+StringUtils.m */,
 			);
 			path = NineCards;
 			sourceTree = "<group>";
@@ -236,6 +280,8 @@
 				0C5C87211806988100C6B371 /* Main_iPad.storyboard */,
 				0CF033D018083D5200C1FE0F /* TextFieldCell.h */,
 				0CF033D118083D5200C1FE0F /* TextFieldCell.m */,
+				0C40AB5A1816631600CA06A5 /* CardButton.h */,
+				0C40AB5B1816631600CA06A5 /* CardButton.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -268,9 +314,36 @@
 			name = Model;
 			sourceTree = "<group>";
 		};
+		0C7E392318102755009F9158 /* Cards */ = {
+			isa = PBXGroup;
+			children = (
+				0C7E392418102755009F9158 /* card1.png */,
+				0C7E392518102755009F9158 /* card1@2x.png */,
+				0C7E392618102755009F9158 /* card2.png */,
+				0C7E392718102755009F9158 /* card2@2x.png */,
+				0C7E392818102755009F9158 /* card3.png */,
+				0C7E392918102755009F9158 /* card3@2x.png */,
+				0C7E392A18102755009F9158 /* card4.png */,
+				0C7E392B18102755009F9158 /* card4@2x.png */,
+				0C7E392C18102755009F9158 /* card5.png */,
+				0C7E392D18102755009F9158 /* card5@2x.png */,
+				0C7E392E18102755009F9158 /* card6.png */,
+				0C7E392F18102755009F9158 /* card6@2x.png */,
+				0C7E393018102755009F9158 /* card7.png */,
+				0C7E393118102755009F9158 /* card7@2x.png */,
+				0C7E393218102755009F9158 /* card8.png */,
+				0C7E393318102755009F9158 /* card8@2x.png */,
+				0C7E393418102755009F9158 /* card9.png */,
+				0C7E393518102755009F9158 /* card9@2x.png */,
+			);
+			name = Cards;
+			path = Images/Cards;
+			sourceTree = "<group>";
+		};
 		0CFEBBBB180D319200631DD2 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				0C7E392318102755009F9158 /* Cards */,
 				0C7E3914180EB87F009F9158 /* 9Cards-BGL-iPad.png */,
 				0C7E3915180EB87F009F9158 /* 9Cards-BGL-iPad@2x.png */,
 				0C7E3916180EB87F009F9158 /* 9Cards-BGP-iPad.png */,
@@ -384,16 +457,34 @@
 			files = (
 				0C16BC0F180D56E8000DA30A /* 9Cards-BG-iPhone@2x.png in Resources */,
 				0C5C87231806988100C6B371 /* Main_iPad.storyboard in Resources */,
+				0C7E394318102755009F9158 /* card7@2x.png in Resources */,
+				0C7E394618102755009F9158 /* card9.png in Resources */,
+				0C7E394118102755009F9158 /* card6@2x.png in Resources */,
 				0C16BC0E180D56E8000DA30A /* 9Cards-BG-iPhone-568h@2x.png in Resources */,
 				0C5C87281806988100C6B371 /* Images.xcassets in Resources */,
+				0C7E394718102755009F9158 /* card9@2x.png in Resources */,
 				0C5C87201806988100C6B371 /* Main_iPhone.storyboard in Resources */,
 				5B1C401F180E94A60029030E /* Settings.plist in Resources */,
+				0C7E394418102755009F9158 /* card8.png in Resources */,
 				0C7E3918180EB87F009F9158 /* 9Cards-BGL-iPad.png in Resources */,
 				5B219C861811312000C64C54 /* Settings.plist.example in Resources */,
+				0C7E393618102755009F9158 /* card1.png in Resources */,
+				0C7E393918102755009F9158 /* card2@2x.png in Resources */,
+				0C7E393B18102755009F9158 /* card3@2x.png in Resources */,
+				0C7E393A18102755009F9158 /* card3.png in Resources */,
 				0C7E391B180EB87F009F9158 /* 9Cards-BGP-iPad@2x.png in Resources */,
+				0C7E394218102755009F9158 /* card7.png in Resources */,
+				0C7E394518102755009F9158 /* card8@2x.png in Resources */,
 				0C7E391A180EB87F009F9158 /* 9Cards-BGP-iPad.png in Resources */,
+				0C7E393818102755009F9158 /* card2.png in Resources */,
+				0C7E393D18102755009F9158 /* card4@2x.png in Resources */,
+				0C7E393E18102755009F9158 /* card5.png in Resources */,
+				0C7E393F18102755009F9158 /* card5@2x.png in Resources */,
 				0C7E3919180EB87F009F9158 /* 9Cards-BGL-iPad@2x.png in Resources */,
 				0C5C87171806988100C6B371 /* InfoPlist.strings in Resources */,
+				0C7E393C18102755009F9158 /* card4.png in Resources */,
+				0C7E394018102755009F9158 /* card6.png in Resources */,
+				0C7E393718102755009F9158 /* card1@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -448,10 +539,12 @@
 				0C5C874D1806B7C300C6B371 /* GameViewController.m in Sources */,
 				0C5C87261806988100C6B371 /* GameListTableViewController.m in Sources */,
 				0C7E38F8180D5CD5009F9158 /* StartViewController_iPhone.m in Sources */,
+				0C40AB5C1816631600CA06A5 /* CardButton.m in Sources */,
 				0CF033CF18083CC000C1FE0F /* SettingsViewController.m in Sources */,
 				0CF033D218083D5200C1FE0F /* TextFieldCell.m in Sources */,
 				0C5C871D1806988100C6B371 /* AppDelegate.m in Sources */,
 				0C66D02318084DE900044B28 /* CreateGameViewController.m in Sources */,
+				0C07CF8618190FE900F07113 /* NSString+StringUtils.m in Sources */,
 				0C5C87191806988100C6B371 /* main.m in Sources */,
 				0CFEBBB6180C8FAD00631DD2 /* StartViewController_iPad.m in Sources */,
 				0C7E391F180FD04D009F9158 /* Game.m in Sources */,

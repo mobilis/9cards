@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4510" systemVersion="12F37" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="B1s-T8-Aeg">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4514" systemVersion="13A603" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="B1s-T8-Aeg">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3742"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3746"/>
     </dependencies>
     <scenes>
         <!--Start View Controller i Pad - 9Cards-->
@@ -46,6 +46,9 @@
                                                     </subviews>
                                                 </tableViewCellContentView>
                                                 <color key="backgroundColor" white="1" alpha="0.5" colorSpace="calibratedWhite"/>
+                                                <connections>
+                                                    <segue destination="bao-rz-B8d" kind="push" identifier="JoinGame" id="fok-4P-4NP"/>
+                                                </connections>
                                             </tableViewCell>
                                         </prototypes>
                                     </tableView>
@@ -82,7 +85,7 @@
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="pbB-1V-C1Z">
                             <connections>
-                                <segue destination="oxe-68-hBb" kind="modal" modalPresentationStyle="formSheet" id="NcQ-ah-dgr"/>
+                                <segue destination="oxe-68-hBb" kind="modal" identifier="CreateGame" modalPresentationStyle="formSheet" id="NcQ-ah-dgr"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -119,7 +122,7 @@
                                         </barButtonItem>
                                         <barButtonItem key="rightBarButtonItem" title="Create &amp; Play" style="done" id="tRB-1c-LUo">
                                             <connections>
-                                                <action selector="createAndStartGame" destination="oxe-68-hBb" id="ySj-xX-qzf"/>
+                                                <action selector="createGame:" destination="oxe-68-hBb" id="hbf-6a-56q"/>
                                             </connections>
                                         </barButtonItem>
                                     </navigationItem>
@@ -223,7 +226,7 @@
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <action selector="createAndStartGame" destination="oxe-68-hBb" eventType="touchUpInside" id="2G7-6N-oQR"/>
+                                    <action selector="createGame:" destination="oxe-68-hBb" eventType="touchUpInside" id="9Pv-1A-yHt"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -259,12 +262,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HUN-9y-rcg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1022" y="-742"/>
+            <point key="canvasLocation" x="880" y="-411"/>
         </scene>
-        <!--View Controller-->
+        <!--Game View Controller - Game-->
         <scene sceneID="YMY-a6-6tw">
             <objects>
-                <viewController id="bao-rz-B8d" sceneMemberID="viewController">
+                <viewController id="bao-rz-B8d" customClass="GameViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="YKz-j7-bMx"/>
                         <viewControllerLayoutGuide type="bottom" id="gFM-6B-Ej6"/>
@@ -272,12 +275,267 @@
                     <view key="view" contentMode="scaleToFill" id="7K3-iN-FVe">
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6Vp-G9-6gV" userLabel="CardsView">
+                                <rect key="frame" x="187" y="102" width="340" height="470"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Udm-Zc-Q8e" customClass="CardButton">
+                                        <rect key="frame" x="120" y="160" width="100" height="150"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="100" id="74u-Z0-Odb"/>
+                                            <constraint firstAttribute="height" constant="150" id="vDU-1v-dS5"/>
+                                        </constraints>
+                                        <state key="normal" image="card5.png">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="cardNumber">
+                                                <integer key="value" value="5"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="cardPlayed:" destination="bao-rz-B8d" eventType="touchUpInside" id="3aj-dm-ooS"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cGr-Fx-sqC" customClass="CardButton">
+                                        <rect key="frame" x="240" y="160" width="100" height="150"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="150" id="bKN-bB-bQ9"/>
+                                            <constraint firstAttribute="width" constant="100" id="jDd-2v-g6u"/>
+                                        </constraints>
+                                        <state key="normal" image="card6.png">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="cardNumber">
+                                                <integer key="value" value="6"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="cardPlayed:" destination="bao-rz-B8d" eventType="touchUpInside" id="xyt-gv-Ajg"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1Nz-Pq-dqM" customClass="CardButton">
+                                        <rect key="frame" x="0.0" y="160" width="100" height="150"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="150" id="ZAK-bh-Axb"/>
+                                            <constraint firstAttribute="width" constant="100" id="rzr-N5-DHq"/>
+                                        </constraints>
+                                        <state key="normal" image="card4.png">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="cardNumber">
+                                                <integer key="value" value="4"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="cardPlayed:" destination="bao-rz-B8d" eventType="touchUpInside" id="l3G-ib-MbU"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GDm-k1-Ixt" customClass="CardButton">
+                                        <rect key="frame" x="120" y="0.0" width="100" height="150"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="150" id="FdM-Wh-OA9"/>
+                                            <constraint firstAttribute="width" constant="100" id="d8j-Oq-d2p"/>
+                                        </constraints>
+                                        <state key="normal" image="card2.png">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="cardNumber">
+                                                <integer key="value" value="2"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="cardPlayed:" destination="bao-rz-B8d" eventType="touchUpInside" id="MSW-Bi-9FV"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NQ1-Zu-VrF" customClass="CardButton">
+                                        <rect key="frame" x="0.0" y="0.0" width="100" height="150"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="100" id="9CK-QT-i3r"/>
+                                            <constraint firstAttribute="height" constant="150" id="hHV-RN-ofd"/>
+                                        </constraints>
+                                        <state key="normal" image="card1.png">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="cardNumber">
+                                                <integer key="value" value="1"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="cardPlayed:" destination="bao-rz-B8d" eventType="touchUpInside" id="9R0-8d-68c"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wg1-nr-OC3" customClass="CardButton">
+                                        <rect key="frame" x="240" y="0.0" width="100" height="150"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="150" id="2R4-7P-PdV"/>
+                                            <constraint firstAttribute="width" constant="100" id="G6B-n9-k40"/>
+                                        </constraints>
+                                        <state key="normal" image="card3.png">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="cardNumber">
+                                                <integer key="value" value="3"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="cardPlayed:" destination="bao-rz-B8d" eventType="touchUpInside" id="US0-Rz-IRc"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sXm-Ju-7Yy" customClass="CardButton">
+                                        <rect key="frame" x="0.0" y="320" width="100" height="150"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="150" id="AhQ-8W-gYs"/>
+                                            <constraint firstAttribute="width" constant="100" id="sdP-Tz-sOd"/>
+                                        </constraints>
+                                        <state key="normal" image="card7.png">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="cardNumber">
+                                                <integer key="value" value="7"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="cardPlayed:" destination="bao-rz-B8d" eventType="touchUpInside" id="3Qu-jM-CAv"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nCs-bF-2j3" customClass="CardButton">
+                                        <rect key="frame" x="120" y="320" width="100" height="150"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="150" id="84Y-ek-8eQ"/>
+                                            <constraint firstAttribute="width" constant="100" id="kz5-Td-bUJ"/>
+                                        </constraints>
+                                        <state key="normal" image="card8.png">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="cardNumber">
+                                                <integer key="value" value="8"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="cardPlayed:" destination="bao-rz-B8d" eventType="touchUpInside" id="lZe-Lf-e45"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JFm-Hw-cPF" customClass="CardButton">
+                                        <rect key="frame" x="240" y="320" width="100" height="150"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="150" id="j0A-C6-Bfo"/>
+                                            <constraint firstAttribute="width" constant="100" id="uFY-j8-gsb"/>
+                                        </constraints>
+                                        <state key="normal" image="card9.png">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="cardNumber">
+                                                <integer key="value" value="9"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="cardPlayed:" destination="bao-rz-B8d" eventType="touchUpInside" id="unt-c3-EBe"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="cGr-Fx-sqC" firstAttribute="height" secondItem="Udm-Zc-Q8e" secondAttribute="height" id="1Vh-Od-rTY"/>
+                                    <constraint firstAttribute="trailing" secondItem="cGr-Fx-sqC" secondAttribute="trailing" id="3r5-8J-HeU"/>
+                                    <constraint firstAttribute="bottom" secondItem="nCs-bF-2j3" secondAttribute="bottom" id="4I0-dj-CXP"/>
+                                    <constraint firstItem="GDm-k1-Ixt" firstAttribute="height" secondItem="Udm-Zc-Q8e" secondAttribute="height" id="AVn-gn-0m4"/>
+                                    <constraint firstAttribute="width" constant="340" id="CB7-1w-E6X"/>
+                                    <constraint firstAttribute="bottom" secondItem="sXm-Ju-7Yy" secondAttribute="bottom" id="FvX-Xb-zqy"/>
+                                    <constraint firstItem="sXm-Ju-7Yy" firstAttribute="width" secondItem="Udm-Zc-Q8e" secondAttribute="width" id="G6o-aY-3E1"/>
+                                    <constraint firstAttribute="trailing" secondItem="JFm-Hw-cPF" secondAttribute="trailing" id="HFv-oq-8ms"/>
+                                    <constraint firstItem="cGr-Fx-sqC" firstAttribute="width" secondItem="Udm-Zc-Q8e" secondAttribute="width" id="Kob-ZI-b8Y"/>
+                                    <constraint firstAttribute="trailing" secondItem="wg1-nr-OC3" secondAttribute="trailing" id="Kzm-EI-9Ec"/>
+                                    <constraint firstItem="sXm-Ju-7Yy" firstAttribute="leading" secondItem="6Vp-G9-6gV" secondAttribute="leading" id="Lqe-Kh-fKi"/>
+                                    <constraint firstItem="1Nz-Pq-dqM" firstAttribute="width" secondItem="Udm-Zc-Q8e" secondAttribute="width" id="Mk0-JH-d2K"/>
+                                    <constraint firstItem="wg1-nr-OC3" firstAttribute="height" secondItem="Udm-Zc-Q8e" secondAttribute="height" id="Oqz-Hs-hfK"/>
+                                    <constraint firstItem="NQ1-Zu-VrF" firstAttribute="top" secondItem="6Vp-G9-6gV" secondAttribute="top" id="QAD-KD-jg8"/>
+                                    <constraint firstAttribute="centerY" secondItem="1Nz-Pq-dqM" secondAttribute="centerY" id="T5S-ff-h35"/>
+                                    <constraint firstItem="1Nz-Pq-dqM" firstAttribute="height" secondItem="Udm-Zc-Q8e" secondAttribute="height" id="TGV-pa-vUn"/>
+                                    <constraint firstAttribute="centerX" secondItem="Udm-Zc-Q8e" secondAttribute="centerX" constant="0.5" id="W6p-G1-A6f"/>
+                                    <constraint firstItem="sXm-Ju-7Yy" firstAttribute="height" secondItem="Udm-Zc-Q8e" secondAttribute="height" id="YVB-4O-Xn0"/>
+                                    <constraint firstItem="GDm-k1-Ixt" firstAttribute="width" secondItem="Udm-Zc-Q8e" secondAttribute="width" id="ZRs-Rh-i1L"/>
+                                    <constraint firstItem="Udm-Zc-Q8e" firstAttribute="width" secondItem="JFm-Hw-cPF" secondAttribute="width" id="aCh-NJ-nDG"/>
+                                    <constraint firstAttribute="centerX" secondItem="nCs-bF-2j3" secondAttribute="centerX" id="fio-ZL-iET"/>
+                                    <constraint firstItem="Udm-Zc-Q8e" firstAttribute="height" secondItem="JFm-Hw-cPF" secondAttribute="height" id="gPs-ET-AP6"/>
+                                    <constraint firstItem="Udm-Zc-Q8e" firstAttribute="height" secondItem="NQ1-Zu-VrF" secondAttribute="height" id="hC2-ue-TQ2"/>
+                                    <constraint firstItem="nCs-bF-2j3" firstAttribute="height" secondItem="Udm-Zc-Q8e" secondAttribute="height" id="hdC-ix-Sa9"/>
+                                    <constraint firstAttribute="centerY" secondItem="Udm-Zc-Q8e" secondAttribute="centerY" id="j3O-Az-IUF"/>
+                                    <constraint firstItem="nCs-bF-2j3" firstAttribute="width" secondItem="Udm-Zc-Q8e" secondAttribute="width" id="jv5-A0-Wtz"/>
+                                    <constraint firstItem="Udm-Zc-Q8e" firstAttribute="width" secondItem="NQ1-Zu-VrF" secondAttribute="width" id="nej-Wt-6Qz"/>
+                                    <constraint firstItem="wg1-nr-OC3" firstAttribute="top" secondItem="6Vp-G9-6gV" secondAttribute="top" id="qil-8u-odx"/>
+                                    <constraint firstItem="wg1-nr-OC3" firstAttribute="width" secondItem="Udm-Zc-Q8e" secondAttribute="width" id="rZQ-m1-vVb"/>
+                                    <constraint firstItem="1Nz-Pq-dqM" firstAttribute="leading" secondItem="6Vp-G9-6gV" secondAttribute="leading" id="rZz-N1-p66"/>
+                                    <constraint firstAttribute="height" constant="470" id="sUb-t1-EfT"/>
+                                    <constraint firstAttribute="centerX" secondItem="GDm-k1-Ixt" secondAttribute="centerX" id="tEA-Xs-mVW"/>
+                                    <constraint firstAttribute="bottom" secondItem="JFm-Hw-cPF" secondAttribute="bottom" id="tFj-nf-kfl"/>
+                                    <constraint firstItem="NQ1-Zu-VrF" firstAttribute="leading" secondItem="6Vp-G9-6gV" secondAttribute="leading" id="wCM-r1-xNd"/>
+                                    <constraint firstItem="GDm-k1-Ixt" firstAttribute="top" secondItem="6Vp-G9-6gV" secondAttribute="top" id="xAC-fj-sKg"/>
+                                    <constraint firstAttribute="centerY" secondItem="cGr-Fx-sqC" secondAttribute="centerY" id="y79-ra-TxL"/>
+                                </constraints>
+                            </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kFb-mW-aC0">
+                                <rect key="frame" x="0.0" y="64" width="768" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="DLc-go-ddV"/>
+                                </constraints>
+                                <state key="normal" title="Start Game">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="startGame:" destination="bao-rz-B8d" eventType="touchUpInside" id="LmH-yr-Ejt"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="6Vp-G9-6gV" firstAttribute="top" secondItem="kFb-mW-aC0" secondAttribute="bottom" constant="8" symbolic="YES" id="PNd-hK-Vxt"/>
+                            <constraint firstItem="kFb-mW-aC0" firstAttribute="top" secondItem="YKz-j7-bMx" secondAttribute="bottom" id="Tz8-1A-6Lf"/>
+                            <constraint firstItem="6Vp-G9-6gV" firstAttribute="leading" secondItem="7K3-iN-FVe" secondAttribute="leading" constant="187" id="Zku-9B-Cve"/>
+                            <constraint firstItem="kFb-mW-aC0" firstAttribute="leading" secondItem="7K3-iN-FVe" secondAttribute="leading" id="eW3-dX-Z6X"/>
+                            <constraint firstAttribute="trailing" secondItem="kFb-mW-aC0" secondAttribute="trailing" id="i7g-Ml-dM4"/>
+                        </constraints>
                     </view>
+                    <navigationItem key="navigationItem" title="Game" id="TcN-Gz-QF6">
+                        <barButtonItem key="leftBarButtonItem" title="Quit" id="pj4-Bj-3sv">
+                            <connections>
+                                <action selector="quitGame:" destination="bao-rz-B8d" id="0zV-jG-ZRX"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outletCollection property="cardButtons" destination="NQ1-Zu-VrF" id="SVn-SH-Kxl"/>
+                        <outletCollection property="cardButtons" destination="GDm-k1-Ixt" id="mxa-Yh-LQN"/>
+                        <outletCollection property="cardButtons" destination="wg1-nr-OC3" id="lKw-no-g1d"/>
+                        <outletCollection property="cardButtons" destination="1Nz-Pq-dqM" id="z5P-fC-lhN"/>
+                        <outletCollection property="cardButtons" destination="Udm-Zc-Q8e" id="6Oz-Rc-acu"/>
+                        <outletCollection property="cardButtons" destination="cGr-Fx-sqC" id="QgY-jg-LL5"/>
+                        <outletCollection property="cardButtons" destination="sXm-Ju-7Yy" id="L6B-CD-9vf"/>
+                        <outletCollection property="cardButtons" destination="nCs-bF-2j3" id="OEb-Oi-tYI"/>
+                        <outletCollection property="cardButtons" destination="JFm-Hw-cPF" id="R1C-3y-Yh4"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DGp-On-ucA" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1862" y="-117"/>
+            <point key="canvasLocation" x="1852" y="-125"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="iIK-Al-o3q">
@@ -292,7 +550,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="P14-I7-dJC" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1458" y="474"/>
+            <point key="canvasLocation" x="-1431" y="-125"/>
         </scene>
         <!--Settings View Controller-->
         <scene sceneID="XaU-U6-qtV">
@@ -318,7 +576,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="540" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="2mo-IM-Z9X">
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" clearButtonMode="always" translatesAutoresizingMaskIntoConstraints="NO" id="2mo-IM-Z9X">
                                                     <rect key="frame" x="20" y="0.0" width="500" height="43"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -378,11 +636,20 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qRi-GC-fDv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="54" y="1149"/>
+            <point key="canvasLocation" x="880" y="429"/>
         </scene>
     </scenes>
     <resources>
         <image name="9Cards-BGP-iPad.png" width="768" height="1024"/>
+        <image name="card1.png" width="100" height="150"/>
+        <image name="card2.png" width="100" height="150"/>
+        <image name="card3.png" width="100" height="150"/>
+        <image name="card4.png" width="100" height="150"/>
+        <image name="card5.png" width="100" height="150"/>
+        <image name="card6.png" width="100" height="150"/>
+        <image name="card7.png" width="100" height="150"/>
+        <image name="card8.png" width="100" height="150"/>
+        <image name="card9.png" width="100" height="150"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar" statusBarStyle="blackOpaque"/>

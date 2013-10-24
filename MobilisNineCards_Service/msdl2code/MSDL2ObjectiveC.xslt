@@ -401,9 +401,11 @@
 		<xsl:value-of select="$newline" />
 	</xsl:if>
 </xsl:for-each>
-
+<xsl:text>- (NSXMLElement* )toXML;
+- (void)fromXML:(NSXMLElement* )xml;
++ (NSString* )elementName;
 <!-- End of header definition -->
-<xsl:text>@end</xsl:text>
+@end</xsl:text>
 				</xsl:result-document>
 
 				<!-- Generate implementation file -->

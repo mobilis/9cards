@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface GameListTableViewController : UITableViewController
+@class Game;
 
+@interface GameListTableViewController : UITableViewController
+- (Game*) gameForIndexPath:(NSIndexPath*)path;
 @end

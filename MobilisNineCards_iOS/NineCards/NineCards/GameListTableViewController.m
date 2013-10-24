@@ -8,10 +8,11 @@
 
 #import <MobilisMXi/MXi/MXiConnectionHandler.h>
 #import "GameListTableViewController.h"
+#import "Game.h"
 
 @interface GameListTableViewController ()<UITableViewDataSource, UITableViewDelegate>
 
-@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) NSArray *availableGames;
 
 @end
@@ -23,10 +24,10 @@ static void *KVOContext = &KVOContext;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.availableGames = [NSArray new];
+    self.availableGames = [[MXiConnectionHandler sharedInstance] discoveredServiceInstances];
     [[MXiConnectionHandler sharedInstance] addObserver:self
-                                            forKeyPath:@"discoveredServiceInstances"
-                                               options:NSKeyValueObservingOptionNew
+											forKeyPath:@"discoveredServiceInstances"
+                                               options:0
                                                context:KVOContext];
 }
 
@@ -67,6 +68,14 @@ static void *KVOContext = &KVOContext;
         self.availableGames = [[MXiConnectionHandler sharedInstance] discoveredServiceInstances];
         [self.tableView reloadData];
     }
+}
+
+
+- (Game *)gameForIndexPath:(NSIndexPath *)path
+{
+	MXiService *service = [self.availableGames objectAtIndex:path.row];
+	Game *game = [[Game alloc] initWithName:service.name numberOfPlayers:nil numberOfRounds:nil andGameJid:service.jid];
+	return game;
 }
 
 @end

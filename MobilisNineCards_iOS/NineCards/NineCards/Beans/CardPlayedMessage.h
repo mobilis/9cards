@@ -5,4 +5,8 @@
 @property (nonatomic) NSNumber* round;
 @property (nonatomic, strong) NSString* player;
 
+- (NSXMLElement* )toXML;
+- (void)fromXML:(NSXMLElement* )xml;
++ (NSString* )elementName;
+
 @end

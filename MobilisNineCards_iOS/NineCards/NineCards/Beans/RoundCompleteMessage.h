@@ -8,4 +8,8 @@
 @property (nonatomic, strong) NSString* winner;
 @property (nonatomic, strong) NSMutableArray* PlayerInfos;
 
+- (NSXMLElement* )toXML;
+- (void)fromXML:(NSXMLElement* )xml;
++ (NSString* )elementName;
+
 @end

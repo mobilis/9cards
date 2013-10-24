@@ -12,7 +12,10 @@
 #import "ConfigureGameRequest.h"
 #import "ConfigureGameResponse.h"
 
-@interface CreateGameViewController ()
+@interface CreateGameViewController () {
+@private __strong Game *_game;
+}
+
 @property (weak, nonatomic) IBOutlet UITextField *gameNameTextField;
 @property (weak, nonatomic) IBOutlet UIStepper *gamePlayerStepper;
 @property (weak, nonatomic) IBOutlet UIStepper *gameRoundsStepper;
@@ -21,7 +24,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *startGameButton;
 
 
-
+- (void) didReceiveConfigureGameResponse;
 - (IBAction)createGame:(id)sender;
 - (IBAction)cancelGameCreation:(UIBarButtonItem *)sender;
 
@@ -29,7 +32,6 @@
 
 @implementation CreateGameViewController
 
-Game *_game;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -43,6 +45,7 @@ Game *_game;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+	[[MXiConnectionHandler sharedInstance] addDelegate:self withSelector:@selector(didReceiveConfigureGameResponse) forBeanClass:[ConfigureGameResponse class]];
 }
 
 - (void)didReceiveMemoryWarning
@@ -52,28 +55,41 @@ Game *_game;
 }
 
 - (IBAction)createGame:(id)sender {
-    [[MXiConnectionHandler sharedInstance] createServiceWithCompletionBlock:^(NSString *serviceJID)
+    [[MXiConnectionHandler sharedInstance] createServiceWithName:_gameNameTextField.text completionBlock:^(NSString * serviceJID)
     {
 		NSLog(@"Service with JID %@ created", serviceJID);
+		_game = [[Game alloc] initWithName:_gameNameTextField.text
+						   numberOfPlayers:[NSNumber numberWithDouble:_gamePlayerStepper.value]
+							numberOfRounds:[NSNumber numberWithDouble:_gameRoundsStepper.value]
+								andGameJid:[XMPPJID jidWithString:serviceJID]];
+		
 		ConfigureGameRequest *req = [ConfigureGameRequest new];
-		req.to = [XMPPJID jidWithString:serviceJID];
-		req.players = [NSNumber numberWithDouble:_gamePlayerStepper.value];
-		req.rounds = [NSNumber numberWithDouble:_gameRoundsStepper.value];
-		if(_delegate)
-		{
-			[_delegate gameCreated:nil];
-		}
-		else
-		{
-			[self gameCreated:nil];
-		}
+		req.to = _game.gameJid;
+		req.gamename = _game.name;
+		req.players = _game.players;
+		req.rounds = _game.rounds;
+		[[MXiConnectionHandler sharedInstance] sendBean:req];
     }];
 }
 
 - (IBAction)cancelGameCreation:(UIBarButtonItem *)sender {
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
-	   
+
+- (void)didReceiveConfigureGameResponse
+{
+	if(_delegate)
+	{
+		[self dismissViewControllerAnimated:YES completion:^{
+			[_delegate gameCreated:_game];
+		}];
+	}
+	else
+	{
+		[self gameCreated:_game];
+	}
+}
+
 #pragma mark - CreateGameDelegate
 -(void)gameCreated:(Game *)game
 {

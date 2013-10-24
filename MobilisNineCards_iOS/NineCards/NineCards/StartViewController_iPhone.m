@@ -8,9 +8,11 @@
 
 #import "StartViewController_iPhone.h"
 #import "GameListTableViewController.h"
+#import "GameViewController.h"
 
 @interface StartViewController_iPhone ()
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (strong) GameListTableViewController *gameList;
 
 @end
 
@@ -28,23 +30,35 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	GameListTableViewController *gameList = [GameListTableViewController new];
-	gameList.tableView = self.tableView;
-	gameList.tableView.delegate = gameList;
-	gameList.tableView.dataSource = gameList;
+	self.gameList = [GameListTableViewController new];
+	_gameList.tableView = self.tableView;
+	_gameList.tableView.delegate = _gameList;
+	_gameList.tableView.dataSource = _gameList;
 	
 	NSString *imageName = @"9Cards-BG-iPhone";
 	if ([UIScreen mainScreen].bounds.size.height == 568.0) {
 		imageName = [NSString stringWithFormat:@"%@-568h", imageName];
 	}
 	self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:imageName]];
-	[self addChildViewController:gameList];
+	[self addChildViewController:_gameList];
+	[_gameList viewDidLoad];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+	if ([segue.identifier isEqualToString:@"JoinGame"]) {
+		if([sender class] == [Game class]) {
+			((GameViewController*)segue.destinationViewController).game = sender;
+		} else {
+			((GameViewController*)segue.destinationViewController).game = [_gameList gameForIndexPath:[_gameList.tableView indexPathForSelectedRow]];
+		}
+	}
 }
 
 @end
