@@ -29,7 +29,6 @@ table#numpad a .ui-btn-inner {
 }
 
 #round-count {
-	display: none;
 	position: absolute;
 	top: 3px;
 	right: 5px;

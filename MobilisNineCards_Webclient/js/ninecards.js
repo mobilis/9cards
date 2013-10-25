@@ -134,12 +134,13 @@ var ninecards = {
 			ninecards.onRoster,
 			function(result){
 
+				$('#round-count span').hide();
+				$('#game h1').append(gameName);
+
 				jQuery.mobile.changePage('#game', { 
 					transition: 'slide',
 					changeHash: true
 				});
-
-				$('#game h1').append(gameName);
 
 				res = result;
 			}
@@ -272,7 +273,7 @@ var ninecards = {
 
 		$('#round-count #round').html(ninecards.game.round);
 		$('#round-count #rounds').html(ninecards.game.rounds);
-		$('#round-count').css('display','block');
+		$('#round-count .ingame').show();
 
 	},
 
@@ -315,7 +316,7 @@ var ninecards = {
 		});
 	},
 
-	
+
 
 	onGameOverMessage : function (message) {
 
@@ -323,7 +324,8 @@ var ninecards = {
 
 		var winner = Strophe.getResourceFromJid( $(message).find('winner').text() );
 		var score = ninecards.players[winner].score;
-		$('#round-count').html('<span>Game Over</span>');
+		$('#round-count .ingame').hide();
+		$('#round-count #gameover').show();
 
 		$('#dialog-popup').popup({
 			afteropen: function( event, ui ) {
@@ -336,9 +338,7 @@ var ninecards = {
 			positionTo: 'window'
 		});
 
-
 	},
-	
 
 
 
@@ -464,6 +464,7 @@ var ninecards = {
 			function(){
 				$('#players-list').empty();
 				$('#startgame-button').remove();
+				$('#round-count span').hide();
 				$('#numpad a').each(function(){
 					$(this).addClass('ui-disabled');
 				});
