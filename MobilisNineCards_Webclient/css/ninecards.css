@@ -38,3 +38,6 @@ table#numpad a .ui-btn-inner {
 	display: inline-block;
 	font-size: 12.5px;
 }
+#startgame-button {
+	display: none;
+}

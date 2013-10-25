@@ -3,40 +3,6 @@ var ninecards = {
 
 
 
-	createGame : function(gameName, maxPlayers, numberOfRounds) {
-
-		MX.ninecards.createServiceInstance(
-			gameName,
-			function(result){
-
-				var gameJid = ($(result).find('jidOfNewService').text());
-
-				MX.ninecards.ConfigureGame(
-					gameJid, gameName, maxPlayers, numberOfRounds, 
-					function(result){
-						ninecards.joinGame(gameJid, gameName, function(result){
-							console.log(result);
-							$('#game-area').append(
-								'<a href="#" id="startgame-button" data-theme="a" data-role="button">Start Game</a>' // TODO move to html, display:none, .show();
-							).trigger('create');
-						});
-					},
-					function(error){
-						console.error('ConfigureGame error',error);
-					}
-				);
-			},
-			function(error){
-				console.error('createServiceInstance error',error);
-			}
-
-		);
-	},
-
-
-
-
-
 	onMessage : function (rawMessage){
 
 		var rawMessageBody = $(rawMessage).find('body').text();
@@ -80,6 +46,7 @@ var ninecards = {
 	onRoster : function (roster){
 
 		console.log('roster',roster);
+		
 		ninecards.players = roster;
 
 		$('#players-list').empty();
@@ -268,6 +235,35 @@ var ninecards = {
 	},
 
 
+	createGame : function(gameName, maxPlayers, numberOfRounds) {
+
+		MX.ninecards.createServiceInstance(
+			gameName,
+			function(result){
+
+				var gameJid = ($(result).find('jidOfNewService').text());
+
+				MX.ninecards.ConfigureGame(
+					gameJid, gameName, maxPlayers, numberOfRounds, 
+					function(result){
+						ninecards.joinGame(gameJid, gameName, function(result){
+							console.log(result);
+							$('#startgame-button').css('display','block');
+						});
+					},
+					function(error){
+						console.error('ConfigureGame error',error);
+					}
+				);
+			},
+			function(error){
+				console.error('createServiceInstance error',error);
+			}
+
+		);
+	},
+
+
 	joinGame : function(serviceJid, gameName, result){
 
 		var resource = Strophe.getResourceFromJid(serviceJid).toLowerCase();
@@ -350,7 +346,7 @@ var ninecards = {
 				);
 
 				$('#players-list').empty();
-				$('#startgame-button').remove();
+				$('#startgame-button').hide();
 				$('#hgn').remove();
 				$('#round-count span').hide();
 				$('#numpad a').each(function(){
@@ -370,6 +366,15 @@ var ninecards = {
 		}
 
 	},
+
+
+
+
+
+
+
+
+
 
 
 
@@ -493,6 +498,15 @@ var ninecards = {
 		});
 
 	},
+
+
+
+
+
+
+
+
+
 
 
 
