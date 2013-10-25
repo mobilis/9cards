@@ -135,7 +135,7 @@ var ninecards = {
 			function(result){
 
 				$('#round-count span').hide();
-				$('#game h1').append(gameName);
+				$('#game h1').append('<span id="hgn">'+gameName+'</span>');
 
 				jQuery.mobile.changePage('#game', { 
 					transition: 'slide',
@@ -462,12 +462,6 @@ var ninecards = {
 			jQuery.jStorage.get('chatroom'),
 			'left Game',
 			function(){
-				$('#players-list').empty();
-				$('#startgame-button').remove();
-				$('#round-count span').hide();
-				$('#numpad a').each(function(){
-					$(this).addClass('ui-disabled');
-				});
 
 				jQuery.mobile.changePage(
 					'#games', {
@@ -476,6 +470,14 @@ var ninecards = {
 						changeHash: true
 					}
 				);
+
+				$('#players-list').empty();
+				$('#startgame-button').remove();
+				$('#hgn').remove();
+				$('#round-count span').hide();
+				$('#numpad a').each(function(){
+					$(this).addClass('ui-disabled');
+				});
 			}
 		);
 	},
