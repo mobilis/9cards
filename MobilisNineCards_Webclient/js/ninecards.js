@@ -579,24 +579,6 @@ var ninecards = {
 
 
 
-$(document).on('vclick', '#message-button', function() {
-	$('#message-popup').popup('open', {
-		positionTo: 'window',
-		theme: 'b',
-		corners: true
-	});
-});
-
-
-
-$(document).on('vclick', '#message-submit', function() {
-	var message = $('#message-form #message').val();
-	if (message) {
-		ninecards.sendGroupchatMessage(message);
-	}
-	$('#message-popup').popup('close');
-	return false;
-});
 
 
 
@@ -734,6 +716,17 @@ $(document).on('vclick', '#exitgames-button', function(event){
 });
 
 
+// $(document).on('vclick', '#message-submit', function() {
+
+// 	event.preventDefault();
+// 	var message = $('#message-form #message').val();
+// 	if (message) {
+// 		ninecards.sendGroupchatMessage(message);
+// 	}
+// 	$('#message-popup').popup('close');
+// 	return false;
+
+// });
 
 
 
