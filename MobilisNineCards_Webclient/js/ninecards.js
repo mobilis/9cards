@@ -97,7 +97,7 @@ var ninecards = {
 						ninecards.joinGame(gameJid, gameName, function(result){
 							console.log(result);
 							$('#game-area').append(
-								'<a href="#" id="startgame-button" data-theme="a" data-role="button">Start Game</a>'
+								'<a href="#" id="startgame-button" data-theme="a" data-role="button">Start Game</a>' // TODO move to html, display:none, .show();
 							).trigger('create');
 						});
 					},
@@ -579,31 +579,6 @@ var ninecards = {
 
 
 
-$(document).on('vclick', '#create-game-submit', function() {
-
-	var gameName = $('#create-game-form #gamename').val();
-	var numPlayers = $('#create-game-form #numplayers').val();
-	var numRounds = $('#create-game-form #numrounds').val();
-	
-	if (gameName && numPlayers && numRounds) {
-		ninecards.createGame(gameName, numPlayers, numRounds);
-	}
-	$('#creategame-popup').popup('close');
-	return false;
-});
-
-
-
-$(document).on('vclick', '.available-game', function () {
-
-	ninecards.joinGame( $(this).attr('id'), $(this).attr('data-name'), function (result){
-		console.log(result);
-	});
-	
-});
-
-
-
 $(document).on('vclick', '#message-button', function() {
 	$('#message-popup').popup('open', {
 		positionTo: 'window',
@@ -672,11 +647,6 @@ $(document).on('vclick', '#settings-submit', function() {
 });
 
 
-
-
-
-
-
 $(document).on('pageshow', '#games', function(){
 
 	ninecards.queryGames();
@@ -690,6 +660,31 @@ $(document).on('vclick', '#refresh-games-button', function(event) {
 	ninecards.queryGames();
 	return false;
 
+});
+
+
+$(document).on('vclick', '.available-game', function () {
+
+	ninecards.joinGame( $(this).attr('id'), $(this).attr('data-name'), function (result){
+		console.log(result);
+	});
+
+});
+
+
+$(document).on('vclick', '#create-game-submit', function(event) {
+
+	event.preventDefault();
+	var gameName = $('#create-game-form #gamename').val();
+	var numPlayers = $('#create-game-form #numplayers').val();
+	var numRounds = $('#create-game-form #numrounds').val();
+
+	if (gameName && numPlayers && numRounds) {
+		ninecards.createGame(gameName, numPlayers, numRounds);
+	}
+
+	$('#create-game-popup').popup('close');
+	return false;
 });
 
 
@@ -768,5 +763,13 @@ $(document).on('vclick', '#load-defaults-button', function() {
     $.getJSON('settings.json', function(data){
 		ninecards.fillSettingsForm(data);
     });
+
+});
+
+$(document).on('pageshow', '#games', function(){
+
+	$('#create-game-form #gamename').val('asdf');
+	$('#create-game-form #numplayers').val('4');
+	$('#create-game-form #numrounds').val('4');
 
 });
