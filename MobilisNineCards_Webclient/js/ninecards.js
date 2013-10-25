@@ -409,7 +409,7 @@ var ninecards = {
 	
 
 
-	sendCard : function(card, disableButton){
+	sendCard : function(card, result){
 		console.log('card', card);
 		var round = 1; // TODO
 		ninecards.buildMobilisCardMessage(card,round,'PlayCardMessage',function(message){
@@ -418,7 +418,7 @@ var ninecards = {
 				message
 			);
 			ninecards.sendGroupchatMessage(	'sent to '+jQuery.jStorage.get('serviceNick')+': '+message );
-			disableButton();
+			result();
 		});
 
 	},
@@ -455,10 +455,6 @@ var ninecards = {
 
 
 
-	disableButton : function(button){
-			$('a[data-id='+button+']').addClass('ui-disabled');
-			console.log('button', button, 'disabled');
-	},
 
 
 
@@ -511,6 +507,7 @@ var ninecards = {
 		}
 
 	},
+
 
 
 
@@ -660,7 +657,7 @@ $(document).on('click', '#numpad a', function(event) {
 	event.preventDefault();
 	var card  = $(this).attr('data-id');
 	ninecards.sendCard(card, function(){
-		ninecards.disableButton(card);
+		$('a[data-id='+card+']').addClass('ui-disabled');
 	});
 	return false;
 
