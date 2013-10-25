@@ -48,7 +48,7 @@ var ninecards = {
 							ninecards.queryGames();
 							break;
 						case MX.core.Status.AUTHFAIL:
-							ninecards.disconnectOnError();
+							ninecards.onAuthFail();
 							break;
 					}
 					if (status == MX.core.Status.CONNECTED) {
@@ -58,28 +58,6 @@ var ninecards = {
 			);
 		}
 
-	},
-
-
-	disconnectOnError : function(){
-        $('#error-popup').popup({
-            afteropen: function( event, ui ) {
-                $(this).find('h1').html('Error');
-                $(this).find('.ui-content h3').html('Authentication Fail');
-                $(this).find('.ui-content p').html('Please check the settings');
-            },
-            afterclose: function( event, ui ) {
-                MX.connection.disconnect();
-                jQuery.mobile.changePage('#start', {
-                    transition: 'slide',
-                    reverse: true,
-                    changeHash: true
-                });
-            }
-        });
-        $('#error-popup').popup('open', {
-            positionTo: 'window'
-        });
 	},
 
 
@@ -149,21 +127,6 @@ var ninecards = {
 	},
 
 
-
-
-
-	joinMuc : function(room, onMessage, onPresence, onRoster, result) {
-
-		MX.connection.muc.join(
-			room,
-			jQuery.jStorage.get('settings').username,
-			onMessage,
-			onPresence,
-			onRoster
-		);
-
-		if (result) result('joined', room);
-	},
 
 
 
@@ -312,33 +275,6 @@ var ninecards = {
 		});
 
 	},
-
-
-
-	onPresenceError : function (presence) {
-		
-		var code = $(presence).find('error').attr('code');
-		var children = $(presence).find('error').children().prop('tagName');
-		$('#dialog-popup').popup({
-			afteropen: function( event, ui ) {
-				$(this).find('h1').html('Error');
-				$(this).find('.ui-content h3').html(code);
-				$(this).find('.ui-content p').html(children);
-			},
-			afterclose: function( event, ui ) {
-				jQuery.mobile.changePage('#games', {
-					transition: 'slide',
-					reverse: true,
-					changeHash: true
-				});
-			}
-		});
-		$('#dialog-popup').popup('open', {
-			positionTo: 'window'
-		});
-
-	},
-
 
 
 
@@ -497,6 +433,20 @@ var ninecards = {
 	},
 
 
+	joinMuc : function(room, onMessage, onPresence, onRoster, result) {
+
+		MX.connection.muc.join(
+			room,
+			jQuery.jStorage.get('settings').username,
+			onMessage,
+			onPresence,
+			onRoster
+		);
+
+		if (result) result('joined', room);
+	},
+
+
 	leaveMuc : function(room, exitMessage, onLeft){
 		MX.connection.muc.leave(
 			room,
@@ -506,6 +456,54 @@ var ninecards = {
 		);
 		onLeft();
 	},
+
+
+	onAuthFail : function(){
+        $('#error-popup').popup({
+            afteropen: function( event, ui ) {
+                $(this).find('h1').html('Error');
+                $(this).find('.ui-content h3').html('Authentication Fail');
+                $(this).find('.ui-content p').html('Please check the settings');
+            },
+            afterclose: function( event, ui ) {
+                MX.connection.disconnect();
+                jQuery.mobile.changePage('#start', {
+                    transition: 'slide',
+                    reverse: true,
+                    changeHash: true
+                });
+            }
+        });
+        $('#error-popup').popup('open', {
+            positionTo: 'window'
+        });
+	},
+
+
+	onPresenceError : function (presence) {
+
+		var code = $(presence).find('error').attr('code');
+		var children = $(presence).find('error').children().prop('tagName');
+		$('#dialog-popup').popup({
+			afteropen: function( event, ui ) {
+				$(this).find('h1').html('Error');
+				$(this).find('.ui-content h3').html(code);
+				$(this).find('.ui-content p').html(children);
+			},
+			afterclose: function( event, ui ) {
+				jQuery.mobile.changePage('#games', {
+					transition: 'slide',
+					reverse: true,
+					changeHash: true
+				});
+			}
+		});
+		$('#dialog-popup').popup('open', {
+			positionTo: 'window'
+		});
+
+	},
+
 
 
 
