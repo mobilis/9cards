@@ -46,7 +46,7 @@ var ninecards = {
 	onRoster : function (roster){
 
 		console.log('roster',roster);
-		
+
 		ninecards.players = roster;
 
 		$('#players-list').empty();
@@ -106,25 +106,6 @@ var ninecards = {
 	},
 
 
-	updateScore : function(message){
-		$(message).find('playerinfo').each( function(index,playerInfo){
-			console.log('playerinfo',playerInfo);
-			var nick = Strophe.getResourceFromJid( $(playerInfo).find('id').text() );
-
-			ninecards.players[nick].score = $(playerInfo).find('score').text();
-			console.log(ninecards.players[nick],'score',ninecards.players[nick].score);
-
-			var usedCardsHTML = '';
-			$(playerInfo).find('usedcards').each(function(index,usedCard){
-				usedCardsHTML += '<span class="used-card">'+$(usedCard).text()+'</span>';
-			});
-
-			$('#'+ninecards.clearString(nick)+' p.ui-li-aside').html(usedCardsHTML).append(
-				'<strong>/ '+ninecards.players[nick].score+'</strong>');
-			
-			$('#'+ninecards.clearString(nick)).buttonMarkup({ icon: 'clear' });
-		});
-	},
 
 
 
@@ -368,7 +349,25 @@ var ninecards = {
 	},
 
 
+	updateScore : function(message){ // TODO maybe move to onRoundCompleteMessage if MSDL refactoring
+		$(message).find('playerinfo').each( function(index,playerInfo){
+			console.log('playerinfo',playerInfo);
+			var nick = Strophe.getResourceFromJid( $(playerInfo).find('id').text() );
 
+			ninecards.players[nick].score = $(playerInfo).find('score').text();
+			console.log(ninecards.players[nick],'score',ninecards.players[nick].score);
+
+			var usedCardsHTML = '';
+			$(playerInfo).find('usedcards').each(function(index,usedCard){
+				usedCardsHTML += '<span class="used-card">'+$(usedCard).text()+'</span>';
+			});
+
+			$('#'+ninecards.clearString(nick)+' p.ui-li-aside').html(usedCardsHTML).append(
+				'<strong>/ '+ninecards.players[nick].score+'</strong>');
+
+			$('#'+ninecards.clearString(nick)).buttonMarkup({ icon: 'clear' });
+		});
+	},
 
 
 
