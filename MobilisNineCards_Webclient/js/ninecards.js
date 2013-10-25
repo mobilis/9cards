@@ -167,30 +167,37 @@ var ninecards = {
 
 
 
-	onMessage : function (message){
+	onMessage : function (rawMessage){
 
-		// console.log(message);
+		var rawMessageBody = $(rawMessage).find('body').text();
+		var message = $.parseHTML(rawMessageBody)[0];
 
-		var messageBody = $(message).find('body').text();
-		// console.log('messageBody',messageBody);
-		var html = $.parseHTML(messageBody)[0];
-		// console.log('html',html);
+		if ( message.nodeName.toLowerCase() == 'mobilismessage' ) {
 
-		if ( $(html).attr('type') ) {
-			ninecards.processMobilisMessage(html);
+			console.log('mobilismessage',message);
+
+			var type = $(message).attr('type');
+
+			switch (type) {
+				case 'StartGameMessage' : ninecards.onStartGameMessage(message); break;
+				case 'CardPlayedMessage' : ninecards.onCardPlayedMessage(message); break;
+				case 'RoundCompleteMessage' : ninecards.onRoundCompleteMessage(message); break;
+				case 'GameOverMessage' : ninecards.onGameOverMessage(message); break;
+			}
+
 		} else {
-			ninecards.processChatMessage(messageBody);
+
+			console.log('chatmessage:',rawMessageBody);
+
 		}
 		return true;
 	},
 
 
 
-
-
 	onPresence : function (presence){
 		
-		console.log(presence);
+		console.log('presence',presence);
 
 		var type = $(presence).attr('type');
 
@@ -206,7 +213,7 @@ var ninecards = {
 
 	onRoster : function (roster){
 
-		console.log('roster:', roster);
+		console.log('roster',roster);
 		ninecards.players = roster;
 
 		$('#players-list').empty();
@@ -231,38 +238,6 @@ var ninecards = {
 
 
 
-	processChatMessage : function (message) {
-
-		console.log('chat message:',message);
-		return true;
-
-	},
-
-
-
-
-
-	processMobilisMessage : function (message) {
-
-		console.log('MobilisMessage:', message);
-
-		var type = $(message).attr('type');
-
-		console.log('type',type);
-
-		switch (type) {
-			case 'StartGameMessage' : ninecards.onStartGameMessage(message); break;
-			case 'CardPlayedMessage' : ninecards.onCardPlayedMessage(message); break;
-			case 'RoundCompleteMessage' : ninecards.onRoundCompleteMessage(message); break;
-			case 'GameOverMessage' : ninecards.onGameOverMessage(message); break;
-		}
-
-		return true;
-	},
-
-
-
-
 	onStartGameMessage : function (message) {
 		$('#numpad a').removeClass('ui-disabled');
 
@@ -281,6 +256,8 @@ var ninecards = {
 
 
 	onCardPlayedMessage : function (message) {
+
+		console.log('cardplayedmessage',message);
 		var nick = Strophe.getResourceFromJid( $(message).find('player').text() );
 		console.log('nick',nick);
 		$('#'+ninecards.clearString(nick)).buttonMarkup({ icon: 'check' });
