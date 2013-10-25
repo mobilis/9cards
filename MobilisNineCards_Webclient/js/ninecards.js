@@ -663,11 +663,22 @@ $(document).on('vclick', '#refresh-games-button', function(event) {
 });
 
 
-$(document).on('vclick', '.available-game', function () {
+$(document).on('vclick', '.available-game', function (event) {
 
-	ninecards.joinGame( $(this).attr('id'), $(this).attr('data-name'), function (result){
-		console.log(result);
-	});
+	event.preventDefault();
+	ninecards.joinGame(
+		$(this).attr('id'),
+		$(this).attr('data-name'),
+		function (result){
+			console.log(result);
+			jQuery.mobile.changePage(
+				'#game', {
+					transition: 'slide',
+					changeHash: true
+				}
+			);
+		}
+	);
 
 });
 
