@@ -572,43 +572,7 @@ var ninecards = {
 
 
 
-/* jQuery Event Handlers */
-
-
-
-
-
-
-
-
-
-$(document).on('vclick', '#numpad a', function(card) {
-	card.preventDefault();
-	var card  = $(this).attr('data-id');
-	if (card) {
-		ninecards.sendCard(card, function(){
-			ninecards.disableButton(card);
-		});
-	}
-	return false;
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* jQuery application-specific handlers */
+/* application-specific jQuery handlers */
 
 $(document).on('pageshow', '#settings', function() {
 
@@ -691,6 +655,18 @@ $(document).on('vclick', '#startgame-button', function(event){
 });
 
 
+$(document).on('click', '#numpad a', function(event) {
+
+	event.preventDefault();
+	var card  = $(this).attr('data-id');
+	ninecards.sendCard(card, function(){
+		ninecards.disableButton(card);
+	});
+	return false;
+
+});
+
+
 $(document).on('vclick', '#exitgame-button', function(event){
 
 	event.preventDefault();
@@ -740,7 +716,7 @@ $(document).on('vclick', '#exitgames-button', function(event){
 
 
 
-/* jQuery core handlers */
+/* core jQuery handlers */
 
 $( window ).on('beforeunload', function() {
 	MX.core.disconnect('Browser Window Closed');
