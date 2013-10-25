@@ -394,63 +394,10 @@ var ninecards = {
 
 
 
-	startGame : function(){
-
-		ninecards.buildMobilisMessage(null,'StartGameMessage', function(message){
-			ninecards.sendMessage(
-				jQuery.jStorage.get('serviceNick'),
-				// 'marc',
-				message
-			);
-			ninecards.sendGroupchatMessage(	'sent to '+jQuery.jStorage.get('serviceNick')+': '+message );
-		});
-	},
-
-	
-
-
-	sendCard : function(card, result){
-		console.log('card', card);
-		var round = 1; // TODO
-		ninecards.buildMobilisCardMessage(card,round,'PlayCardMessage',function(message){
-			ninecards.sendMessage(
-				jQuery.jStorage.get('serviceNick'),
-				message
-			);
-			ninecards.sendGroupchatMessage(	'sent to '+jQuery.jStorage.get('serviceNick')+': '+message );
-			result();
-		});
-
-	},
 
 
 
 
-	buildMobilisMessage : function(message,type,returnXml) {
-
-		var xml = $build('mobilismessage',{type:type});
-		
-		if (message) {
-			xml = xml.t(message);		
-		}
-
-		returnXml( xml.toString() );
-	},
-
-
-	buildMobilisCardMessage : function(card,round,type,returnXml) {
-
-		var xml = $build('mobilismessage',{type:type})
-				.c('round').t(round).up()
-				.c('card').t(card);
-
-		returnXml( xml.toString() );
-	},
-
-
-	clearString : function(string){
-		return string.replace(/@/g,'-').replace(/\./g,'-').replace(/\//g,'-');
-	},
 
 
 
@@ -474,6 +421,41 @@ var ninecards = {
 
 
 	/* application-specific functions */
+
+	startGame : function(){
+
+		ninecards.buildMobilisMessage(null,'StartGameMessage', function(message){
+			ninecards.sendMessage(
+				jQuery.jStorage.get('serviceNick'),
+				message
+			);
+			ninecards.sendGroupchatMessage(	'sent to '+jQuery.jStorage.get('serviceNick')+': '+message );
+		});
+	},
+
+
+	sendCard : function(card, result){
+
+		var message = {
+			'card': card,
+			'round': ninecards.game.round
+		};
+
+		ninecards.buildMobilisMessage(
+			message,
+			'PlayCardMessage',
+			function(mobilisMessage){
+				ninecards.sendMessage(
+					jQuery.jStorage.get('serviceNick'),
+					mobilisMessage
+				);
+				ninecards.sendGroupchatMessage(	'sent to '+jQuery.jStorage.get('serviceNick')+': '+mobilisMessage ); // TODO remove
+				result();
+			}
+		);
+
+	},
+
 
 	leaveGame : function(){
 		ninecards.leaveMuc(
@@ -518,6 +500,27 @@ var ninecards = {
 
 	/* core functions */
 
+	buildMobilisMessage : function(message,type,returnXml) {
+
+		var xml = $build('mobilismessage',{type:type});
+
+		if (message) {
+
+			if (typeof message === 'object' ) {
+
+				$.each(message, function(key,value){
+					xml.c(key).t(value).up();
+				});
+
+			} else {
+				xml = xml.t(message);
+			}
+		}
+
+		returnXml( xml.toString() );
+	},
+
+
 	leaveMuc : function(room, exitMessage, onLeft){
 		MX.connection.muc.leave(
 			room,
@@ -526,10 +529,21 @@ var ninecards = {
 			// exitMessage
 		);
 		onLeft();
+	},
+
+
+
+
+
+
+
+
+
+	/* helper functions */
+
+	clearString : function(string){
+		return string.replace(/@/g,'-').replace(/\./g,'-').replace(/\//g,'-');
 	}
-
-
-
 
 }
 
