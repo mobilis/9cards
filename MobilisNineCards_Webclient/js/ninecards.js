@@ -199,11 +199,7 @@ var ninecards = {
 		
 		console.log('presence',presence);
 
-		var type = $(presence).attr('type');
-
-		switch (type) {
-			case 'error' : ninecards.onPresenceError(presence); break;
-		}
+		if ($(presence).attr('type') == 'error') ninecards.onPresenceError(presence);
 
 		return true;
 	},
