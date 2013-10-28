@@ -28,4 +28,8 @@
 + (NSString* )elementName {
 	return @"StartGameMessage";
 }
+
++ (NSString* )iqNamespace {
+	return @"http://mobilis.inf.tu-dresden.de/MobilisNineCards";
+}
 @end

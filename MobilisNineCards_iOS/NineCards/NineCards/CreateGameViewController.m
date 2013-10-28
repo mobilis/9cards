@@ -8,6 +8,7 @@
 
 #import <MobilisMXi/MXi/MXiConnectionHandler.h>
 #import "CreateGameViewController.h"
+#import "GameViewController.h"
 
 #import "ConfigureGameRequest.h"
 #import "ConfigureGameResponse.h"
@@ -93,6 +94,14 @@
 #pragma mark - CreateGameDelegate
 -(void)gameCreated:(Game *)game
 {
-	[self performSegueWithIdentifier:@"JoinGame" sender:nil];
+	[self performSegueWithIdentifier:@"JoinGame" sender:game];
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+	if ([segue.identifier isEqualToString:@"JoinGame"])
+	{
+		((GameViewController*)segue.destinationViewController).game = sender;
+	}
 }
 @end

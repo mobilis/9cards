@@ -404,6 +404,7 @@
 <xsl:text>- (NSXMLElement* )toXML;
 - (void)fromXML:(NSXMLElement* )xml;
 + (NSString* )elementName;
++ (NSString* )iqNamespace;
 <!-- End of header definition -->
 @end</xsl:text>
 				</xsl:result-document>
@@ -558,6 +559,10 @@
 
 + (NSString* )elementName {
 	return @"</xsl:text><xsl:value-of select="$className" /><xsl:text>";
+}
+
++ (NSString* )iqNamespace {
+	return @"</xsl:text><xsl:value-of select="/msdl:description/msdl:types/xs:schema/@targetNamespace" /><xsl:text>";
 }
 </xsl:text>
 <!-- END: Changed by Markus Wutzler to support MUC Message Detection & Generation -->

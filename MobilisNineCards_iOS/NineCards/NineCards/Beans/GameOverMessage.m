@@ -61,4 +61,8 @@
 + (NSString* )elementName {
 	return @"GameOverMessage";
 }
+
++ (NSString* )iqNamespace {
+	return @"http://mobilis.inf.tu-dresden.de/MobilisNineCards";
+}
 @end

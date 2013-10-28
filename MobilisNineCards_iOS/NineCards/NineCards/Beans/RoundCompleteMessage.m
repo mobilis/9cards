@@ -61,4 +61,8 @@
 + (NSString* )elementName {
 	return @"RoundCompleteMessage";
 }
+
++ (NSString* )iqNamespace {
+	return @"http://mobilis.inf.tu-dresden.de/MobilisNineCards";
+}
 @end

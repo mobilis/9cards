@@ -40,4 +40,8 @@
 + (NSString* )elementName {
 	return @"PlayerInfo";
 }
+
++ (NSString* )iqNamespace {
+	return @"http://mobilis.inf.tu-dresden.de/MobilisNineCards";
+}
 @end

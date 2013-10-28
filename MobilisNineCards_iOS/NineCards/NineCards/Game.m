@@ -22,4 +22,10 @@
 	return self;
 }
 
+- (XMPPJID *)roomJid
+{
+	XMPPJID *jid = [XMPPJID jidWithString:[NSString stringWithFormat:@"%@@conference.%@", _gameJid.resource, _gameJid.domain]];
+	return jid;
+}
+
 @end

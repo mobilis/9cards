@@ -8,5 +8,6 @@
 - (NSXMLElement* )toXML;
 - (void)fromXML:(NSXMLElement* )xml;
 + (NSString* )elementName;
++ (NSString* )iqNamespace;
 
 @end

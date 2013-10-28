@@ -18,6 +18,8 @@
 #import "GameOverMessage.h"
 #import "RoundCompleteMessage.h"
 
+#import "PlayCardMessage.h"
+
 #import "NSString+StringUtils.h"
 
 @interface GameViewController () <MXiMultiUserChatDelegate>
@@ -29,10 +31,15 @@
 - (void) startGameMessageReceived:(StartGameMessage *)bean;
 - (void) cardPlayedMessageReceived:(CardPlayedMessage *)bean;
 - (void) roundCompleteMessageReceived:(RoundCompleteMessage *)bean;
+- (void) gameOverMessageReceived:(GameOverMessage *)bean;
 
 @end
 
-@implementation GameViewController
+@implementation GameViewController {
+	BOOL _gameStarted;
+	NSNumber *_rounds;
+	NSNumber *_currentRound;
+}
 
 - (void)viewDidLoad
 {
@@ -47,7 +54,8 @@
 			cardButton.titleLabel.font = [UIFont fontWithName:@"AppleColorEmoji" size:36.f];
 		}
 	}
-	[[MXiConnectionHandler sharedInstance] connectToMultiUserChatRoom:[_game.gameJid full] withDelegate:self];
+	_gameStarted = false;
+	[[MXiConnectionHandler sharedInstance] connectToMultiUserChatRoom:[_game roomJid].bare withDelegate:self];
 }
 
 - (void)didReceiveMemoryWarning
@@ -62,7 +70,14 @@
 }
 
 - (IBAction)cardPlayed:(CardButton *)card {
-	NSLog(@"Played Card %@", card.cardNumber);
+	card.enabled = NO;
+	PlayCardMessage *play = [PlayCardMessage new];
+	play.card = card.cardNumber;
+	play.round = _currentRound;
+	[[MXiConnectionHandler sharedInstance] sendMessage:[[play toXML] stringValue]
+												toRoom:[[_game roomJid] bare]
+												toUser:@"9Cards-Service"];
+		NSLog(@"%@", [[play toXML] XMLString]);
 }
 
 - (IBAction)startGame:(UIButton *)startButton
@@ -72,12 +87,18 @@
 	}
 	startButton.enabled = NO;
 	startButton.hidden = YES;
+	StartGameMessage *startGame = [StartGameMessage new];
+	startGame.rounds = _rounds;
+	[[MXiConnectionHandler sharedInstance] sendMessage:[[startGame toXML] stringValue]
+												toRoom:[[_game roomJid] bare]
+												toUser:@"9Cards-Service"];
+	NSLog(@"%@", [[startGame toXML] XMLString]);
 }
 
 #pragma mark - MXiMUCDelegate
 - (void)connectionToRoomEstablished:(NSString *)roomJID
 {
-	NSLog(@"%@", roomJID);
+	NSLog(@"ConnectionToRoomEstablished: %@", roomJID);
 }
 
 -(void)didReceiveMultiUserChatMessage:(NSString *)message fromUser:(NSString *)user publishedInRoom:(NSString *)roomJID
@@ -97,22 +118,43 @@
 			RoundCompleteMessage *round = [RoundCompleteMessage new];
 			[round fromXML:messageBean];
 			[self roundCompleteMessageReceived:round];
+		} else if ([messageBean.name isEqualToString:[GameOverMessage elementName] ignoreCase:YES]) {
+			GameOverMessage *gameOver = [GameOverMessage new];
+			[gameOver fromXML:messageBean];
+			[self gameOverMessageReceived:gameOver];
+		} else {
+			NSLog(@"Message %@ from User %@ in room %@ wasn't processed.", message, user, roomJID);
 		}
 	}
 }
 
 - (void)startGameMessageReceived:(StartGameMessage *)bean
 {
-	
+	if (!_gameStarted) {
+		_gameStarted = true;
+		_currentRound = [NSNumber numberWithInt:1];
+		_rounds = bean.rounds;
+	}
 }
 
 - (void)cardPlayedMessageReceived:(CardPlayedMessage *)bean
 {
-	
+	if(_gameStarted && [bean.round isEqualToNumber:_currentRound]) {
+		//update player
+	}
 }
 
 - (void)roundCompleteMessageReceived:(RoundCompleteMessage *)bean
 {
-	
+	if (_gameStarted) {
+		_currentRound = [NSNumber numberWithInt:[_currentRound intValue]+1];
+	}
 }
+
+- (void)gameOverMessageReceived:(GameOverMessage *)bean
+{
+
+}
+
+
 @end
