@@ -131,14 +131,9 @@ public class MucConnection implements PacketListener, MessageListener
 	 */
 	public void sendMessagetoMuc(XMPPInfo message)
 	{
-		String body = "";
-		body += "<MobilisMessage type='" + message.getClass().getSimpleName() + "'>";
-		body += message.toXML();
-		body += "</MobilisMessage>";
-		
 		try {
 			Message msg = new Message();
-			msg.setBody(body);
+			msg.setBody(message.toXML());
 			msg.setTo(muc.getRoom());
 			msg.setType(Message.Type.groupchat);
 			muc.sendMessage(msg);
