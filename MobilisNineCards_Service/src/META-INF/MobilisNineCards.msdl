@@ -3,12 +3,12 @@
 	xmlns:msdl="http://mobilis.inf.tu-dresden.de/msdl/"
 	xmlns:xmpp="http://mobilis.inf.tu-dresden.de/xmpp/"
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	xmlns:tns="http://mobilis.inf.tu-dresden.de/MobilisNineCards"
+	xmlns:tns="http://mobilis.inf.tu-dresden.de/apps/9cards"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://mobilis.inf.tu-dresden.de/msdl/ http://mobilis.inf.tu-dresden.de/msdl.xsd ">
 	
 	<msdl:types>
-		<xs:schema targetNamespace="http://mobilis.inf.tu-dresden.de/MobilisNineCards">
+		<xs:schema targetNamespace="http://mobilis.inf.tu-dresden.de/apps/9cards">
 		
 			<!-- initial IQs, needed before entering Chat Room -->
 			<xs:element name="ConfigureGameRequest">
@@ -48,7 +48,7 @@
 				<xs:sequence>
 					<xs:element name="round" type="xs:int" />
 					<xs:element name="winner" type="xs:string" />
-					<xs:element name="PlayerInfos" type="tns:PlayerInfo" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="playerInfos" type="tns:PlayerInfo" minOccurs="0" maxOccurs="unbounded" />
 				</xs:sequence>
 			</xs:complexType>
 			
@@ -56,7 +56,7 @@
 				<xs:sequence>
 					<xs:element name="winner" type="xs:string" />
 					<xs:element name="score" type="xs:int" />
-					<xs:element name="PlayerInfos" type="tns:PlayerInfo" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="playerInfos" type="tns:PlayerInfo" minOccurs="0" maxOccurs="unbounded" />
 				</xs:sequence>
 			</xs:complexType>
 			
@@ -91,7 +91,7 @@
 			xmpp:errorcondition="not-acceptable"
 			xmpp:errortext="Unaccepted data input." />
 			
-		<msdl:operation ref="tns:ConfigureGame" xmpp:ident="mobilisninecards:iq:configuregame">
+		<msdl:operation ref="tns:ConfigureGame" xmpp:ident="http://mobilis.inf.tu-dresden.de/apps/9cards">
 			<msdl:input xmpp:type="set" />
 			<msdl:output xmpp:type="result" />
 			<msdl:outfault ref="tns:InputDataFault" />
@@ -100,10 +100,10 @@
 	
 	<msdl:service
 		name="MobilisNineCards"
-		interface="tns:M9CInterface"
+		interface="tns:NineCardsInterface"
 		ident="http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService"
 		version="1">
-		<msdl:endpoint name="M9CEndpoint" binding="tns:M9CBinding" />
+		<msdl:endpoint name="M9CEndpoint" binding="tns:NineCardsBinding" />
 		<msdl:dependencies />
 	</msdl:service>
 	
