@@ -22,6 +22,7 @@ package de.tudresden.inf.rn.mobilis.services.ninecards.communication;
 import de.tudresden.inf.rn.mobilis.services.ninecards.Game.State;
 import de.tudresden.inf.rn.mobilis.services.ninecards.NineCardsService;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.ConfigureGameRequest;
+import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.GetGameConfigurationRequest;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
 /**
@@ -57,19 +58,38 @@ public class IqPacketProcessor
 	 */
 	public void processPacket(XMPPBean inBean)
 	{
-		if(inBean instanceof ConfigureGameRequest)
+		if (inBean instanceof ConfigureGameRequest) {
 			onConfigureGame((ConfigureGameRequest) inBean);
-		
-		else {
+		} else if (inBean instanceof GetGameConfigurationRequest) {
+			onGetGameConfigration((GetGameConfigurationRequest) inBean);
+		} else {
 			inBean.errorType = "wait";
 			inBean.errorCondition = "unexpected-request";
-			inBean.errorText = "This request is not supportet!";
+			inBean.errorText = "This request is not supported!";
 			
 			mServiceInstance.getIqConnection().sendXMPPBeanError(inBean, inBean);			
 		}
 	}
 	
 	
+	private void onGetGameConfigration(GetGameConfigurationRequest inBean) {
+		if (mServiceInstance.getGame().getGameState() == State.READY) {
+
+			mServiceInstance
+					.getIqConnection()
+					.getProxy()
+					.GetGameConfiguration(inBean.getFrom(), inBean.getId(),
+							mServiceInstance.getSettings().getChatID(),
+							mServiceInstance.getSettings().getRounds(),
+							mServiceInstance.getSettings().getMaxPlayers());
+		} else {
+			XMPPBean out = inBean
+					.buildGameConfigFault("Not allowed in this state.");
+			mServiceInstance.getIqConnection().getProxy().getBindingStub()
+					.sendXMPPBean(out);
+		}
+	}
+
 	/**
 	 * This method checks whether the game has already been initialized, and if that's not the case,
 	 * settings are configured and the multiuser chat is created.

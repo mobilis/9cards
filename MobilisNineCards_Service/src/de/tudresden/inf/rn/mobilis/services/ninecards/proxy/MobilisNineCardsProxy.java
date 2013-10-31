@@ -29,4 +29,17 @@ public class MobilisNineCardsProxy {
 		return out;
 	}
 
+	public XMPPBean GetGameConfiguration( String toJid, String packetId, String muc, int maxRounds, int maxPlayers ) {
+		if ( null == _bindingStub )
+			return null;
+
+		GetGameConfigurationResponse out = new GetGameConfigurationResponse( muc, maxRounds, maxPlayers );
+		out.setTo( toJid );
+		out.setId( packetId );
+
+		_bindingStub.sendXMPPBean( out );
+
+		return out;
+	}
+
 }
