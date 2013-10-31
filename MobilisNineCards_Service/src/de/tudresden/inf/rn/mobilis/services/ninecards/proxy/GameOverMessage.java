@@ -11,15 +11,15 @@ public class GameOverMessage implements XMPPInfo {
 
 	private String winner = null;
 	private int score = Integer.MIN_VALUE;
-	private List< PlayerInfo > PlayerInfos = new ArrayList< PlayerInfo >();
+	private List< PlayerInfo > playerInfos = new ArrayList< PlayerInfo >();
 
 
-	public GameOverMessage( String winner, int score, List< PlayerInfo > PlayerInfos ) {
+	public GameOverMessage( String winner, int score, List< PlayerInfo > playerInfos ) {
 		super();
 		this.winner = winner;
 		this.score = score;
-		for ( PlayerInfo entity : PlayerInfos ) {
-			this.PlayerInfos.add( entity );
+		for ( PlayerInfo entity : playerInfos ) {
+			this.playerInfos.add( entity );
 		}
 	}
 
@@ -49,7 +49,7 @@ public class GameOverMessage implements XMPPInfo {
 					PlayerInfo entity = new PlayerInfo();
 
 					entity.fromXML( parser );
-					this.PlayerInfos.add( entity );
+					this.playerInfos.add( entity );
 					
 					parser.next();
 				}
@@ -97,7 +97,7 @@ public class GameOverMessage implements XMPPInfo {
 			.append( this.score )
 			.append( "</score>" );
 
-		for( PlayerInfo entry : PlayerInfos ) {
+		for( PlayerInfo entry : playerInfos ) {
 			sb.append( "<" + PlayerInfo.CHILD_ELEMENT + ">" );
 			sb.append( entry.toXML() );
 			sb.append( "</" + PlayerInfo.CHILD_ELEMENT + ">" );
@@ -125,11 +125,11 @@ public class GameOverMessage implements XMPPInfo {
 	}
 
 	public List< PlayerInfo > getPlayerInfos() {
-		return this.PlayerInfos;
+		return this.playerInfos;
 	}
 
-	public void setPlayerInfos( List< PlayerInfo > PlayerInfos ) {
-		this.PlayerInfos = PlayerInfos;
+	public void setPlayerInfos( List< PlayerInfo > playerInfos ) {
+		this.playerInfos = playerInfos;
 	}
 
 }

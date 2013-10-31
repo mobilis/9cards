@@ -11,15 +11,15 @@ public class RoundCompleteMessage implements XMPPInfo {
 
 	private int round = Integer.MIN_VALUE;
 	private String winner = null;
-	private List< PlayerInfo > PlayerInfos = new ArrayList< PlayerInfo >();
+	private List< PlayerInfo > playerInfos = new ArrayList< PlayerInfo >();
 
 
-	public RoundCompleteMessage( int round, String winner, List< PlayerInfo > PlayerInfos ) {
+	public RoundCompleteMessage( int round, String winner, List< PlayerInfo > playerInfos ) {
 		super();
 		this.round = round;
 		this.winner = winner;
-		for ( PlayerInfo entity : PlayerInfos ) {
-			this.PlayerInfos.add( entity );
+		for ( PlayerInfo entity : playerInfos ) {
+			this.playerInfos.add( entity );
 		}
 	}
 
@@ -49,7 +49,7 @@ public class RoundCompleteMessage implements XMPPInfo {
 					PlayerInfo entity = new PlayerInfo();
 
 					entity.fromXML( parser );
-					this.PlayerInfos.add( entity );
+					this.playerInfos.add( entity );
 					
 					parser.next();
 				}
@@ -97,7 +97,7 @@ public class RoundCompleteMessage implements XMPPInfo {
 			.append( this.winner )
 			.append( "</winner>" );
 
-		for( PlayerInfo entry : PlayerInfos ) {
+		for( PlayerInfo entry : playerInfos ) {
 			sb.append( "<" + PlayerInfo.CHILD_ELEMENT + ">" );
 			sb.append( entry.toXML() );
 			sb.append( "</" + PlayerInfo.CHILD_ELEMENT + ">" );
@@ -125,11 +125,11 @@ public class RoundCompleteMessage implements XMPPInfo {
 	}
 
 	public List< PlayerInfo > getPlayerInfos() {
-		return this.PlayerInfos;
+		return this.playerInfos;
 	}
 
-	public void setPlayerInfos( List< PlayerInfo > PlayerInfos ) {
-		this.PlayerInfos = PlayerInfos;
+	public void setPlayerInfos( List< PlayerInfo > playerInfos ) {
+		this.playerInfos = playerInfos;
 	}
 
 }
