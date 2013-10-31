@@ -7,7 +7,7 @@
 	<xsl:output method="text" version="1.0" encoding="UTF-8" indent="yes"/>
 	
 	<!-- the output folder where the classes will be created. this folder has to be create before -->
-	<xsl:variable name="outputFolder" select="'build/service/'"/>
+	<xsl:param name="outputFolder" select="'build/service/'"/>
 	
 	<!-- set package namespace if required. default = '' -->
 	<xsl:variable name="packageNamespace" select="'de.tudresden.inf.rn.mobilis.services.ninecards.proxy'" />
