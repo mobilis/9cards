@@ -30,3 +30,4 @@ MobilisNineCards_iOS/NineCards/NineCards.xcworkspace/xcshareddata/NineCards.xcch
 build.sh
 MobilisNineCards_Service/dist
 Settings.plist
+MobilisNineCards_Service/.settings/
