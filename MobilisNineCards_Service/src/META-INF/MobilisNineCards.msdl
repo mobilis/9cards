@@ -28,7 +28,7 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-
+			
 			<xs:element name="GetGameConfigurationRequest"/>
 				
 			<xs:element name="GetGameConfigurationResponse">
@@ -43,9 +43,12 @@
 			
 			<!-- Messages sent via Multi User Chat or private Chat -->			
 			<xs:complexType name="StartGameMessage">
+				<xs:sequence/>
+			</xs:complexType>
+			
+			<xs:complexType name="GameStartsMessage">
 				<xs:sequence>
 					<xs:element name="rounds" type="xs:int" />
-					<xs:element name="password" type="xs:string" />
 				</xs:sequence>
 			</xs:complexType>
 			
@@ -117,7 +120,7 @@
 			xmpp:errortype="modify"
 			xmpp:errorcondition="not-acceptable"
 			xmpp:errortext="Unaccepted data input." />
-			
+		
 		<msdl:fault ref="tns:GameConfigFault"
 			xmpp:errortype="cancel"
 			xmpp:errorcondition="not-allowed"

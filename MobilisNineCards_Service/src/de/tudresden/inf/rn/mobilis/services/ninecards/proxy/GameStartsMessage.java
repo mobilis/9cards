@@ -1,12 +1,18 @@
 package de.tudresden.inf.rn.mobilis.services.ninecards.proxy;
 
-import org.xmlpull.v1.XmlPullParser;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;import org.xmlpull.v1.XmlPullParser;import java.util.List;import java.util.ArrayList;
 
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
+public class GameStartsMessage implements XMPPInfo {
 
-public class StartGameMessage implements XMPPInfo {
+	private int rounds = Integer.MIN_VALUE;
 
-public StartGameMessage(){}
+
+	public GameStartsMessage( int rounds ) {
+		super();
+		this.rounds = rounds;
+	}
+
+	public GameStartsMessage(){}
 
 
 
@@ -21,6 +27,9 @@ public StartGameMessage(){}
 				
 				if (tagName.equals(getChildElement())) {
 					parser.next();
+				}
+				else if (tagName.equals( "rounds" ) ) {
+					this.rounds = Integer.parseInt( parser.nextText() );
 				}
 				else
 					parser.next();
@@ -40,14 +49,14 @@ public StartGameMessage(){}
 		} while (!done);
 	}
 
-	public static final String CHILD_ELEMENT = "StartGameMessage";
+	public static final String CHILD_ELEMENT = "GameStartsMessage";
 
 	@Override
 	public String getChildElement() {
 		return CHILD_ELEMENT;
 	}
 
-	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService#type:StartGameMessage";
+	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService#type:GameStartsMessage";
 
 	@Override
 	public String getNamespace() {
@@ -58,9 +67,21 @@ public StartGameMessage(){}
 	public String toXML() {
 		StringBuilder sb = new StringBuilder();
 
+		sb.append( "<rounds>" )
+			.append( this.rounds )
+			.append( "</rounds>" );
+
 		return sb.toString();
 	}
 
 
+
+	public int getRounds() {
+		return this.rounds;
+	}
+
+	public void setRounds( int rounds ) {
+		this.rounds = rounds;
+	}
 
 }
