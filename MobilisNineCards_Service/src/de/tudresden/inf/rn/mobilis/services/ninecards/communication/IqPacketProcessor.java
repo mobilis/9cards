@@ -80,15 +80,18 @@ public class IqPacketProcessor
 	{
 		if (mServiceInstance.getGame().getGameState() == State.UNINITIALIZED) {
 			
-			// TODO: remove game name or also set new service instance name ->
-			// could lead to errors because muc name is part of chat jid
-			mServiceInstance.getSettings().setGameName(inBean.getGamename());
 			mServiceInstance.getSettings().setRounds(inBean.getRounds());
 			mServiceInstance.getSettings().setMaxPlayers(inBean.getPlayers());
 
 			mServiceInstance.getGame().setGameState(State.READY);
 
-			mServiceInstance.getIqConnection().getProxy().ConfigureGame(inBean.getFrom(), inBean.getId());
+			mServiceInstance
+					.getIqConnection()
+					.getProxy()
+					.ConfigureGame(inBean.getFrom(), inBean.getId(),
+							mServiceInstance.getSettings().getChatID());
+
+			// TODO: set MUC admin to game creator and not to first joiner.
 		}
 
 		else {
