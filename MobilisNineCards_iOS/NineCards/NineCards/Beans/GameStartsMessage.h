@@ -1,6 +1,8 @@
 #import <Mxi/Mxi.h>
 
-@interface StartGameMessage : NSObject <MXiIncomingBean, MXiOutgoingBean>
+@interface GameStartsMessage : NSObject <MXiIncomingBean, MXiOutgoingBean>
+
+@property (nonatomic) NSNumber* rounds;
 
 - (NSXMLElement* )toXML;
 - (void)fromXML:(NSXMLElement* )xml;

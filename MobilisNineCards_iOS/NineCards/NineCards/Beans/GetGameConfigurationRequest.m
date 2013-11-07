@@ -1,6 +1,12 @@
-#import "StartGameMessage.h"
+#import "GetGameConfigurationRequest.h"
 
-@implementation StartGameMessage
+@implementation GetGameConfigurationRequest
+
+- (id)init {
+	self = [super initWithBeanType:SET];
+
+	return self;
+}
 
 - (NSXMLElement* )toXML {
 	NSXMLElement* beanElement = [NSXMLElement elementWithName:[[self class] elementName]
@@ -9,14 +15,12 @@
 	return beanElement;
 }
 
-- (void)fromXML:(NSXMLElement* )xml {
-}
-
 + (NSString* )elementName {
-	return @"StartGameMessage";
+	return @"GetGameConfigurationRequest";
 }
 
 + (NSString* )iqNamespace {
 	return @"http://mobilis.inf.tu-dresden.de/apps/9cards";
 }
+
 @end

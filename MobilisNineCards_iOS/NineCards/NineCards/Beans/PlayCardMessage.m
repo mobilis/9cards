@@ -7,11 +7,11 @@
 														xmlns:[[self class] iqNamespace]];
 
 	NSXMLElement* roundElement = [NSXMLElement elementWithName:@"round"];
-	[roundElement setStringValue:[NSString stringWithFormat:@"%f", [[self round] floatValue]]];
+	[roundElement setStringValue:[NSString stringWithFormat:@"%d", [[self round] intValue]]];
 	[beanElement addChild:roundElement];
 
 	NSXMLElement* cardElement = [NSXMLElement elementWithName:@"card"];
-	[cardElement setStringValue:[NSString stringWithFormat:@"%f", [[self card] floatValue]]];
+	[cardElement setStringValue:[NSString stringWithFormat:@"%d", [[self card] intValue]]];
 	[beanElement addChild:cardElement];
 
 	return beanElement;
@@ -19,10 +19,10 @@
 
 - (void)fromXML:(NSXMLElement* )xml {
 	NSXMLElement* roundElement = [xml elementForName:@"round"];
-	[self setRound:[NSNumber numberWithFloat:[[roundElement stringValue] floatValue]]];
+	[self setRound:[NSNumber numberWithFloat:[[roundElement stringValue] intValue]]];
 
 	NSXMLElement* cardElement = [xml elementForName:@"card"];
-	[self setCard:[NSNumber numberWithFloat:[[cardElement stringValue] floatValue]]];
+	[self setCard:[NSNumber numberWithFloat:[[cardElement stringValue] intValue]]];
 }
 
 + (NSString* )elementName {
@@ -30,6 +30,6 @@
 }
 
 + (NSString* )iqNamespace {
-	return @"http://mobilis.inf.tu-dresden.de/MobilisNineCards";
+	return @"http://mobilis.inf.tu-dresden.de/apps/9cards";
 }
 @end

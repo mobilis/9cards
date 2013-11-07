@@ -12,16 +12,12 @@
 	NSXMLElement* beanElement = [NSXMLElement elementWithName:[[self class] elementName]
 														xmlns:[[self class] iqNamespace]];
 
-	NSXMLElement* gamenameElement = [NSXMLElement elementWithName:@"gamename"];
-	[gamenameElement setStringValue:[self gamename]];
-	[beanElement addChild:gamenameElement];
-
 	NSXMLElement* playersElement = [NSXMLElement elementWithName:@"players"];
-	[playersElement setStringValue:[NSString stringWithFormat:@"%f", [[self players] floatValue]]];
+	[playersElement setStringValue:[NSString stringWithFormat:@"%d", [[self players] intValue]]];
 	[beanElement addChild:playersElement];
 
 	NSXMLElement* roundsElement = [NSXMLElement elementWithName:@"rounds"];
-	[roundsElement setStringValue:[NSString stringWithFormat:@"%f", [[self rounds] floatValue]]];
+	[roundsElement setStringValue:[NSString stringWithFormat:@"%d", [[self rounds] intValue]]];
 	[beanElement addChild:roundsElement];
 
 	return beanElement;
@@ -32,7 +28,7 @@
 }
 
 + (NSString* )iqNamespace {
-	return @"mobilisninecards:iq:configuregame";
+	return @"http://mobilis.inf.tu-dresden.de/apps/9cards";
 }
 
 @end

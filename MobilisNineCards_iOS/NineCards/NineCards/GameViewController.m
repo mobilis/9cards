@@ -74,10 +74,9 @@
 	PlayCardMessage *play = [PlayCardMessage new];
 	play.card = card.cardNumber;
 	play.round = _currentRound;
-	[[MXiConnectionHandler sharedInstance] sendMessage:[[play toXML] stringValue]
-												toRoom:[[_game roomJid] bare]
-												toUser:@"9Cards-Service"];
-		NSLog(@"%@", [[play toXML] XMLString]);
+	
+    [[MXiConnectionHandler sharedInstance] sendMessageString:[[play toXML] XMLString] toJID:[[_game gameJid] full]];
+    NSLog(@"%@", [[play toXML] XMLString]);
 }
 
 - (IBAction)startGame:(UIButton *)startButton
@@ -88,10 +87,8 @@
 	startButton.enabled = NO;
 	startButton.hidden = YES;
 	StartGameMessage *startGame = [StartGameMessage new];
-	startGame.rounds = _rounds;
-	[[MXiConnectionHandler sharedInstance] sendMessage:[[startGame toXML] stringValue]
-												toRoom:[[_game roomJid] bare]
-												toUser:@"9Cards-Service"];
+
+    [[MXiConnectionHandler sharedInstance] sendMessageString:[[startGame toXML] XMLString] toJID:[_game.gameJid full]];
 	NSLog(@"%@", [[startGame toXML] XMLString]);
 }
 
@@ -133,7 +130,6 @@
 	if (!_gameStarted) {
 		_gameStarted = true;
 		_currentRound = [NSNumber numberWithInt:1];
-		_rounds = bean.rounds;
 	}
 }
 

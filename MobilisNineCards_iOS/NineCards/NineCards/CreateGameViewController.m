@@ -29,6 +29,8 @@
 - (IBAction)createGame:(id)sender;
 - (IBAction)cancelGameCreation:(UIBarButtonItem *)sender;
 
+- (IBAction)stepperValueChanged:(id)sender;
+
 @end
 
 @implementation CreateGameViewController
@@ -66,7 +68,6 @@
 		
 		ConfigureGameRequest *req = [ConfigureGameRequest new];
 		req.to = _game.gameJid;
-		req.gamename = _game.name;
 		req.players = _game.players;
 		req.rounds = _game.rounds;
 		[[MXiConnectionHandler sharedInstance] sendBean:req];
@@ -75,6 +76,15 @@
 
 - (IBAction)cancelGameCreation:(UIBarButtonItem *)sender {
 	[self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (IBAction)stepperValueChanged:(id)sender {
+    if (self.gamePlayerStepper == sender) {
+        self.gamePlayerLabel.text = [NSString stringWithFormat:@"%.0f", self.gamePlayerStepper.value];
+    }
+    if (self.gameRoundsStepper == sender) {
+        self.gameRoundsLabel.text = [NSString stringWithFormat:@"%.0f", self.gameRoundsStepper.value];
+    }
 }
 
 - (void)didReceiveConfigureGameResponse
@@ -102,6 +112,9 @@
 	if ([segue.identifier isEqualToString:@"JoinGame"])
 	{
 		((GameViewController*)segue.destinationViewController).game = sender;
+//        [self dismissViewControllerAnimated:YES completion:^{
+//            [self.parentViewController performSegueWithIdentifier:@"JoinGame" sender:self];
+//        }];
 	}
 }
 @end

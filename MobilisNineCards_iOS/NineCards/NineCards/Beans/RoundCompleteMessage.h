@@ -6,7 +6,7 @@
 
 @property (nonatomic) NSNumber* round;
 @property (nonatomic, strong) NSString* winner;
-@property (nonatomic, strong) NSMutableArray* PlayerInfos;
+@property (nonatomic, strong) NSMutableArray* playerInfos;
 
 - (NSXMLElement* )toXML;
 - (void)fromXML:(NSXMLElement* )xml;

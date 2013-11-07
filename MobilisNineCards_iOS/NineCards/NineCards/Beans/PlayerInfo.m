@@ -16,7 +16,7 @@
 
 	for (NSNumber* usedcardsPart in [self usedcards]) {
 		NSXMLElement* usedcardsElement = [NSXMLElement elementWithName:@"usedcards"];
-		[usedcardsElement setStringValue:[NSString stringWithFormat:@"%f", [usedcardsPart floatValue]]];
+		[usedcardsElement setStringValue:[NSString stringWithFormat:@"%d", [usedcardsPart intValue]]];
 		[beanElement addChild:usedcardsElement];
 	}
 
@@ -42,6 +42,6 @@
 }
 
 + (NSString* )iqNamespace {
-	return @"http://mobilis.inf.tu-dresden.de/MobilisNineCards";
+	return @"http://mobilis.inf.tu-dresden.de/apps/9cards";
 }
 @end
