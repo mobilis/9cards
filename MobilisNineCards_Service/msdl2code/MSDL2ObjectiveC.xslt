@@ -28,7 +28,7 @@
 		<xsl:variable name="fullOperation" select="./@ref" />
 		<xsl:variable name="operationName" select="substring-after(./@ref, ':')" />
 
-		<xsl:for-each select="/msdl:description/msdl:interface/msdl:operation[@name=$operationName]/*">
+		<xsl:for-each select="/msdl:description/msdl:interface/msdl:operation[@name=$operationName]/*[@element]">
 
 			<xsl:variable name="className" select="substring-after(./@element, ':')" />
 			<xsl:variable name="headerFileName" select="concat($outputFolder, $className, '.h')" />
