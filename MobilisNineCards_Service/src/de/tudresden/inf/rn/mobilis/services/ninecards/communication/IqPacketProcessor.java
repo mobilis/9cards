@@ -19,6 +19,11 @@
  ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.services.ninecards.communication;
 
+import java.util.logging.Logger;
+
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.util.StringUtils;
+
 import de.tudresden.inf.rn.mobilis.services.ninecards.Game.State;
 import de.tudresden.inf.rn.mobilis.services.ninecards.NineCardsService;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.ConfigureGameRequest;
@@ -33,6 +38,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
  */
 public class IqPacketProcessor
 {
+	private final static Logger LOGGER = Logger.getLogger(MucConnection.class.getCanonicalName());
 	
 	/**	The ninecards game service instance. */
 	private NineCardsService mServiceInstance;
@@ -112,6 +118,7 @@ public class IqPacketProcessor
 							mServiceInstance.getSettings().getChatID());
 
 			// TODO: set MUC admin to game creator and not to first joiner.
+			mServiceInstance.getSettings().setAdminBareJID(StringUtils.parseBareAddress(inBean.getFrom()));
 		}
 
 		else {

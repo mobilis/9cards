@@ -180,6 +180,11 @@ public class MucConnection implements PacketListener, MessageListener
 		return mucPw;
 	}
 	
+	public MultiUserChat getMuc()
+	{
+		return muc;
+	}
+	
 	
 	/*
 	 * Receives all groupchat messages which are sent inside the muc room (also own messages).
@@ -267,23 +272,24 @@ public class MucConnection implements PacketListener, MessageListener
 	/**
 	 * Determines whether the player corresponding to the specified ID has admin affiliation in the muc room.
 	 * 
-	 * @param id the id of the player
+	 * @param adminBareJID the id of the player
 	 * @return true if player is admin, else if not
 	 */
-	public boolean isAdmin(String id)
+	public boolean isAdmin(String adminBareJID)
 	{
-		String nick = StringUtils.parseResource(id);
-		boolean res = false;
-		
-		try {
-			for(Affiliate aff : muc.getAdmins())
-				if(aff.getNick().equals(nick))
-					res = true;	
-		} catch(Exception e) {
-			LOGGER.severe("Failed to determine whether " + id + "is admin");
-		}
-		
-		return res;
+//		String nick = StringUtils.parseResource(id);
+//		boolean res = false;
+//		
+//		try {
+//			for(Affiliate aff : muc.getAdmins())
+//				if(aff.getNick().equals(nick))
+//					res = true;	
+//		} catch(Exception e) {
+//			LOGGER.severe("Failed to determine whether " + id + "is admin");
+//		}
+//		
+//		return res;
+		return mServiceInstance.getSettings().getAdminBareJID().equalsIgnoreCase(StringUtils.parseBareAddress(adminBareJID));
 	}
 	
 	
@@ -388,11 +394,16 @@ public class MucConnection implements PacketListener, MessageListener
 			
 			else {
 				// add player if he's not already joined
-				if(!mServiceInstance.getGame().getPlayers().containsKey(participant)) {
-					mServiceInstance.getGame().addPlayer(new Player(participant));
+				if(!mServiceInstance.getGame().getPlayers().containsKey(getJID(participant))) {
+					mServiceInstance.getGame().addPlayer(new Player(getJID(participant)));
 					
 					// if he's the first one, he is the creator of the game and will be assigned administrator affiliation
-					if (mServiceInstance.getGame().getPlayers().size() == 1) {
+//					if (mServiceInstance.getGame().getPlayers().size() == 1) {
+//						try { muc.grantAdmin(getJID(participant)); }
+//						catch (Exception e) { LOGGER.severe("Failed to assign admin affiliation (" + e.getMessage() + ")"); };
+//					}
+					// check if the joined user is the admin who triggered the ConfigureGameMessage
+					if (mServiceInstance.getSettings().getAdminBareJID().equalsIgnoreCase(StringUtils.parseBareAddress(getJID(participant)))) {
 						try { muc.grantAdmin(getJID(participant)); }
 						catch (Exception e) { LOGGER.severe("Failed to assign admin affiliation (" + e.getMessage() + ")"); };
 					}
