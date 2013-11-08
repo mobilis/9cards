@@ -465,7 +465,7 @@
 				
 				<xsl:apply-templates select="/" mode="generateFunctionGetNamespace" >
 					<xsl:with-param name="namespace" >
-						<xsl:value-of select="$serviceNS" /><xsl:text>#type:</xsl:text><xsl:value-of select="$typeInfoClassName" />
+						<xsl:value-of select="$serviceNS" />
 					</xsl:with-param>
 				</xsl:apply-templates>
 				<xsl:value-of select="$newline" /><xsl:value-of select="$newline" />
