@@ -1,11 +1,6 @@
 package de.tudresden.inf.rn.mobilis.services.ninecards.proxy;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.xmlpull.v1.XmlPullParser;
-
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;import org.xmlpull.v1.XmlPullParser;import java.util.List;import java.util.ArrayList;
 
 public class GameOverMessage implements XMPPInfo {
 
@@ -78,7 +73,7 @@ public class GameOverMessage implements XMPPInfo {
 		return CHILD_ELEMENT;
 	}
 
-	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService#type:GameOverMessage";
+	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService";
 
 	@Override
 	public String getNamespace() {
@@ -89,6 +84,7 @@ public class GameOverMessage implements XMPPInfo {
 	public String toXML() {
 		StringBuilder sb = new StringBuilder();
 
+		sb.append("<" + getChildElement() + " xmlns=\"" + getNamespace() + "\">");
 		sb.append( "<winner>" )
 			.append( this.winner )
 			.append( "</winner>" );
@@ -103,6 +99,7 @@ public class GameOverMessage implements XMPPInfo {
 			sb.append( "</" + PlayerInfo.CHILD_ELEMENT + ">" );
 		}
 
+		sb.append("</" + getChildElement() + ">");
 		return sb.toString();
 	}
 

@@ -56,6 +56,9 @@
 		0CF033CF18083CC000C1FE0F /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF033CE18083CC000C1FE0F /* SettingsViewController.m */; };
 		0CF033D218083D5200C1FE0F /* TextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF033D118083D5200C1FE0F /* TextFieldCell.m */; };
 		0CFEBBB6180C8FAD00631DD2 /* StartViewController_iPad.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CFEBBB5180C8FAD00631DD2 /* StartViewController_iPad.m */; };
+		5B182362182D298400FAD9FE /* GetGameConfigurationResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B18235C182D298400FAD9FE /* GetGameConfigurationResponse.m */; };
+		5B182363182D298400FAD9FE /* GetGameConfigurationRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B18235E182D298400FAD9FE /* GetGameConfigurationRequest.m */; };
+		5B182364182D298400FAD9FE /* GameStartsMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B182360182D298400FAD9FE /* GameStartsMessage.m */; };
 		5B1C401F180E94A60029030E /* Settings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5B1C401E180E94A60029030E /* Settings.plist */; };
 		5B219C861811312000C64C54 /* Settings.plist.example in Resources */ = {isa = PBXBuildFile; fileRef = 5B219C851811312000C64C54 /* Settings.plist.example */; };
 		BF8CB25D253FE7F53718C5DC /* GameOverMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CB0C818E406A8842E8111 /* GameOverMessage.m */; };
@@ -145,6 +148,12 @@
 		0CFEBBB5180C8FAD00631DD2 /* StartViewController_iPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StartViewController_iPad.m; sourceTree = "<group>"; };
 		201482854538406FBF9698BD /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		38D6716BF7E24CD28EC41FF0 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
+		5B18235C182D298400FAD9FE /* GetGameConfigurationResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetGameConfigurationResponse.m; sourceTree = "<group>"; };
+		5B18235D182D298400FAD9FE /* GetGameConfigurationResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetGameConfigurationResponse.h; sourceTree = "<group>"; };
+		5B18235E182D298400FAD9FE /* GetGameConfigurationRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetGameConfigurationRequest.m; sourceTree = "<group>"; };
+		5B18235F182D298400FAD9FE /* GetGameConfigurationRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetGameConfigurationRequest.h; sourceTree = "<group>"; };
+		5B182360182D298400FAD9FE /* GameStartsMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameStartsMessage.m; sourceTree = "<group>"; };
+		5B182361182D298400FAD9FE /* GameStartsMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameStartsMessage.h; sourceTree = "<group>"; };
 		5B1C401E180E94A60029030E /* Settings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Settings.plist; sourceTree = "<group>"; };
 		5B219C851811312000C64C54 /* Settings.plist.example */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Settings.plist.example; sourceTree = "<group>"; };
 		BF8CB0A720CE579AE6AE27D3 /* GameOverMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameOverMessage.h; sourceTree = "<group>"; };
@@ -357,6 +366,12 @@
 		BF8CB60FE278B02A25291DD0 /* Beans */ = {
 			isa = PBXGroup;
 			children = (
+				5B18235C182D298400FAD9FE /* GetGameConfigurationResponse.m */,
+				5B18235D182D298400FAD9FE /* GetGameConfigurationResponse.h */,
+				5B18235E182D298400FAD9FE /* GetGameConfigurationRequest.m */,
+				5B18235F182D298400FAD9FE /* GetGameConfigurationRequest.h */,
+				5B182360182D298400FAD9FE /* GameStartsMessage.m */,
+				5B182361182D298400FAD9FE /* GameStartsMessage.h */,
 				BF8CBFB35C4ECE6650B205C5 /* CardPlayedMessage.h */,
 				BF8CB13C0F0DA5D226EDCEBE /* CardPlayedMessage.m */,
 				BF8CB9FF65CEC580F9DD53D1 /* ConfigureGameRequest.h */,
@@ -544,8 +559,10 @@
 				0C7E38F8180D5CD5009F9158 /* StartViewController_iPhone.m in Sources */,
 				0C40AB5C1816631600CA06A5 /* CardButton.m in Sources */,
 				0CF033CF18083CC000C1FE0F /* SettingsViewController.m in Sources */,
+				5B182364182D298400FAD9FE /* GameStartsMessage.m in Sources */,
 				0CF033D218083D5200C1FE0F /* TextFieldCell.m in Sources */,
 				0C5C871D1806988100C6B371 /* AppDelegate.m in Sources */,
+				5B182363182D298400FAD9FE /* GetGameConfigurationRequest.m in Sources */,
 				0C66D02318084DE900044B28 /* CreateGameViewController.m in Sources */,
 				0C07CF8618190FE900F07113 /* NSString+StringUtils.m in Sources */,
 				0C5C87191806988100C6B371 /* main.m in Sources */,
@@ -559,6 +576,7 @@
 				BF8CB8F91E8B484C2A45B7FB /* PlayerInfo.m in Sources */,
 				BF8CB7FB7A452FC8022AA89E /* RoundCompleteMessage.m in Sources */,
 				BF8CBAA5FAE16A280ECDAC57 /* StartGameMessage.m in Sources */,
+				5B182362182D298400FAD9FE /* GetGameConfigurationResponse.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

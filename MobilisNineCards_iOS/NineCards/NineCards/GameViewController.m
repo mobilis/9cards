@@ -17,7 +17,7 @@
 #import "CardPlayedMessage.h"
 #import "GameOverMessage.h"
 #import "RoundCompleteMessage.h"
-
+#import "GameStartsMessage.h"
 #import "PlayCardMessage.h"
 
 #import "NSString+StringUtils.h"
@@ -28,7 +28,7 @@
 - (IBAction)cardPlayed:(CardButton *)card;
 - (IBAction)startGame:(UIButton *)startButton;
 
-- (void) startGameMessageReceived:(StartGameMessage *)bean;
+- (void) startGameMessageReceived:(GameStartsMessage *)bean;
 - (void) cardPlayedMessageReceived:(CardPlayedMessage *)bean;
 - (void) roundCompleteMessageReceived:(RoundCompleteMessage *)bean;
 - (void) gameOverMessageReceived:(GameOverMessage *)bean;
@@ -103,8 +103,8 @@
 	NSError *error;
 	NSXMLElement *messageBean = [[NSXMLElement alloc] initWithXMLString:message error:&error];
 	if(!error) {
-		if ([messageBean.name isEqualToString:[StartGameMessage elementName] ignoreCase:YES]) {
-			StartGameMessage *start = [StartGameMessage new];
+		if ([messageBean.name isEqualToString:[GameStartsMessage elementName] ignoreCase:YES]) {
+			GameStartsMessage *start = [GameStartsMessage new];
 			[start fromXML:messageBean];
 			[self startGameMessageReceived:start];
 		} else if ([messageBean.name isEqualToString:[CardPlayedMessage elementName] ignoreCase:YES]) {
@@ -125,7 +125,7 @@
 	}
 }
 
-- (void)startGameMessageReceived:(StartGameMessage *)bean
+- (void)startGameMessageReceived:(GameStartsMessage *)bean
 {
 	if (!_gameStarted) {
 		_gameStarted = true;

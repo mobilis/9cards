@@ -1,8 +1,6 @@
 package de.tudresden.inf.rn.mobilis.services.ninecards.proxy;
 
-import org.xmlpull.v1.XmlPullParser;
-
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;import org.xmlpull.v1.XmlPullParser;import java.util.List;import java.util.ArrayList;
 
 public class StartGameMessage implements XMPPInfo {
 
@@ -47,7 +45,7 @@ public StartGameMessage(){}
 		return CHILD_ELEMENT;
 	}
 
-	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService#type:StartGameMessage";
+	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService";
 
 	@Override
 	public String getNamespace() {

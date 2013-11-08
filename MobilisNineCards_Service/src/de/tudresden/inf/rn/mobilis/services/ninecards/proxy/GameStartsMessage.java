@@ -56,7 +56,7 @@ public class GameStartsMessage implements XMPPInfo {
 		return CHILD_ELEMENT;
 	}
 
-	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService#type:GameStartsMessage";
+	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService";
 
 	@Override
 	public String getNamespace() {
@@ -67,10 +67,12 @@ public class GameStartsMessage implements XMPPInfo {
 	public String toXML() {
 		StringBuilder sb = new StringBuilder();
 
+		sb.append("<" + getChildElement() + " xmlns=\"" + getNamespace() + "\">");
 		sb.append( "<rounds>" )
 			.append( this.rounds )
 			.append( "</rounds>" );
 
+		sb.append("</" + getChildElement() + ">");
 		return sb.toString();
 	}
 

@@ -1,8 +1,6 @@
 package de.tudresden.inf.rn.mobilis.services.ninecards.proxy;
 
-import org.xmlpull.v1.XmlPullParser;
-
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;import org.xmlpull.v1.XmlPullParser;import java.util.List;import java.util.ArrayList;
 
 public class ConfigureGameRequest extends XMPPBean {
 
