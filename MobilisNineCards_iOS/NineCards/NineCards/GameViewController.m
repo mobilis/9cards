@@ -36,13 +36,17 @@
 - (void) roundCompleteMessageReceived:(RoundCompleteMessage *)bean;
 - (void) gameOverMessageReceived:(GameOverMessage *)bean;
 
+- (void)showWaitingView;
+- (void)hideWaitingView;
+
 @end
 
 @implementation GameViewController {
 	BOOL _gameStarted;
-    BOOL _roundCompleted;
 	NSNumber *_rounds;
 	NSNumber *_currentRound;
+    
+    __strong UIView *_waitingView;
 }
 
 - (void)viewDidLoad
@@ -58,7 +62,6 @@
 		}
 	}
 	_gameStarted = NO;
-    _roundCompleted = YES;
     if ([self.game hasGameConfiguration]) {
         [[MXiConnectionHandler sharedInstance] connectToMultiUserChatRoom:[_game roomJid].bare withDelegate:self];
     } else {
@@ -92,16 +95,14 @@
 }
 
 - (IBAction)cardPlayed:(CardButton *)card {
-    if (_roundCompleted) {
-        card.enabled = NO;
-        PlayCardMessage *play = [PlayCardMessage new];
-        play.card = card.cardNumber;
-        play.round = _currentRound;
+    card.enabled = NO;
+    PlayCardMessage *play = [PlayCardMessage new];
+    play.card = card.cardNumber;
+    play.round = _currentRound;
         
-        [[MXiConnectionHandler sharedInstance] sendMessageString:[[play toXML] XMLString] toJID:[[_game gameJid] full]];
-        _roundCompleted = NO;
-        NSLog(@"%@", [[play toXML] XMLString]);
-    }
+    [[MXiConnectionHandler sharedInstance] sendMessageString:[[play toXML] XMLString] toJID:[[_game gameJid] full]];
+    [self showWaitingView];
+    NSLog(@"%@", [[play toXML] XMLString]);
 }
 
 - (IBAction)startGame:(UIButton *)startButton
@@ -170,7 +171,7 @@
 {
 	if (_gameStarted) {
 		_currentRound = [NSNumber numberWithInt:[_currentRound intValue]+1];
-        _roundCompleted = YES;
+        [self hideWaitingView];
 	}
 }
 
@@ -186,6 +187,85 @@
     self.game.rounds = response.maxRounds;
     
     [[MXiConnectionHandler sharedInstance] connectToMultiUserChatRoom:response.muc withDelegate:self];
+}
+
+- (void)showWaitingView
+{
+    if (!_waitingView) {
+        [self setupWaitingView];
+    }
+    
+    [self.view addSubview:_waitingView];
+}
+- (void)setupWaitingView
+{
+    _waitingView = [[UIView alloc] initWithFrame:self.view.frame];
+    _waitingView.backgroundColor = [UIColor clearColor];
+    
+    UILabel *waitingForOthersLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    waitingForOthersLabel.textAlignment = NSTextAlignmentCenter;
+    waitingForOthersLabel.text = @"Waiting for other players to finish.";
+    waitingForOthersLabel.textColor = [UIColor whiteColor];
+    waitingForOthersLabel.font = [UIFont boldSystemFontOfSize:20.0];
+    [waitingForOthersLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+    
+    UIView *coloredBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, 200.0)];
+    coloredBackgroundView.backgroundColor = [UIColor colorWithRed:(15.0/255.0) green:(101.0/255) blue:(255.0/255.0) alpha:1.0];
+    coloredBackgroundView.layer.cornerRadius = 5.0;
+    [coloredBackgroundView setTranslatesAutoresizingMaskIntoConstraints:NO];
+    
+    [coloredBackgroundView addSubview:waitingForOthersLabel];
+    [_waitingView addSubview:coloredBackgroundView];
+    
+    [_waitingView addConstraint:[NSLayoutConstraint constraintWithItem:waitingForOthersLabel
+                                                             attribute:NSLayoutAttributeCenterY
+                                                             relatedBy:NSLayoutRelationEqual
+                                                                toItem:coloredBackgroundView
+                                                             attribute:NSLayoutAttributeCenterY
+                                                            multiplier:1.0
+                                                              constant:0.0]];
+    [_waitingView addConstraint:[NSLayoutConstraint constraintWithItem:waitingForOthersLabel
+                                                             attribute:NSLayoutAttributeCenterX
+                                                             relatedBy:NSLayoutRelationEqual
+                                                                toItem:coloredBackgroundView
+                                                             attribute:NSLayoutAttributeCenterX
+                                                            multiplier:1.0
+                                                              constant:0.0]];
+    [_waitingView addConstraint:[NSLayoutConstraint constraintWithItem:coloredBackgroundView
+                                                             attribute:NSLayoutAttributeHeight
+                                                             relatedBy:NSLayoutRelationEqual
+                                                                toItem:waitingForOthersLabel
+                                                             attribute:NSLayoutAttributeHeight
+                                                            multiplier:2.0
+                                                              constant:0.0]];
+    [_waitingView addConstraint:[NSLayoutConstraint constraintWithItem:coloredBackgroundView
+                                                             attribute:NSLayoutAttributeWidth
+                                                             relatedBy:NSLayoutRelationEqual
+                                                                toItem:waitingForOthersLabel
+                                                             attribute:NSLayoutAttributeWidth
+                                                            multiplier:1.25
+                                                              constant:0.0]];
+    
+    [_waitingView addConstraint:[NSLayoutConstraint constraintWithItem:coloredBackgroundView
+                                                             attribute:NSLayoutAttributeCenterY
+                                                             relatedBy:NSLayoutRelationEqual
+                                                                toItem:_waitingView
+                                                             attribute:NSLayoutAttributeCenterY
+                                                            multiplier:1.0
+                                                              constant:0.0]];
+    [_waitingView addConstraint:[NSLayoutConstraint constraintWithItem:coloredBackgroundView
+                                                             attribute:NSLayoutAttributeCenterX
+                                                             relatedBy:NSLayoutRelationEqual
+                                                                toItem:_waitingView
+                                                             attribute:NSLayoutAttributeCenterX
+                                                            multiplier:1.0
+                                                              constant:0.0]];
+}
+
+- (void)hideWaitingView
+{
+    [_waitingView removeFromSuperview];
+    [self.view setNeedsDisplay];
 }
 
 @end
