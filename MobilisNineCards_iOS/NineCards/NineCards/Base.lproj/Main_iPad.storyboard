@@ -528,6 +528,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="startButton" destination="kFb-mW-aC0" id="CKj-9w-5pF"/>
                         <outletCollection property="cardButtons" destination="NQ1-Zu-VrF" id="SVn-SH-Kxl"/>
                         <outletCollection property="cardButtons" destination="GDm-k1-Ixt" id="mxa-Yh-LQN"/>
                         <outletCollection property="cardButtons" destination="wg1-nr-OC3" id="lKw-no-g1d"/>

@@ -22,6 +22,9 @@
 @end
 
 @implementation StartViewController_iPad
+{
+    __weak GameListTableViewController *_gameListTableViewController;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -36,6 +39,7 @@
 {
     [super viewDidLoad];
 	GameListTableViewController *gameList = [GameListTableViewController new];
+    _gameListTableViewController = gameList;
 	gameList.tableView = self.gameListTableView;
 	gameList.tableView.delegate = gameList;
 	gameList.tableView.dataSource = gameList;
@@ -80,6 +84,11 @@
 			((GameViewController*)segue.destinationViewController).game = sender;
 		} else {
 			NSLog(@"%@", [[sender class] description]);
+            NSIndexPath *selectedRowIndexPath = [self.gameListTableView indexPathForCell:sender];
+            // TODO: get GameListTableViewController as property to access the game at the index path
+            // check for game == nil might not be suitable anymore in the GameViewController
+            Game *game = [_gameListTableViewController gameForIndexPath:selectedRowIndexPath];
+            ((GameViewController *)segue.destinationViewController).game = game;
 		}
 	}
 }

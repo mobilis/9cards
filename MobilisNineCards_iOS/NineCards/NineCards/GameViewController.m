@@ -13,6 +13,8 @@
 
 #import <MXi/MXi.h>
 #import "StartGameMessage.h"
+#import "GetGameConfigurationRequest.h"
+#import "GetGameConfigurationResponse.h"
 
 #import "CardPlayedMessage.h"
 #import "GameOverMessage.h"
@@ -24,6 +26,7 @@
 
 @interface GameViewController () <MXiMultiUserChatDelegate>
 @property (strong, nonatomic) IBOutletCollection(UIButton) NSArray *cardButtons;
+@property (weak, nonatomic) IBOutlet UIButton *startButton;
 - (IBAction)quitGame:(UIBarButtonItem *)sender;
 - (IBAction)cardPlayed:(CardButton *)card;
 - (IBAction)startGame:(UIButton *)startButton;
@@ -45,7 +48,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	self.navigationItem.title = _game.name;
 	for (UIButton *cardButton in self.cardButtons) {
 		cardButton.enabled = NO;
 		if([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone)
@@ -57,13 +59,31 @@
 	}
 	_gameStarted = NO;
     _roundCompleted = YES;
-	[[MXiConnectionHandler sharedInstance] connectToMultiUserChatRoom:[_game roomJid].bare withDelegate:self];
+    if ([self.game hasGameConfiguration]) {
+        [[MXiConnectionHandler sharedInstance] connectToMultiUserChatRoom:[_game roomJid].bare withDelegate:self];
+    } else {
+        [[MXiConnectionHandler sharedInstance] addDelegate:self withSelector:@selector(gameConfigurationReceived:) forBeanClass:[GetGameConfigurationResponse class]];
+        GetGameConfigurationRequest *gameConfigurationRequest = [GetGameConfigurationRequest new];
+        gameConfigurationRequest.to = self.game.gameJid;
+        [[MXiConnectionHandler sharedInstance] sendBean:gameConfigurationRequest];
+        self.startButton.hidden = YES;
+    }
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (NSString *)title
+{
+    return self.game.name;
+}
+
+- (void)dealloc
+{
+    [[MXiConnectionHandler sharedInstance] removeDelegate:self withSelector:@selector(gameConfigurationReceived:) forBeanClass:[GetGameConfigurationResponse class]];
 }
 
 - (IBAction)quitGame:(UIBarButtonItem *)sender
@@ -100,6 +120,7 @@
 #pragma mark - MXiMUCDelegate
 - (void)connectionToRoomEstablished:(NSString *)roomJID
 {
+    self.startButton.hidden = NO;
 	NSLog(@"ConnectionToRoomEstablished: %@", roomJID);
 }
 
@@ -158,5 +179,13 @@
 
 }
 
+- (void)gameConfigurationReceived:(GetGameConfigurationResponse *)response
+{
+    self.game = [Game new];
+    self.game.players = response.maxPlayers;
+    self.game.rounds = response.maxRounds;
+    
+    [[MXiConnectionHandler sharedInstance] connectToMultiUserChatRoom:response.muc withDelegate:self];
+}
 
 @end
