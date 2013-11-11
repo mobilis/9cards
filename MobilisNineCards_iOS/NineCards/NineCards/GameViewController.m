@@ -37,6 +37,7 @@
 
 @implementation GameViewController {
 	BOOL _gameStarted;
+    BOOL _roundCompleted;
 	NSNumber *_rounds;
 	NSNumber *_currentRound;
 }
@@ -54,7 +55,8 @@
 			cardButton.titleLabel.font = [UIFont fontWithName:@"AppleColorEmoji" size:36.f];
 		}
 	}
-	_gameStarted = false;
+	_gameStarted = NO;
+    _roundCompleted = YES;
 	[[MXiConnectionHandler sharedInstance] connectToMultiUserChatRoom:[_game roomJid].bare withDelegate:self];
 }
 
@@ -70,13 +72,16 @@
 }
 
 - (IBAction)cardPlayed:(CardButton *)card {
-	card.enabled = NO;
-	PlayCardMessage *play = [PlayCardMessage new];
-	play.card = card.cardNumber;
-	play.round = _currentRound;
-	
-    [[MXiConnectionHandler sharedInstance] sendMessageString:[[play toXML] XMLString] toJID:[[_game gameJid] full]];
-    NSLog(@"%@", [[play toXML] XMLString]);
+    if (_roundCompleted) {
+        card.enabled = NO;
+        PlayCardMessage *play = [PlayCardMessage new];
+        play.card = card.cardNumber;
+        play.round = _currentRound;
+        
+        [[MXiConnectionHandler sharedInstance] sendMessageString:[[play toXML] XMLString] toJID:[[_game gameJid] full]];
+        _roundCompleted = NO;
+        NSLog(@"%@", [[play toXML] XMLString]);
+    }
 }
 
 - (IBAction)startGame:(UIButton *)startButton
@@ -128,7 +133,7 @@
 - (void)startGameMessageReceived:(GameStartsMessage *)bean
 {
 	if (!_gameStarted) {
-		_gameStarted = true;
+		_gameStarted = YES;
 		_currentRound = [NSNumber numberWithInt:1];
 	}
 }
@@ -144,6 +149,7 @@
 {
 	if (_gameStarted) {
 		_currentRound = [NSNumber numberWithInt:[_currentRound intValue]+1];
+        _roundCompleted = YES;
 	}
 }
 
