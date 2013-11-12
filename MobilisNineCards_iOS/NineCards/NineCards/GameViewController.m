@@ -10,6 +10,7 @@
 
 #import "GameViewController.h"
 #import "CardButton.h"
+#import "GamePointsViewController.h"
 
 #import <MXi/MXi.h>
 #import "StartGameMessage.h"
@@ -25,11 +26,13 @@
 #import "NSString+StringUtils.h"
 
 @interface GameViewController () <MXiMultiUserChatDelegate>
+
 @property (strong, nonatomic) IBOutletCollection(UIButton) NSArray *cardButtons;
 @property (weak, nonatomic) IBOutlet UIButton *startButton;
 - (IBAction)quitGame:(UIBarButtonItem *)sender;
 - (IBAction)cardPlayed:(CardButton *)card;
 - (IBAction)startGame:(UIButton *)startButton;
+- (IBAction)showGamePoints:(id)sender;
 
 - (void) startGameMessageReceived:(GameStartsMessage *)bean;
 - (void) cardPlayedMessageReceived:(CardPlayedMessage *)bean;
@@ -47,6 +50,8 @@
 	NSNumber *_currentRound;
     
     __strong UIView *_waitingView;
+    __strong UIPopoverController *_pointsPopOverView;
+    __strong GamePointsViewController *_gamePointsViewController;
 }
 
 - (void)viewDidLoad
@@ -71,6 +76,10 @@
         [[MXiConnectionHandler sharedInstance] sendBean:gameConfigurationRequest];
         self.startButton.hidden = YES;
     }
+    
+    GamePointsViewController *gamePointsViewController = [[GamePointsViewController alloc] initWithNibName:@"GamePointsView"
+                                                                                                    bundle:nil];
+    [self addChildViewController:gamePointsViewController];
 }
 
 - (void)didReceiveMemoryWarning
@@ -116,6 +125,17 @@
 
     [[MXiConnectionHandler sharedInstance] sendMessageString:[[startGame toXML] XMLString] toJID:[_game.gameJid full]];
 	NSLog(@"%@", [[startGame toXML] XMLString]);
+}
+
+- (IBAction)showGamePoints:(id)sender {
+    if (!_pointsPopOverView) {
+        _gamePointsViewController = [[GamePointsViewController alloc] initWithNibName:@"GamePointsView"
+                                                                               bundle:nil];
+        _pointsPopOverView = [[UIPopoverController alloc] initWithContentViewController:_gamePointsViewController];
+    }
+    [_pointsPopOverView presentPopoverFromBarButtonItem:sender
+                               permittedArrowDirections:UIPopoverArrowDirectionAny
+                                               animated:YES];
 }
 
 #pragma mark - MXiMUCDelegate
@@ -171,6 +191,7 @@
 {
 	if (_gameStarted) {
 		_currentRound = [NSNumber numberWithInt:[_currentRound intValue]+1];
+        [_gamePointsViewController updatePlayersWithPlayerInfos:bean.playerInfos];
         [self hideWaitingView];
 	}
 }

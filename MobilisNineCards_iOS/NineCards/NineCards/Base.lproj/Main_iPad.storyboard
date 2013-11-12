@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4514" systemVersion="13A603" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="B1s-T8-Aeg">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3746"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3747"/>
     </dependencies>
     <scenes>
         <!--Start View Controller i Pad - 9Cards-->
@@ -268,7 +268,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HUN-9y-rcg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="880" y="-411"/>
+            <point key="canvasLocation" x="1255" y="-601"/>
         </scene>
         <!--Game View Controller - Game-->
         <scene sceneID="YMY-a6-6tw">
@@ -283,7 +283,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6Vp-G9-6gV" userLabel="CardsView">
-                                <rect key="frame" x="187" y="102" width="340" height="470"/>
+                                <rect key="frame" x="214" y="102" width="340" height="470"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Udm-Zc-Q8e" customClass="CardButton">
@@ -513,9 +513,11 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="6Vp-G9-6gV" firstAttribute="centerX" secondItem="kFb-mW-aC0" secondAttribute="centerX" id="9zD-BE-fi6"/>
                             <constraint firstItem="6Vp-G9-6gV" firstAttribute="top" secondItem="kFb-mW-aC0" secondAttribute="bottom" constant="8" symbolic="YES" id="PNd-hK-Vxt"/>
                             <constraint firstItem="kFb-mW-aC0" firstAttribute="top" secondItem="YKz-j7-bMx" secondAttribute="bottom" id="Tz8-1A-6Lf"/>
-                            <constraint firstItem="6Vp-G9-6gV" firstAttribute="leading" secondItem="7K3-iN-FVe" secondAttribute="leading" constant="187" id="Zku-9B-Cve"/>
+                            <constraint firstItem="6Vp-G9-6gV" firstAttribute="leading" secondItem="7K3-iN-FVe" secondAttribute="leading" constant="214" id="Y7Q-nP-jVY"/>
+                            <constraint firstAttribute="trailing" secondItem="6Vp-G9-6gV" secondAttribute="trailing" constant="214" id="cgE-BM-NHB"/>
                             <constraint firstItem="kFb-mW-aC0" firstAttribute="leading" secondItem="7K3-iN-FVe" secondAttribute="leading" id="eW3-dX-Z6X"/>
                             <constraint firstAttribute="trailing" secondItem="kFb-mW-aC0" secondAttribute="trailing" id="i7g-Ml-dM4"/>
                         </constraints>
@@ -524,6 +526,11 @@
                         <barButtonItem key="leftBarButtonItem" title="Quit" id="pj4-Bj-3sv">
                             <connections>
                                 <action selector="quitGame:" destination="bao-rz-B8d" id="0zV-jG-ZRX"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Points" id="5h9-ao-wQr">
+                            <connections>
+                                <action selector="showGamePoints:" destination="bao-rz-B8d" id="eX0-6V-VH9"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -542,7 +549,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DGp-On-ucA" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1852" y="-125"/>
+            <point key="canvasLocation" x="2001" y="-102"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="iIK-Al-o3q">
@@ -643,7 +650,25 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qRi-GC-fDv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="880" y="429"/>
+            <point key="canvasLocation" x="1206" y="580"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="7Mc-NY-KOZ">
+            <objects>
+                <viewController automaticallyAdjustsScrollViewInsets="NO" id="ecM-ZF-Muq" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="0at-LA-ViI"/>
+                        <viewControllerLayoutGuide type="bottom" id="ffi-Bf-aAJ"/>
+                    </layoutGuides>
+                    <view key="view" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="uc8-R9-YAG">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <toolbarItems/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Vxd-lT-jDH" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
         </scene>
     </scenes>
     <resources>

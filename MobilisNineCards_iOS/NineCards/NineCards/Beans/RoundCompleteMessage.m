@@ -42,7 +42,7 @@
 	[self setWinner:[winnerElement stringValue]];
 
 	[self setPlayerInfos:[NSMutableArray array]];
-	NSArray* playerInfosElements = [xml elementsForName:@"playerInfos"];
+	NSArray* playerInfosElements = [xml elementsForName:@"PlayerInfo"];
 	for (NSXMLElement* playerInfosElement in playerInfosElements) {
 		PlayerInfo *playerInfosObject = [[PlayerInfo alloc] init];
 		NSXMLElement* idElement = [playerInfosElement elementForName:@"id"];
