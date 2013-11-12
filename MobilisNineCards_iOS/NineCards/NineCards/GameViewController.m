@@ -198,7 +198,17 @@
 
 - (void)gameOverMessageReceived:(GameOverMessage *)bean
 {
-
+    [self hideWaitingView];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Game finished."
+                                                        message:[NSString stringWithFormat:@"Player %@ won with %i points", bean.winner, [bean.score intValue]]
+                                                       delegate:self
+                                              cancelButtonTitle:nil
+                                              otherButtonTitles:@"OK", nil];
+    [alertView show];
+}
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 - (void)gameConfigurationReceived:(GetGameConfigurationResponse *)response
