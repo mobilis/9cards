@@ -259,7 +259,6 @@ public class Game
 	public Player removePlayer(String id, String reason)
 	{
 		Player player = gamePlayers.remove(id);
-		mServiceInstance.getMucConnection().removePlayerFromChat(id, reason);
 		LOGGER.info("Removed player " + id);
 		
 		// shut down if there are no more players left

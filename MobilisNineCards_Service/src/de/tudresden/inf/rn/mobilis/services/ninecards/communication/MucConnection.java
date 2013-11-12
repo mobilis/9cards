@@ -19,7 +19,9 @@
  ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.services.ninecards.communication;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.jivesoftware.smack.Chat;
@@ -62,6 +64,8 @@ public class MucConnection implements PacketListener, MessageListener
 	/** The password for re-entering the muc room after it has been locked. */
 	private String mucPw;
 
+	private Map<String,String> addressMapper;
+	
 	/** The class specific Logger object. */
 	private final static Logger LOGGER = Logger.getLogger(MucConnection.class.getCanonicalName());
 	
@@ -117,6 +121,7 @@ public class MucConnection implements PacketListener, MessageListener
 			
 			LOGGER.info("Chatroom created (ID: " + mServiceInstance.getSettings().getChatID());
 			
+			addressMapper = new HashMap<String, String>();
 		} catch (Exception e) {
 			LOGGER.severe("Failed to create MUC! (" + e.getMessage() + ")");
 			mServiceInstance.shutdown();
@@ -277,18 +282,6 @@ public class MucConnection implements PacketListener, MessageListener
 	 */
 	public boolean isAdmin(String adminBareJID)
 	{
-//		String nick = StringUtils.parseResource(id);
-//		boolean res = false;
-//		
-//		try {
-//			for(Affiliate aff : muc.getAdmins())
-//				if(aff.getNick().equals(nick))
-//					res = true;	
-//		} catch(Exception e) {
-//			LOGGER.severe("Failed to determine whether " + id + "is admin");
-//		}
-//		
-//		return res;
 		return mServiceInstance.getSettings().getAdminBareJID().equalsIgnoreCase(StringUtils.parseBareAddress(adminBareJID));
 	}
 	
@@ -358,7 +351,10 @@ public class MucConnection implements PacketListener, MessageListener
 		@Override
 		public void left(String participant)
 		{
-			Player player = mServiceInstance.getGame().removePlayer(participant, "player left");
+			Player player = mServiceInstance.getGame().removePlayer(addressMapper.get(participant), "player left");
+			if (player != null) {
+				removePlayerFromChat(participant, "player left");
+			}
 			if(mServiceInstance.getGame().getPlayers().size() > 0 && (player != null && player.getChosenCard() == -1))
 				checkRoundOver();
 		}
@@ -366,7 +362,7 @@ public class MucConnection implements PacketListener, MessageListener
 		@Override
 		public void kicked(String participant, String actor, String reason)
 		{
-			Player player = mServiceInstance.getGame().removePlayer(participant, "player was kicked by "
+			Player player = mServiceInstance.getGame().removePlayer(addressMapper.get(participant), "player was kicked by "
 					+ actor.substring(0, actor.indexOf("@")) + " (reason: " + reason + ")");
 			
 			if(mServiceInstance.getGame().getPlayers().size() > 0 && (player != null && player.getChosenCard() == -1))
@@ -376,7 +372,7 @@ public class MucConnection implements PacketListener, MessageListener
 		@Override
 		public void banned(String participant, String actor, String reason)
 		{
-			Player player = mServiceInstance.getGame().removePlayer(participant, "player was banned by "
+			Player player = mServiceInstance.getGame().removePlayer(addressMapper.get(participant), "player was banned by "
 					+ actor.substring(0, actor.indexOf("@")) + " (reason: " + reason + ")");
 
 			if(mServiceInstance.getGame().getPlayers().size() > 0 && (player != null && player.getChosenCard() == -1))
@@ -396,12 +392,8 @@ public class MucConnection implements PacketListener, MessageListener
 				// add player if he's not already joined
 				if(!mServiceInstance.getGame().getPlayers().containsKey(getJID(participant))) {
 					mServiceInstance.getGame().addPlayer(new Player(getJID(participant)));
+					addressMapper.put(participant, getJID(participant));
 					
-					// if he's the first one, he is the creator of the game and will be assigned administrator affiliation
-//					if (mServiceInstance.getGame().getPlayers().size() == 1) {
-//						try { muc.grantAdmin(getJID(participant)); }
-//						catch (Exception e) { LOGGER.severe("Failed to assign admin affiliation (" + e.getMessage() + ")"); };
-//					}
 					// check if the joined user is the admin who triggered the ConfigureGameMessage
 					if (mServiceInstance.getSettings().getAdminBareJID().equalsIgnoreCase(StringUtils.parseBareAddress(getJID(participant)))) {
 						try { muc.grantAdmin(getJID(participant)); }
