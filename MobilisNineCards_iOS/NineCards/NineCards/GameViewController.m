@@ -139,10 +139,10 @@
 }
 
 #pragma mark - MXiMUCDelegate
-- (void)connectionToRoomEstablished:(NSString *)roomJID
+- (void)connectionToRoomEstablished:(NSString *)roomJID usingRoomJID:(NSString *)myRoomJID
 {
     self.startButton.hidden = NO;
-	NSLog(@"ConnectionToRoomEstablished: %@", roomJID);
+	NSLog(@"ConnectionToRoomEstablished: %@ usingJID: %@", roomJID, myRoomJID);
 }
 
 -(void)didReceiveMultiUserChatMessage:(NSString *)message fromUser:(NSString *)user publishedInRoom:(NSString *)roomJID
@@ -232,6 +232,7 @@
 {
     _waitingView = [[UIView alloc] initWithFrame:self.view.frame];
     _waitingView.backgroundColor = [UIColor clearColor];
+    _waitingView.exclusiveTouch = YES;
     
     UILabel *waitingForOthersLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     waitingForOthersLabel.textAlignment = NSTextAlignmentCenter;
