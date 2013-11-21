@@ -200,7 +200,7 @@ public class Game
 			
 			// put information into new PlayerInfo
 			PlayerInfo info = new PlayerInfo();
-			info.setId(plr.getID());
+			info.setId(plr.getMucJID());
 			info.setScore(plr.getScore());
 			info.setUsedcards(plr.getUsedCards());
 			
@@ -219,15 +219,17 @@ public class Game
 	 */
 	public void addPlayer(Player player)
 	{
-		this.gamePlayers.put(player.getID(), player);
-		LOGGER.info("Added player " + player.getID());
+		this.gamePlayers.put(player.getPrivateJID(), player);
+		LOGGER.info("Added player " + player.getPrivateJID());
 	}
 	
 	
 	/**
-	 * Returns the player corresponding to the specified ID.
+	 * Returns the player corresponding to the specified private JID.
 	 * 
-	 * @param id the ID of the player (example: room@conference.jabber.org/nick)
+	 * @param id
+	 *            the private JID of the player (example:
+	 *            nick@jabber.org/resource)
 	 * @return Player the player that matches the JabberID
 	 */
 	public Player getPlayer(String id)
@@ -249,12 +251,18 @@ public class Game
 	
 	
 	/**
-	 * Removes the player corresponding to the specified ID. Also removes him from the chat.
-	 * If there's no player left in the game, the service will shut down.
+	 * Removes the player corresponding to the specified ID. Also removes him
+	 * from the chat. If there's no player left in the game, the service will
+	 * shut down.
 	 * 
-	 * @param id the ID of the player to be kicked (example: room@conference.jabber.org/nick)
-	 * @param reason the reason to be logged or displayed when removing him from the chat
-	 * @return the player object which was removed or null, if no player was found.
+	 * @param id
+	 *            the private JID of the player to be kicked (example:
+	 *            nick@jabber.org/resource)
+	 * @param reason
+	 *            the reason to be logged or displayed when removing him from
+	 *            the chat
+	 * @return the player object which was removed or null, if no player was
+	 *         found.
 	 */
 	public Player removePlayer(String id, String reason)
 	{

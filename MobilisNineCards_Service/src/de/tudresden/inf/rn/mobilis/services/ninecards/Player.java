@@ -31,8 +31,14 @@ import java.util.List;
 public class Player
 {
 	
-	/** The player's id in the muc room (example: room@conference.jabber.org/nick). */
-	private String id;
+	/**
+	 * The player's jid in the muc room (example:
+	 * room@conference.jabber.org/nick).
+	 */
+	private String mucJID;
+
+	/** The player's jid (example: nick@jabber.org/resource). */
+	private String privateJID;
 
 	/** The cards (values from 1-9) which the player already used in the current game. */
 	private List<Integer> usedCards;
@@ -45,11 +51,14 @@ public class Player
 	/**
 	 * The constructor for initializing a new player object.
 	 * 
-	 * @param id the player's id in the muc room (example: room@conference.jabber.org/nick)
+	 * @param mucJID
+	 *            the player's id in the muc room (example:
+	 *            room@conference.jabber.org/nick)
 	 */
-	public Player(String id)
+	public Player(String mucJID, String privateJID)
 	{
-		this.id = id;
+		this.mucJID = mucJID;
+		this.privateJID = privateJID;
 		this.score = 0;
 		this.chosenCard = -1;
 		
@@ -112,13 +121,14 @@ public class Player
 	
 
 	/**
-	 * Returns the ID of the player in the multiuser chat room (example: room@conference.jabber.org/nick).
+	 * Returns the JID of the player in the multiuser chat room (example:
+	 * room@conference.jabber.org/nick).
 	 * 
-	 * @return the ID of the player
+	 * @return the muc JID of the player
 	 */
-	public String getID()
+	public String getMucJID()
 	{
-		return id;
+		return mucJID;
 	}
 	
 	
@@ -129,6 +139,16 @@ public class Player
 	 */
 	public void changeID(String newID)
 	{
-		this.id = newID;
+		this.mucJID = newID;
+	}
+
+	/**
+	 * Returns the private JID of the player (example:
+	 * nick@jabber.org/resource).
+	 * 
+	 * @return the private JID of the player
+	 */
+	public String getPrivateJID() {
+		return privateJID;
 	}
 }

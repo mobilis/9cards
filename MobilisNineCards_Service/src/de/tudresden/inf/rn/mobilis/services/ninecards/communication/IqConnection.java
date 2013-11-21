@@ -30,6 +30,8 @@ import org.jivesoftware.smack.packet.Packet;
 import de.tudresden.inf.rn.mobilis.services.ninecards.NineCardsService;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.ConfigureGameRequest;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.ConfigureGameResponse;
+import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.GetGameConfigurationRequest;
+import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.GetGameConfigurationResponse;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.IMobilisNineCardsOutgoing;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.MobilisNineCardsProxy;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.IXMPPCallback;
@@ -185,6 +187,8 @@ public class IqConnection implements PacketListener
 	{		
 		registerXMPPBean(new ConfigureGameRequest());
 		registerXMPPBean(new ConfigureGameResponse());
+		registerXMPPBean(new GetGameConfigurationRequest());
+		registerXMPPBean(new GetGameConfigurationResponse());
 	}
 	
 	
