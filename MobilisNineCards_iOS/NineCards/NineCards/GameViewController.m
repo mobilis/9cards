@@ -94,6 +94,21 @@ typedef enum {
     // Dispose of any resources that can be recreated.
 }
 
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    CGRect newFrame = CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width);
+    [UIView animateWithDuration:duration animations:^{
+        _waitingView.frame = newFrame;
+    }];
+    
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+}
+
 - (NSString *)title
 {
     return self.game.name;
