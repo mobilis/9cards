@@ -560,12 +560,9 @@
                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Score" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bkZ-r9-xh8">
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" text="Score" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bkZ-r9-xh8">
                                             <rect key="frame" x="319" y="14" width="45" height="21"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="45" id="jO8-EN-ExM"/>
-                                            </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
@@ -573,14 +570,12 @@
                                     </subviews>
                                     <color key="backgroundColor" red="0.0" green="0.25098040700000002" blue="0.50196081400000003" alpha="0.80000000000000004" colorSpace="calibratedRGB"/>
                                     <constraints>
-                                        <constraint firstItem="bkZ-r9-xh8" firstAttribute="top" secondItem="vWq-up-KtR" secondAttribute="top" constant="14" id="Rtu-qk-xiM"/>
-                                        <constraint firstAttribute="bottom" secondItem="kRN-dW-Dnw" secondAttribute="bottom" constant="15" id="VED-Pe-AdL"/>
-                                        <constraint firstItem="kRN-dW-Dnw" firstAttribute="top" secondItem="vWq-up-KtR" secondAttribute="top" constant="14" id="W9O-83-lIU"/>
-                                        <constraint firstAttribute="bottom" secondItem="bkZ-r9-xh8" secondAttribute="bottom" constant="15" id="Yi2-Go-9hA"/>
-                                        <constraint firstAttribute="trailing" secondItem="bkZ-r9-xh8" secondAttribute="trailing" constant="20" symbolic="YES" id="iYz-b7-5bH"/>
-                                        <constraint firstAttribute="centerY" secondItem="bkZ-r9-xh8" secondAttribute="centerY" id="mIY-Et-Wuo"/>
-                                        <constraint firstItem="bkZ-r9-xh8" firstAttribute="leading" secondItem="kRN-dW-Dnw" secondAttribute="trailing" constant="8" id="qBc-c9-Qpi"/>
-                                        <constraint firstItem="kRN-dW-Dnw" firstAttribute="leading" secondItem="vWq-up-KtR" secondAttribute="leading" constant="20" id="yOj-hx-fU7"/>
+                                        <constraint firstAttribute="trailing" secondItem="bkZ-r9-xh8" secondAttribute="trailing" constant="20" id="QyR-lw-bIv"/>
+                                        <constraint firstItem="kRN-dW-Dnw" firstAttribute="top" secondItem="vWq-up-KtR" secondAttribute="top" constant="14" id="adS-t4-tEW"/>
+                                        <constraint firstItem="kRN-dW-Dnw" firstAttribute="baseline" secondItem="bkZ-r9-xh8" secondAttribute="baseline" id="nXr-tW-UeS"/>
+                                        <constraint firstItem="bkZ-r9-xh8" firstAttribute="leading" secondItem="kRN-dW-Dnw" secondAttribute="trailing" constant="8" id="tW8-Bd-6UM"/>
+                                        <constraint firstItem="kRN-dW-Dnw" firstAttribute="leading" secondItem="vWq-up-KtR" secondAttribute="leading" constant="20" id="u6S-Pa-FRE"/>
+                                        <constraint firstAttribute="bottom" secondItem="kRN-dW-Dnw" secondAttribute="bottom" constant="15" id="uRX-Yd-AlF"/>
                                     </constraints>
                                     <connections>
                                         <outlet property="scoreLabel" destination="bkZ-r9-xh8" id="dXY-Cd-1YF"/>
