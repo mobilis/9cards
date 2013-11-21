@@ -42,7 +42,6 @@ typedef enum {
 - (IBAction)quitGame:(UIBarButtonItem *)sender;
 - (IBAction)cardPlayed:(CardButton *)card;
 - (IBAction)startGame:(UIButton *)startButton;
-- (IBAction)showGamePoints:(id)sender;
 
 - (void) startGameMessageReceived:(GameStartsMessage *)bean;
 - (void) cardPlayedMessageReceived:(CardPlayedMessage *)bean;
@@ -144,17 +143,6 @@ typedef enum {
 	[[MXiConnectionHandler sharedInstance] sendMessageString:[[startGame toXML] XMLString] toJID:[_game.gameJid full]];
 	NSLog(@"%@", [[startGame toXML] XMLString]);
 
-}
-
-- (IBAction)showGamePoints:(id)sender {
-    if (!_pointsPopOverView) {
-        _gamePointsViewController = [[GamePointsViewController alloc] initWithNibName:@"GamePointsView"
-                                                                               bundle:nil];
-        _pointsPopOverView = [[UIPopoverController alloc] initWithContentViewController:_gamePointsViewController];
-    }
-    [_pointsPopOverView presentPopoverFromBarButtonItem:sender
-                               permittedArrowDirections:UIPopoverArrowDirectionAny
-                                               animated:YES];
 }
 
 #pragma mark - MXiMUCDelegate

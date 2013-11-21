@@ -510,16 +510,100 @@
                                     <action selector="startGame:" destination="bao-rz-B8d" eventType="touchUpInside" id="LmH-yr-Ejt"/>
                                 </connections>
                             </button>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="YPk-fo-sBu">
+                                <rect key="frame" x="192" y="580" width="384" height="444"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="384" id="iX9-OY-PEv"/>
+                                </constraints>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="h15-ef-gLm">
+                                    <size key="itemSize" width="50" height="50"/>
+                                    <size key="headerReferenceSize" width="50" height="50"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="CollectionViewCardCell" id="jNc-9Z-4kx" customClass="PlayerListCardCell">
+                                        <rect key="frame" x="0.0" y="50" width="50" height="50"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="?" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mJM-T9-kqn">
+                                                    <rect key="frame" x="20" y="14" width="10" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                        <constraints>
+                                            <constraint firstAttribute="centerY" secondItem="mJM-T9-kqn" secondAttribute="centerY" id="ElV-Yw-bEG"/>
+                                            <constraint firstAttribute="centerX" secondItem="mJM-T9-kqn" secondAttribute="centerX" id="Pie-Au-dBG"/>
+                                        </constraints>
+                                        <connections>
+                                            <outlet property="cardLabel" destination="mJM-T9-kqn" id="eQf-5X-uhJ"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                </cells>
+                                <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="CollectionViewSectionHeader" id="vWq-up-KtR" customClass="PlayerListSectionHeader">
+                                    <rect key="frame" x="0.0" y="0.0" width="384" height="50"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Username" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kRN-dW-Dnw">
+                                            <rect key="frame" x="20" y="14" width="291" height="21"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Score" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bkZ-r9-xh8">
+                                            <rect key="frame" x="319" y="14" width="45" height="21"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="45" id="jO8-EN-ExM"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" red="0.0" green="0.25098040700000002" blue="0.50196081400000003" alpha="0.80000000000000004" colorSpace="calibratedRGB"/>
+                                    <constraints>
+                                        <constraint firstItem="bkZ-r9-xh8" firstAttribute="top" secondItem="vWq-up-KtR" secondAttribute="top" constant="14" id="Rtu-qk-xiM"/>
+                                        <constraint firstAttribute="bottom" secondItem="kRN-dW-Dnw" secondAttribute="bottom" constant="15" id="VED-Pe-AdL"/>
+                                        <constraint firstItem="kRN-dW-Dnw" firstAttribute="top" secondItem="vWq-up-KtR" secondAttribute="top" constant="14" id="W9O-83-lIU"/>
+                                        <constraint firstAttribute="bottom" secondItem="bkZ-r9-xh8" secondAttribute="bottom" constant="15" id="Yi2-Go-9hA"/>
+                                        <constraint firstAttribute="trailing" secondItem="bkZ-r9-xh8" secondAttribute="trailing" constant="20" symbolic="YES" id="iYz-b7-5bH"/>
+                                        <constraint firstAttribute="centerY" secondItem="bkZ-r9-xh8" secondAttribute="centerY" id="mIY-Et-Wuo"/>
+                                        <constraint firstItem="bkZ-r9-xh8" firstAttribute="leading" secondItem="kRN-dW-Dnw" secondAttribute="trailing" constant="8" id="qBc-c9-Qpi"/>
+                                        <constraint firstItem="kRN-dW-Dnw" firstAttribute="leading" secondItem="vWq-up-KtR" secondAttribute="leading" constant="20" id="yOj-hx-fU7"/>
+                                    </constraints>
+                                    <connections>
+                                        <outlet property="scoreLabel" destination="bkZ-r9-xh8" id="dXY-Cd-1YF"/>
+                                        <outlet property="userNameLabel" destination="kRN-dW-Dnw" id="lVF-pH-NYY"/>
+                                    </connections>
+                                </collectionReusableView>
+                                <connections>
+                                    <outlet property="dataSource" destination="bao-rz-B8d" id="Oap-OS-e2H"/>
+                                    <outlet property="delegate" destination="bao-rz-B8d" id="LDl-cV-wa7"/>
+                                </connections>
+                            </collectionView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="6Vp-G9-6gV" firstAttribute="centerX" secondItem="kFb-mW-aC0" secondAttribute="centerX" id="9zD-BE-fi6"/>
+                            <constraint firstItem="6Vp-G9-6gV" firstAttribute="centerX" secondItem="YPk-fo-sBu" secondAttribute="centerX" id="Irm-R9-a9S"/>
+                            <constraint firstAttribute="centerY" secondItem="YPk-fo-sBu" secondAttribute="centerY" constant="-290" id="Kom-FM-Fdy"/>
                             <constraint firstItem="6Vp-G9-6gV" firstAttribute="top" secondItem="kFb-mW-aC0" secondAttribute="bottom" constant="8" symbolic="YES" id="PNd-hK-Vxt"/>
                             <constraint firstItem="kFb-mW-aC0" firstAttribute="top" secondItem="YKz-j7-bMx" secondAttribute="bottom" id="Tz8-1A-6Lf"/>
-                            <constraint firstItem="6Vp-G9-6gV" firstAttribute="leading" secondItem="7K3-iN-FVe" secondAttribute="leading" constant="214" id="Y7Q-nP-jVY"/>
-                            <constraint firstAttribute="trailing" secondItem="6Vp-G9-6gV" secondAttribute="trailing" constant="214" id="cgE-BM-NHB"/>
                             <constraint firstItem="kFb-mW-aC0" firstAttribute="leading" secondItem="7K3-iN-FVe" secondAttribute="leading" id="eW3-dX-Z6X"/>
                             <constraint firstAttribute="trailing" secondItem="kFb-mW-aC0" secondAttribute="trailing" id="i7g-Ml-dM4"/>
+                            <constraint firstAttribute="centerX" secondItem="6Vp-G9-6gV" secondAttribute="centerX" id="pBH-Wl-jdo"/>
+                            <constraint firstItem="YPk-fo-sBu" firstAttribute="top" secondItem="6Vp-G9-6gV" secondAttribute="bottom" constant="8" id="pGB-pX-Fwz"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Game" id="TcN-Gz-QF6">
@@ -528,13 +612,9 @@
                                 <action selector="quitGame:" destination="bao-rz-B8d" id="0zV-jG-ZRX"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" title="Points" id="5h9-ao-wQr">
-                            <connections>
-                                <action selector="showGamePoints:" destination="bao-rz-B8d" id="eX0-6V-VH9"/>
-                            </connections>
-                        </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="playerStatsView" destination="YPk-fo-sBu" id="oAf-Qx-WHE"/>
                         <outlet property="startButton" destination="kFb-mW-aC0" id="CKj-9w-5pF"/>
                         <outletCollection property="cardButtons" destination="NQ1-Zu-VrF" id="SVn-SH-Kxl"/>
                         <outletCollection property="cardButtons" destination="GDm-k1-Ixt" id="mxa-Yh-LQN"/>
