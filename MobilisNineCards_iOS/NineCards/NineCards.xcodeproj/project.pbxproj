@@ -10,6 +10,26 @@
 		0C07CF8618190FE900F07113 /* NSString+StringUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C07CF8518190FE900F07113 /* NSString+StringUtils.m */; };
 		0C16BC0E180D56E8000DA30A /* 9Cards-BG-iPhone-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C16BC0C180D56E8000DA30A /* 9Cards-BG-iPhone-568h@2x.png */; };
 		0C16BC0F180D56E8000DA30A /* 9Cards-BG-iPhone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C16BC0D180D56E8000DA30A /* 9Cards-BG-iPhone@2x.png */; };
+		0C3B48CB183626D3008F9DCD /* PlayerListSectionHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C3B48CA183626D3008F9DCD /* PlayerListSectionHeader.m */; };
+		0C3B48CE183626F8008F9DCD /* PlayerListCardCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C3B48CD183626F8008F9DCD /* PlayerListCardCell.m */; };
+		0C3B490518362D6C008F9DCD /* card1-iPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C3B48F318362D6C008F9DCD /* card1-iPhone.png */; };
+		0C3B490618362D6C008F9DCD /* card1-iPhone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C3B48F418362D6C008F9DCD /* card1-iPhone@2x.png */; };
+		0C3B490718362D6C008F9DCD /* card2-iPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C3B48F518362D6C008F9DCD /* card2-iPhone.png */; };
+		0C3B490818362D6C008F9DCD /* card2-iPhone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C3B48F618362D6C008F9DCD /* card2-iPhone@2x.png */; };
+		0C3B490918362D6C008F9DCD /* card3-iPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C3B48F718362D6C008F9DCD /* card3-iPhone.png */; };
+		0C3B490A18362D6C008F9DCD /* card3-iPhone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C3B48F818362D6C008F9DCD /* card3-iPhone@2x.png */; };
+		0C3B490B18362D6C008F9DCD /* card4-iPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C3B48F918362D6C008F9DCD /* card4-iPhone.png */; };
+		0C3B490C18362D6C008F9DCD /* card4-iPhone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C3B48FA18362D6C008F9DCD /* card4-iPhone@2x.png */; };
+		0C3B490D18362D6C008F9DCD /* card5-iPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C3B48FB18362D6C008F9DCD /* card5-iPhone.png */; };
+		0C3B490E18362D6C008F9DCD /* card5-iPhone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C3B48FC18362D6C008F9DCD /* card5-iPhone@2x.png */; };
+		0C3B490F18362D6C008F9DCD /* card6-iPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C3B48FD18362D6C008F9DCD /* card6-iPhone.png */; };
+		0C3B491018362D6C008F9DCD /* card6-iPhone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C3B48FE18362D6C008F9DCD /* card6-iPhone@2x.png */; };
+		0C3B491118362D6C008F9DCD /* card7-iPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C3B48FF18362D6C008F9DCD /* card7-iPhone.png */; };
+		0C3B491218362D6C008F9DCD /* card7-iPhone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C3B490018362D6C008F9DCD /* card7-iPhone@2x.png */; };
+		0C3B491318362D6C008F9DCD /* card8-iPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C3B490118362D6C008F9DCD /* card8-iPhone.png */; };
+		0C3B491418362D6C008F9DCD /* card8-iPhone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C3B490218362D6C008F9DCD /* card8-iPhone@2x.png */; };
+		0C3B491518362D6C008F9DCD /* card9-iPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C3B490318362D6C008F9DCD /* card9-iPhone.png */; };
+		0C3B491618362D6C008F9DCD /* card9-iPhone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C3B490418362D6C008F9DCD /* card9-iPhone@2x.png */; };
 		0C40AB5C1816631600CA06A5 /* CardButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C40AB5B1816631600CA06A5 /* CardButton.m */; };
 		0C5C870D1806988100C6B371 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C5C870C1806988100C6B371 /* Foundation.framework */; };
 		0C5C870F1806988100C6B371 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C5C870E1806988100C6B371 /* CoreGraphics.framework */; };
@@ -90,6 +110,28 @@
 		0C07CF8518190FE900F07113 /* NSString+StringUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+StringUtils.m"; path = "Categories/NSString+StringUtils.m"; sourceTree = "<group>"; };
 		0C16BC0C180D56E8000DA30A /* 9Cards-BG-iPhone-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "9Cards-BG-iPhone-568h@2x.png"; path = "Images/9Cards-BG-iPhone-568h@2x.png"; sourceTree = "<group>"; };
 		0C16BC0D180D56E8000DA30A /* 9Cards-BG-iPhone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "9Cards-BG-iPhone@2x.png"; path = "Images/9Cards-BG-iPhone@2x.png"; sourceTree = "<group>"; };
+		0C3B48C9183626D3008F9DCD /* PlayerListSectionHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerListSectionHeader.h; sourceTree = "<group>"; };
+		0C3B48CA183626D3008F9DCD /* PlayerListSectionHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerListSectionHeader.m; sourceTree = "<group>"; };
+		0C3B48CC183626F8008F9DCD /* PlayerListCardCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerListCardCell.h; sourceTree = "<group>"; };
+		0C3B48CD183626F8008F9DCD /* PlayerListCardCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerListCardCell.m; sourceTree = "<group>"; };
+		0C3B48F318362D6C008F9DCD /* card1-iPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card1-iPhone.png"; sourceTree = "<group>"; };
+		0C3B48F418362D6C008F9DCD /* card1-iPhone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card1-iPhone@2x.png"; sourceTree = "<group>"; };
+		0C3B48F518362D6C008F9DCD /* card2-iPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card2-iPhone.png"; sourceTree = "<group>"; };
+		0C3B48F618362D6C008F9DCD /* card2-iPhone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card2-iPhone@2x.png"; sourceTree = "<group>"; };
+		0C3B48F718362D6C008F9DCD /* card3-iPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card3-iPhone.png"; sourceTree = "<group>"; };
+		0C3B48F818362D6C008F9DCD /* card3-iPhone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card3-iPhone@2x.png"; sourceTree = "<group>"; };
+		0C3B48F918362D6C008F9DCD /* card4-iPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card4-iPhone.png"; sourceTree = "<group>"; };
+		0C3B48FA18362D6C008F9DCD /* card4-iPhone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card4-iPhone@2x.png"; sourceTree = "<group>"; };
+		0C3B48FB18362D6C008F9DCD /* card5-iPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card5-iPhone.png"; sourceTree = "<group>"; };
+		0C3B48FC18362D6C008F9DCD /* card5-iPhone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card5-iPhone@2x.png"; sourceTree = "<group>"; };
+		0C3B48FD18362D6C008F9DCD /* card6-iPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card6-iPhone.png"; sourceTree = "<group>"; };
+		0C3B48FE18362D6C008F9DCD /* card6-iPhone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card6-iPhone@2x.png"; sourceTree = "<group>"; };
+		0C3B48FF18362D6C008F9DCD /* card7-iPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card7-iPhone.png"; sourceTree = "<group>"; };
+		0C3B490018362D6C008F9DCD /* card7-iPhone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card7-iPhone@2x.png"; sourceTree = "<group>"; };
+		0C3B490118362D6C008F9DCD /* card8-iPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card8-iPhone.png"; sourceTree = "<group>"; };
+		0C3B490218362D6C008F9DCD /* card8-iPhone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card8-iPhone@2x.png"; sourceTree = "<group>"; };
+		0C3B490318362D6C008F9DCD /* card9-iPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card9-iPhone.png"; sourceTree = "<group>"; };
+		0C3B490418362D6C008F9DCD /* card9-iPhone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "card9-iPhone@2x.png"; sourceTree = "<group>"; };
 		0C40AB5A1816631600CA06A5 /* CardButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CardButton.h; sourceTree = "<group>"; };
 		0C40AB5B1816631600CA06A5 /* CardButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CardButton.m; sourceTree = "<group>"; };
 		0C5C87091806988100C6B371 /* NineCards.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NineCards.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -300,6 +342,10 @@
 				0C40AB5A1816631600CA06A5 /* CardButton.h */,
 				0C40AB5B1816631600CA06A5 /* CardButton.m */,
 				5BDD0FC61832031E00437515 /* GamePointsView.xib */,
+				0C3B48C9183626D3008F9DCD /* PlayerListSectionHeader.h */,
+				0C3B48CA183626D3008F9DCD /* PlayerListSectionHeader.m */,
+				0C3B48CC183626F8008F9DCD /* PlayerListCardCell.h */,
+				0C3B48CD183626F8008F9DCD /* PlayerListCardCell.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -339,6 +385,24 @@
 		0C7E392318102755009F9158 /* Cards */ = {
 			isa = PBXGroup;
 			children = (
+				0C3B48F318362D6C008F9DCD /* card1-iPhone.png */,
+				0C3B48F418362D6C008F9DCD /* card1-iPhone@2x.png */,
+				0C3B48F518362D6C008F9DCD /* card2-iPhone.png */,
+				0C3B48F618362D6C008F9DCD /* card2-iPhone@2x.png */,
+				0C3B48F718362D6C008F9DCD /* card3-iPhone.png */,
+				0C3B48F818362D6C008F9DCD /* card3-iPhone@2x.png */,
+				0C3B48F918362D6C008F9DCD /* card4-iPhone.png */,
+				0C3B48FA18362D6C008F9DCD /* card4-iPhone@2x.png */,
+				0C3B48FB18362D6C008F9DCD /* card5-iPhone.png */,
+				0C3B48FC18362D6C008F9DCD /* card5-iPhone@2x.png */,
+				0C3B48FD18362D6C008F9DCD /* card6-iPhone.png */,
+				0C3B48FE18362D6C008F9DCD /* card6-iPhone@2x.png */,
+				0C3B48FF18362D6C008F9DCD /* card7-iPhone.png */,
+				0C3B490018362D6C008F9DCD /* card7-iPhone@2x.png */,
+				0C3B490118362D6C008F9DCD /* card8-iPhone.png */,
+				0C3B490218362D6C008F9DCD /* card8-iPhone@2x.png */,
+				0C3B490318362D6C008F9DCD /* card9-iPhone.png */,
+				0C3B490418362D6C008F9DCD /* card9-iPhone@2x.png */,
 				0C7E392418102755009F9158 /* card1.png */,
 				0C7E392518102755009F9158 /* card1@2x.png */,
 				0C7E392618102755009F9158 /* card2.png */,
@@ -487,7 +551,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C16BC0F180D56E8000DA30A /* 9Cards-BG-iPhone@2x.png in Resources */,
+				0C3B491618362D6C008F9DCD /* card9-iPhone@2x.png in Resources */,
 				0C5C87231806988100C6B371 /* Main_iPad.storyboard in Resources */,
+				0C3B490A18362D6C008F9DCD /* card3-iPhone@2x.png in Resources */,
 				0C7E394318102755009F9158 /* card7@2x.png in Resources */,
 				0C7E394618102755009F9158 /* card9.png in Resources */,
 				0C7E394118102755009F9158 /* card6@2x.png in Resources */,
@@ -495,27 +561,43 @@
 				0C5C87281806988100C6B371 /* Images.xcassets in Resources */,
 				0C7E394718102755009F9158 /* card9@2x.png in Resources */,
 				0C5C87201806988100C6B371 /* Main_iPhone.storyboard in Resources */,
+				0C3B490818362D6C008F9DCD /* card2-iPhone@2x.png in Resources */,
 				5B1C401F180E94A60029030E /* Settings.plist in Resources */,
+				0C3B491418362D6C008F9DCD /* card8-iPhone@2x.png in Resources */,
 				0C7E394418102755009F9158 /* card8.png in Resources */,
+				0C3B490918362D6C008F9DCD /* card3-iPhone.png in Resources */,
+				0C3B490718362D6C008F9DCD /* card2-iPhone.png in Resources */,
 				0C7E3918180EB87F009F9158 /* 9Cards-BGL-iPad.png in Resources */,
 				5B219C861811312000C64C54 /* Settings.plist.example in Resources */,
+				0C3B490C18362D6C008F9DCD /* card4-iPhone@2x.png in Resources */,
+				0C3B490D18362D6C008F9DCD /* card5-iPhone.png in Resources */,
 				0C7E393618102755009F9158 /* card1.png in Resources */,
 				0C7E393918102755009F9158 /* card2@2x.png in Resources */,
 				0C7E393B18102755009F9158 /* card3@2x.png in Resources */,
+				0C3B491218362D6C008F9DCD /* card7-iPhone@2x.png in Resources */,
 				0C7E393A18102755009F9158 /* card3.png in Resources */,
+				0C3B490B18362D6C008F9DCD /* card4-iPhone.png in Resources */,
+				0C3B491018362D6C008F9DCD /* card6-iPhone@2x.png in Resources */,
 				0C7E391B180EB87F009F9158 /* 9Cards-BGP-iPad@2x.png in Resources */,
 				0C7E394218102755009F9158 /* card7.png in Resources */,
 				5BDD0FC71832031E00437515 /* GamePointsView.xib in Resources */,
 				0C7E394518102755009F9158 /* card8@2x.png in Resources */,
 				0C7E391A180EB87F009F9158 /* 9Cards-BGP-iPad.png in Resources */,
+				0C3B490618362D6C008F9DCD /* card1-iPhone@2x.png in Resources */,
 				0C7E393818102755009F9158 /* card2.png in Resources */,
+				0C3B491118362D6C008F9DCD /* card7-iPhone.png in Resources */,
+				0C3B490F18362D6C008F9DCD /* card6-iPhone.png in Resources */,
 				0C7E393D18102755009F9158 /* card4@2x.png in Resources */,
+				0C3B490E18362D6C008F9DCD /* card5-iPhone@2x.png in Resources */,
+				0C3B491518362D6C008F9DCD /* card9-iPhone.png in Resources */,
+				0C3B491318362D6C008F9DCD /* card8-iPhone.png in Resources */,
 				0C7E393E18102755009F9158 /* card5.png in Resources */,
 				0C7E393F18102755009F9158 /* card5@2x.png in Resources */,
 				0C7E3919180EB87F009F9158 /* 9Cards-BGL-iPad@2x.png in Resources */,
 				0C5C87171806988100C6B371 /* InfoPlist.strings in Resources */,
 				0C7E393C18102755009F9158 /* card4.png in Resources */,
 				0C7E394018102755009F9158 /* card6.png in Resources */,
+				0C3B490518362D6C008F9DCD /* card1-iPhone.png in Resources */,
 				0C7E393718102755009F9158 /* card1@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -570,11 +652,13 @@
 			files = (
 				0C5C874D1806B7C300C6B371 /* GameViewController.m in Sources */,
 				0C5C87261806988100C6B371 /* GameListTableViewController.m in Sources */,
+				0C3B48CE183626F8008F9DCD /* PlayerListCardCell.m in Sources */,
 				0C7E38F8180D5CD5009F9158 /* StartViewController_iPhone.m in Sources */,
 				0C40AB5C1816631600CA06A5 /* CardButton.m in Sources */,
 				0CF033CF18083CC000C1FE0F /* SettingsViewController.m in Sources */,
 				5B182364182D298400FAD9FE /* GameStartsMessage.m in Sources */,
 				0CF033D218083D5200C1FE0F /* TextFieldCell.m in Sources */,
+				0C3B48CB183626D3008F9DCD /* PlayerListSectionHeader.m in Sources */,
 				0C5C871D1806988100C6B371 /* AppDelegate.m in Sources */,
 				5B182363182D298400FAD9FE /* GetGameConfigurationRequest.m in Sources */,
 				0C66D02318084DE900044B28 /* CreateGameViewController.m in Sources */,

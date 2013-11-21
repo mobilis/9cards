@@ -11,6 +11,8 @@
 #import "GameViewController.h"
 #import "CardButton.h"
 #import "GamePointsViewController.h"
+#import "PlayerListCardCell.h"
+#import "PlayerListSectionHeader.h"
 
 #import <MXi/MXi.h>
 #import "StartGameMessage.h"
@@ -25,10 +27,17 @@
 
 #import "NSString+StringUtils.h"
 
-@interface GameViewController () <MXiMultiUserChatDelegate>
+typedef enum {
+	CardPlayedWaiting,
+	CardPlayedSuccess,
+	CardPlayedWinner
+} CardPlayedState;
+
+@interface GameViewController () <MXiMultiUserChatDelegate, UICollectionViewDataSource, UICollectionViewDelegate>
 
 @property (strong, nonatomic) IBOutletCollection(UIButton) NSArray *cardButtons;
 @property (weak, nonatomic) IBOutlet UIButton *startButton;
+@property (weak, nonatomic) IBOutlet UICollectionView *playerStatsView;
 - (IBAction)quitGame:(UIBarButtonItem *)sender;
 - (IBAction)cardPlayed:(CardButton *)card;
 - (IBAction)startGame:(UIButton *)startButton;
@@ -48,6 +57,7 @@
 	BOOL _gameStarted;
 	NSNumber *_rounds;
 	NSNumber *_currentRound;
+	NSMutableDictionary *_players;
     
     __strong UIView *_waitingView;
     __strong UIPopoverController *_pointsPopOverView;
@@ -59,12 +69,6 @@
     [super viewDidLoad];
 	for (UIButton *cardButton in self.cardButtons) {
 		cardButton.enabled = NO;
-		if([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-		{
-			[[cardButton layer] setCornerRadius:4.0f];
-			[[cardButton layer] setBorderWidth:0.5f];
-			cardButton.titleLabel.font = [UIFont fontWithName:@"AppleColorEmoji" size:36.f];
-		}
 	}
 	_gameStarted = NO;
     if ([self.game hasGameConfiguration]) {
@@ -80,6 +84,8 @@
     GamePointsViewController *gamePointsViewController = [[GamePointsViewController alloc] initWithNibName:@"GamePointsView"
                                                                                                     bundle:nil];
     [self addChildViewController:gamePointsViewController];
+	
+	[self setupWaitingView];
 }
 
 - (void)didReceiveMemoryWarning
@@ -93,9 +99,10 @@
     return self.game.name;
 }
 
-- (void)dealloc
+- (void)viewWillDisappear:(BOOL)animated
 {
     [[MXiConnectionHandler sharedInstance] removeDelegate:self withSelector:@selector(gameConfigurationReceived:) forBeanClass:[GetGameConfigurationResponse class]];
+	[super viewWillDisappear:animated];
 }
 
 - (IBAction)quitGame:(UIBarButtonItem *)sender
@@ -104,27 +111,38 @@
 }
 
 - (IBAction)cardPlayed:(CardButton *)card {
-    card.enabled = NO;
+	for (CardButton *card in _cardButtons) {
+		[card setEnabled:NO];
+	}
     PlayCardMessage *play = [PlayCardMessage new];
     play.card = card.cardNumber;
     play.round = _currentRound;
-        
+    
     [[MXiConnectionHandler sharedInstance] sendMessageString:[[play toXML] XMLString] toJID:[[_game gameJid] full]];
+	
+	[UIView transitionWithView:card duration:0.5f options:UIViewAnimationOptionTransitionFlipFromTop animations:^{
+		card.alpha = 0.f;
+	} completion:^(BOOL finished) {
+		if(finished) {
+			card.hidden = YES;
+			card.userInteractionEnabled = NO;
+		}
+	}];
+	
     [self showWaitingView];
     NSLog(@"%@", [[play toXML] XMLString]);
 }
 
 - (IBAction)startGame:(UIButton *)startButton
 {
-	for (CardButton *card in _cardButtons) {
-		[card setEnabled:YES];
-	}
 	startButton.enabled = NO;
 	startButton.hidden = YES;
-	StartGameMessage *startGame = [StartGameMessage new];
 
-    [[MXiConnectionHandler sharedInstance] sendMessageString:[[startGame toXML] XMLString] toJID:[_game.gameJid full]];
+	StartGameMessage *startGame = [StartGameMessage new];
+		
+	[[MXiConnectionHandler sharedInstance] sendMessageString:[[startGame toXML] XMLString] toJID:[_game.gameJid full]];
 	NSLog(@"%@", [[startGame toXML] XMLString]);
+
 }
 
 - (IBAction)showGamePoints:(id)sender {
@@ -139,9 +157,42 @@
 }
 
 #pragma mark - MXiMUCDelegate
-- (void)connectionToRoomEstablished:(NSString *)roomJID
+- (void)userWithJid:(NSString *)fullJid didJoin:(NSString *)presence room:(NSString *)roomJid
 {
-    self.startButton.hidden = NO;
+	XMPPJID *userJid = [XMPPJID jidWithString:fullJid];
+	if([userJid.resource isEqualToString:@"9Cards-Service" ignoreCase:YES]) return;
+	
+	NSLog(@"User: %@/%@ didJoin: %@", userJid.user, userJid.resource, presence);
+	if (!_players) {
+		_players = [NSMutableDictionary dictionaryWithCapacity:[_game.players unsignedIntegerValue]];
+	}
+	if (![_players objectForKey:userJid]) {
+		[_players setObject:[NSMutableArray arrayWithCapacity:9] forKey:userJid];
+		[self.playerStatsView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+	}
+}
+
+- (void)userWithJid:(NSString *)fullJid didLeaveRoom:(NSString *)roomJid
+{
+	XMPPJID *userJid = [XMPPJID jidWithString:fullJid];
+	NSLog(@"User: %@/%@ didLeave", userJid.user, userJid.resource);
+	if (!_players) {
+		return;
+	}
+	if ([_players objectForKey:userJid]) {
+		[_players removeObjectForKey:userJid];
+		[self.playerStatsView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+	}
+}
+
+- (void)userWithJid:(NSString *)fullJid didUpdate:(NSString *)presence inRoom:(NSString *)roomJid
+{
+	NSLog(@"JID: %@ didUpdate: %@", fullJid, presence);
+}
+
+- (void)connectionToRoomEstablished:(NSString *)roomJID usingRoomJID:(NSString *)myRoomJID
+{
+	[_players setObject:[NSMutableArray arrayWithCapacity:9] forKey:[XMPPJID jidWithString:myRoomJID]];
 	NSLog(@"ConnectionToRoomEstablished: %@", roomJID);
 }
 
@@ -150,22 +201,23 @@
 	NSError *error;
 	NSXMLElement *messageBean = [[NSXMLElement alloc] initWithXMLString:message error:&error];
 	if(!error) {
+		NSLog(@"Bean: %@", messageBean.name);
 		if ([messageBean.name isEqualToString:[GameStartsMessage elementName] ignoreCase:YES]) {
 			GameStartsMessage *start = [GameStartsMessage new];
 			[start fromXML:messageBean];
-			[self startGameMessageReceived:start];
+			[self performSelectorOnMainThread:@selector(startGameMessageReceived:) withObject:start waitUntilDone:NO];
 		} else if ([messageBean.name isEqualToString:[CardPlayedMessage elementName] ignoreCase:YES]) {
 			CardPlayedMessage *card = [CardPlayedMessage new];
 			[card fromXML:messageBean];
-			[self cardPlayedMessageReceived:card];
+			[self performSelectorOnMainThread:@selector(cardPlayedMessageReceived:) withObject:card waitUntilDone:NO];
 		} else if ([messageBean.name isEqualToString:[RoundCompleteMessage elementName] ignoreCase:YES]) {
 			RoundCompleteMessage *round = [RoundCompleteMessage new];
 			[round fromXML:messageBean];
-			[self roundCompleteMessageReceived:round];
+			[self performSelectorOnMainThread:@selector(roundCompleteMessageReceived:) withObject:round waitUntilDone:NO];
 		} else if ([messageBean.name isEqualToString:[GameOverMessage elementName] ignoreCase:YES]) {
 			GameOverMessage *gameOver = [GameOverMessage new];
 			[gameOver fromXML:messageBean];
-			[self gameOverMessageReceived:gameOver];
+			[self performSelectorOnMainThread:@selector(gameOverMessageReceived:) withObject:gameOver waitUntilDone:NO];
 		} else {
 			NSLog(@"Message %@ from User %@ in room %@ wasn't processed.", message, user, roomJID);
 		}
@@ -176,14 +228,19 @@
 {
 	if (!_gameStarted) {
 		_gameStarted = YES;
-		_currentRound = [NSNumber numberWithInt:1];
+		for (CardButton *card in _cardButtons) {
+			[card setEnabled:YES];
+		}
+		self.playerStatsView.hidden = NO;
+		_currentRound = @1;
 	}
 }
 
 - (void)cardPlayedMessageReceived:(CardPlayedMessage *)bean
 {
 	if(_gameStarted && [bean.round isEqualToNumber:_currentRound]) {
-		//update player
+		[[_players objectForKey:[XMPPJID jidWithString:bean.player]] insertObject:@{@"card": @-1} atIndex:bean.round.unsignedIntegerValue];
+		[_playerStatsView reloadData];
 	}
 }
 
@@ -191,8 +248,15 @@
 {
 	if (_gameStarted) {
 		_currentRound = [NSNumber numberWithInt:[_currentRound intValue]+1];
-        [_gamePointsViewController updatePlayersWithPlayerInfos:bean.playerInfos];
+//        [_gamePointsViewController updatePlayersWithPlayerInfos:bean.playerInfos];
+		for (PlayerInfo *pInfo in bean.playerInfos) {
+			[[_players objectForKey:[XMPPJID jidWithString:pInfo.id]] insertObject:@{@"card": pInfo.usedcards.lastObject, @"winner": ([pInfo.id isEqualToString:bean.winner] ? @YES : @NO)} atIndex:bean.round.unsignedIntegerValue];
+		}
+		[_playerStatsView reloadData];
         [self hideWaitingView];
+		for (CardButton *card in _cardButtons) {
+			[card setEnabled:YES];
+		}
 	}
 }
 
@@ -216,33 +280,33 @@
     self.game = [Game new];
     self.game.players = response.maxPlayers;
     self.game.rounds = response.maxRounds;
+	self.game.gameJid = response.from;
     
     [[MXiConnectionHandler sharedInstance] connectToMultiUserChatRoom:response.muc withDelegate:self];
 }
 
 - (void)showWaitingView
 {
-    if (!_waitingView) {
-        [self setupWaitingView];
-    }
-    
-    [self.view addSubview:_waitingView];
+	[_waitingView setHidden:NO];
 }
 - (void)setupWaitingView
 {
     _waitingView = [[UIView alloc] initWithFrame:self.view.frame];
     _waitingView.backgroundColor = [UIColor clearColor];
-    
+	
+	
     UILabel *waitingForOthersLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     waitingForOthersLabel.textAlignment = NSTextAlignmentCenter;
     waitingForOthersLabel.text = @"Waiting for other players to finish.";
     waitingForOthersLabel.textColor = [UIColor whiteColor];
     waitingForOthersLabel.font = [UIFont boldSystemFontOfSize:20.0];
     [waitingForOthersLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+	waitingForOthersLabel.userInteractionEnabled = NO;
     
     UIView *coloredBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, 200.0)];
     coloredBackgroundView.backgroundColor = [UIColor colorWithRed:(15.0/255.0) green:(101.0/255) blue:(255.0/255.0) alpha:1.0];
     coloredBackgroundView.layer.cornerRadius = 5.0;
+	coloredBackgroundView.userInteractionEnabled = NO;
     [coloredBackgroundView setTranslatesAutoresizingMaskIntoConstraints:NO];
     
     [coloredBackgroundView addSubview:waitingForOthersLabel];
@@ -291,12 +355,43 @@
                                                              attribute:NSLayoutAttributeCenterX
                                                             multiplier:1.0
                                                               constant:0.0]];
+	
+	_waitingView.hidden = YES;
+	[self.view addSubview:_waitingView];
 }
 
 - (void)hideWaitingView
 {
-    [_waitingView removeFromSuperview];
-    [self.view setNeedsDisplay];
+	_waitingView.hidden = YES;
 }
+
+#pragma mark - UICollectionViewDataSource
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
+{
+	return _players.allKeys.count;
+}
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
+{
+	return [[_players objectForKey:[_players.allKeys objectAtIndex:section]] count];
+}
+
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
+{
+	PlayerListSectionHeader *view = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"CollectionViewSectionHeader" forIndexPath:indexPath];
+	if (!view) {
+		view = [[PlayerListSectionHeader alloc] initWithFrame:CGRectMake(0.f, 0.f, 320.f, 38.f)];
+	}
+	view.userNameLabel.text = [[_players.allKeys objectAtIndex:indexPath.section] resource];
+	return view;
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+	PlayerListCardCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"CollectionViewCardCell" forIndexPath:indexPath];
+	cell.cardLabel.text = [[[[_players objectForKey:[_players.allKeys objectAtIndex:indexPath.section]] objectAtIndex:indexPath.item] objectForKey:@"card"] stringValue];
+	return cell;
+}
+
 
 @end
