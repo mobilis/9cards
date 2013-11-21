@@ -105,4 +105,14 @@
 	[self performSegueWithIdentifier:@"JoinGame" sender:game];
 }
 
+- (BOOL)shouldAutomaticallyForwardAppearanceMethods
+{
+	return YES;
+}
+
+- (BOOL)shouldAutomaticallyForwardRotationMethods
+{
+	return YES;
+}
+
 @end
