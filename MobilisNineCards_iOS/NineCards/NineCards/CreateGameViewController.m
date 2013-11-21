@@ -48,7 +48,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	[[MXiConnectionHandler sharedInstance] addDelegate:self withSelector:@selector(didReceiveConfigureGameResponse) forBeanClass:[ConfigureGameResponse class]];
 }
 
 - (void)didReceiveMemoryWarning
@@ -75,7 +74,11 @@
 }
 
 - (IBAction)cancelGameCreation:(UIBarButtonItem *)sender {
-	[self dismissViewControllerAnimated:YES completion:nil];
+	if (self.navigationController) {
+		[self.navigationController popViewControllerAnimated:YES];
+	} else {
+		[self dismissViewControllerAnimated:YES completion:nil];
+	}
 }
 
 - (IBAction)stepperValueChanged:(id)sender {
@@ -107,14 +110,34 @@
 	[self performSegueWithIdentifier:@"JoinGame" sender:game];
 }
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+- (BOOL)shouldPerformSegueWithIdentifier:(NSString *)identifier sender:(id)sender
+{
+	if ([sender class] != [Game class])
+	{
+		((UIButton*)sender).enabled = NO;
+		return NO;
+	} else {
+		return YES;
+	}
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(Game *)game
 {
 	if ([segue.identifier isEqualToString:@"JoinGame"])
 	{
-		((GameViewController*)segue.destinationViewController).game = sender;
-//        [self dismissViewControllerAnimated:YES completion:^{
-//            [self.parentViewController performSegueWithIdentifier:@"JoinGame" sender:self];
-//        }];
+		((GameViewController*)segue.destinationViewController).game = game;
 	}
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+	[[MXiConnectionHandler sharedInstance] removeDelegate:self withSelector:@selector(didReceiveConfigureGameResponse) forBeanClass:[ConfigureGameResponse class]];
+	[super viewDidDisappear:animated];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+	[[MXiConnectionHandler sharedInstance] addDelegate:self withSelector:@selector(didReceiveConfigureGameResponse) forBeanClass:[ConfigureGameResponse class]];
+	[super viewWillAppear:animated];
 }
 @end

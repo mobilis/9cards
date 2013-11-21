@@ -61,4 +61,13 @@
 	}
 }
 
+- (BOOL)shouldAutomaticallyForwardAppearanceMethods
+{
+	return YES;
+}
+
+- (BOOL)shouldAutomaticallyForwardRotationMethods
+{
+	return YES;
+}
 @end

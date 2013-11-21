@@ -105,12 +105,16 @@ public class NineCardsService extends MobilisService
 	public void shutdown()
 	{
 		LOGGER.info(getAgent().getFullJid() + " is shutting down.");
+		//
+		// if (mGame != null)
+		// for (String playerJID : mGame.getPlayers().keySet())
+		// mGame.removePlayer(playerJID, "shutting down ninecards service");
 		
-		if (mGame != null)
-			for (String playerJID : mGame.getPlayers().keySet())
-				mGame.removePlayer(playerJID, "shutting down ninecards service");
-		
-		mMucConnection.closeMultiUserChat("shutting down ninecards service");
+		if (mMucConnection != null) {
+			mMucConnection
+					.closeMultiUserChat("shutting down ninecards service");
+			mMucConnection = null;
+		}
 
 		try {
 			super.shutdown();			

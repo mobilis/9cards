@@ -34,7 +34,6 @@ import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.Form;
 import org.jivesoftware.smackx.FormField;
-import org.jivesoftware.smackx.muc.Affiliate;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.Occupant;
 import org.jivesoftware.smackx.muc.ParticipantStatusListener;
@@ -263,7 +262,10 @@ public class MucConnection implements PacketListener, MessageListener
 	public void closeMultiUserChat(String reason)
 	{
 		try {
-			muc.destroy(reason, null);
+			if (muc != null) {
+				muc.destroy(reason, null);
+				muc = null;
+			}
 			LOGGER.info("Muc room destroyed (reason: " + reason + ")");
 		} catch (Exception e) {
 			String excMessage = e instanceof XMPPException
@@ -323,20 +325,19 @@ public class MucConnection implements PacketListener, MessageListener
 			
 			// check if end of game is reached
 			if(mServiceInstance.getGame().getRound() == mServiceInstance.getSettings().getRounds()) {
-				sendMessagetoMuc(
-						new GameOverMessage(
-								mServiceInstance.getGame().getGameWinner().getID(),
-								mServiceInstance.getGame().getGameWinner().getScore(),
-								mServiceInstance.getGame().getPlayerInfos()));
+				sendMessagetoMuc(new GameOverMessage(mServiceInstance.getGame()
+						.getGameWinner().getMucJID(), mServiceInstance
+						.getGame().getGameWinner().getScore(), mServiceInstance
+						.getGame().getPlayerInfos()));
+				mServiceInstance.shutdown();
 			}
 			
 			// else start next round
 			else {
-				sendMessagetoMuc(
-						new RoundCompleteMessage(
-								mServiceInstance.getGame().getRound(),
-								mServiceInstance.getGame().getRoundWinner().getID(),
-								mServiceInstance.getGame().getPlayerInfos()));
+				sendMessagetoMuc(new RoundCompleteMessage(mServiceInstance
+						.getGame().getRound(), mServiceInstance.getGame()
+						.getRoundWinner().getMucJID(), mServiceInstance
+						.getGame().getPlayerInfos()));
 				mServiceInstance.getGame().startNewRound();
 			}
 		}
@@ -390,8 +391,10 @@ public class MucConnection implements PacketListener, MessageListener
 			
 			else {
 				// add player if he's not already joined
-				if(!mServiceInstance.getGame().getPlayers().containsKey(getJID(participant))) {
-					mServiceInstance.getGame().addPlayer(new Player(getJID(participant)));
+				if (!mServiceInstance.getGame().getPlayers()
+						.containsKey(getJID(participant))) {
+					mServiceInstance.getGame().addPlayer(
+							new Player(participant, getJID(participant)));
 					addressMapper.put(participant, getJID(participant));
 					
 					// check if the joined user is the admin who triggered the ConfigureGameMessage

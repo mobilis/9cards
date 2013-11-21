@@ -142,7 +142,8 @@ public class MucPacketProcessor
 					
 					// inform other players that this player chose some card
 					mServiceInstance.getMucConnection().sendMessagetoMuc(
-							new CardPlayedMessage(mServiceInstance.getGame().getRound(), player.getID()));
+							new CardPlayedMessage(mServiceInstance.getGame()
+									.getRound(), player.getMucJID()));
 					
 					// check if round is finished
 					mServiceInstance.getMucConnection().checkRoundOver();

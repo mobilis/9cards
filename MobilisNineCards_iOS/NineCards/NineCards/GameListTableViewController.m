@@ -14,6 +14,9 @@
 
 @property (weak, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) NSArray *availableGames;
+@property (strong, nonatomic) UIRefreshControl *myRefreshControl;
+
+- (void) handleRefresh:(UIRefreshControl *)sender;
 
 @end
 
@@ -24,11 +27,19 @@ static void *KVOContext = &KVOContext;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+	self.refreshControl = [[UIRefreshControl alloc] init];
+	[self.refreshControl addTarget:self action:@selector(handleRefresh:) forControlEvents:UIControlEventValueChanged];
     self.availableGames = [[MXiConnectionHandler sharedInstance] discoveredServiceInstances];
     [[MXiConnectionHandler sharedInstance] addObserver:self
 											forKeyPath:@"discoveredServiceInstances"
                                                options:0
                                                context:KVOContext];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+	[[MXiConnectionHandler sharedInstance] rediscoverServices:nil];
+	[super viewWillAppear:animated];
 }
 
 - (void)didReceiveMemoryWarning
@@ -67,6 +78,7 @@ static void *KVOContext = &KVOContext;
     if ([keyPath isEqualToString:@"discoveredServiceInstances"] && context == KVOContext) {
         self.availableGames = [[MXiConnectionHandler sharedInstance] discoveredServiceInstances];
         [self.tableView reloadData];
+		[self.refreshControl endRefreshing];
     }
 }
 
@@ -76,6 +88,14 @@ static void *KVOContext = &KVOContext;
 	MXiService *service = [self.availableGames objectAtIndex:path.row];
 	Game *game = [[Game alloc] initWithName:service.name numberOfPlayers:nil numberOfRounds:nil andGameJid:service.jid];
 	return game;
+}
+
+- (void)handleRefresh:(UIRefreshControl *)sender
+{
+	[[MXiConnectionHandler sharedInstance] rediscoverServices:nil];
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10000000000), dispatch_get_main_queue(), ^{
+		[self.refreshControl endRefreshing];
+	});
 }
 
 @end
