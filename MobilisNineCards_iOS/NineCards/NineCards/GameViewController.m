@@ -13,6 +13,7 @@
 #import "GamePointsViewController.h"
 #import "PlayerListCardCell.h"
 #import "PlayerListSectionHeader.h"
+#import "Player.h"
 
 #import <MXi/MXi.h>
 #import "StartGameMessage.h"
@@ -57,7 +58,7 @@ typedef enum {
 	BOOL _gameStarted;
 	NSNumber *_rounds;
 	NSNumber *_currentRound;
-	NSMutableDictionary *_players;
+	NSMutableArray *_players;
     
     __strong UIView *_waitingView;
     __strong UIPopoverController *_pointsPopOverView;
@@ -159,8 +160,39 @@ typedef enum {
 #pragma mark - MXiMUCDelegate
 - (void)connectionToRoomEstablished:(NSString *)roomJID usingRoomJID:(NSString *)myRoomJID
 {
-    self.startButton.hidden = NO;
-	NSLog(@"ConnectionToRoomEstablished: %@ usingJID: %@", roomJID, myRoomJID);
+    if (!_players) {
+        _players = [NSMutableArray arrayWithCapacity:[_game.players unsignedIntegerValue]];
+    }
+    [_players addObject:[Player playerWithJid:[XMPPJID jidWithString:myRoomJID]]];
+    NSLog(@"ConnectionToRoomEstablished: %@", roomJID);
+}
+
+- (void)userWithJid:(NSString *)fullJid didJoin:(NSString *)presence room:(NSString *)roomJid
+{
+    XMPPJID *userJid = [XMPPJID jidWithString:fullJid];
+    if([userJid.resource isEqualToString:@"9Cards-Service" ignoreCase:YES]) return;
+    
+    NSLog(@"User: %@/%@ didJoin: %@", userJid.user, userJid.resource, presence);
+    if (!_players) {
+        _players = [NSMutableArray arrayWithCapacity:[_game.players unsignedIntegerValue]];
+    }
+    if (![_players containsObject:[Player playerWithJid:userJid]]) {
+        [_players addObject:[Player playerWithJid:userJid]];
+        [self.playerStatsView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+    }
+}
+
+- (void)userWithJid:(NSString *)fullJid didLeaveRoom:(NSString *)roomJid
+{
+    XMPPJID *userJid = [XMPPJID jidWithString:fullJid];
+    NSLog(@"User: %@/%@ didLeave", userJid.user, userJid.resource);
+    if (!_players) {
+        return;
+    }
+    if ([_players containsObject:[Player playerWithJid:userJid]]) {
+        [_players removeObject:[Player playerWithJid:userJid]];
+        [self.playerStatsView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+    }
 }
 
 -(void)didReceiveMultiUserChatMessage:(NSString *)message fromUser:(NSString *)user publishedInRoom:(NSString *)roomJID
@@ -206,7 +238,7 @@ typedef enum {
 - (void)cardPlayedMessageReceived:(CardPlayedMessage *)bean
 {
 	if(_gameStarted && [bean.round isEqualToNumber:_currentRound]) {
-		[[_players objectForKey:[XMPPJID jidWithString:bean.player]] insertObject:@{@"card": @-1} atIndex:bean.round.unsignedIntegerValue];
+//		[[_players objectForKey:[XMPPJID jidWithString:bean.player]] insertObject:@{@"card": @-1} atIndex:bean.round.unsignedIntegerValue -1];
 		[_playerStatsView reloadData];
 	}
 }
@@ -215,9 +247,17 @@ typedef enum {
 {
 	if (_gameStarted) {
 		_currentRound = [NSNumber numberWithInt:[_currentRound intValue]+1];
-//        [_gamePointsViewController updatePlayersWithPlayerInfos:bean.playerInfos];
 		for (PlayerInfo *pInfo in bean.playerInfos) {
-			[[_players objectForKey:[XMPPJID jidWithString:pInfo.id]] insertObject:@{@"card": pInfo.usedcards.lastObject, @"winner": ([pInfo.id isEqualToString:bean.winner] ? @YES : @NO)} atIndex:bean.round.unsignedIntegerValue];
+            for (Player *player in _players) {
+                if ([player.jid isEqualToJID:[XMPPJID jidWithString:pInfo.id]]) {
+                    [player setScorePoints:[pInfo.score intValue]];
+                    [player setCardPlayed:@{    @"card": pInfo.usedcards.lastObject,
+                                                @"winner": ([pInfo.id isEqualToString:bean.winner] ? @YES : @NO)
+                                            }
+                                  atIndex:bean.round.unsignedIntegerValue - 1];
+                }
+            }
+            NSLog(@"Test");
 		}
 		[_playerStatsView reloadData];
         [self hideWaitingView];
@@ -335,12 +375,12 @@ typedef enum {
 #pragma mark - UICollectionViewDataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
-	return _players.allKeys.count;
+	return [_players count];
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-	return [[_players objectForKey:[_players.allKeys objectAtIndex:section]] count];
+    return ((Player *)[_players objectAtIndex:section]).cardsPlayed.count;
 }
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
@@ -349,14 +389,18 @@ typedef enum {
 	if (!view) {
 		view = [[PlayerListSectionHeader alloc] initWithFrame:CGRectMake(0.f, 0.f, 320.f, 38.f)];
 	}
-	view.userNameLabel.text = [[_players.allKeys objectAtIndex:indexPath.section] resource];
+    view.userNameLabel.text = [((Player *)[_players objectAtIndex:indexPath.section]).jid resource];
+    view.scoreLabel.text = [NSString stringWithFormat:@"%i", ((Player *)[_players objectAtIndex:indexPath.section]).score];
 	return view;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
 	PlayerListCardCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"CollectionViewCardCell" forIndexPath:indexPath];
-	cell.cardLabel.text = [[[[_players objectForKey:[_players.allKeys objectAtIndex:indexPath.section]] objectAtIndex:indexPath.item] objectForKey:@"card"] stringValue];
+    if ([[[((Player *)[_players objectAtIndex:indexPath.section]).cardsPlayed objectAtIndex:indexPath.item] objectForKey:@"winner"] boolValue] == NO) {
+        cell.cardLabel.textColor = [UIColor redColor];
+    }
+    cell.cardLabel.text = [[[((Player *)[_players objectAtIndex:indexPath.section]).cardsPlayed objectAtIndex:indexPath.item] objectForKey:@"card"] stringValue];
 	return cell;
 }
 

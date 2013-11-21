@@ -81,9 +81,9 @@
 		5B182364182D298400FAD9FE /* GameStartsMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B182360182D298400FAD9FE /* GameStartsMessage.m */; };
 		5B1C401F180E94A60029030E /* Settings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5B1C401E180E94A60029030E /* Settings.plist */; };
 		5B219C861811312000C64C54 /* Settings.plist.example in Resources */ = {isa = PBXBuildFile; fileRef = 5B219C851811312000C64C54 /* Settings.plist.example */; };
-		5BDD0FC41831FF5700437515 /* GamePointsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BDD0FC21831FF5700437515 /* GamePointsViewController.m */; };
 		5BDD0FC71832031E00437515 /* GamePointsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5BDD0FC61832031E00437515 /* GamePointsView.xib */; };
 		5BDD0FCA183207C100437515 /* Player.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BDD0FC9183207C100437515 /* Player.m */; };
+		5BF79944183E4411002A54AC /* GamePointsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BDD0FC21831FF5700437515 /* GamePointsViewController.m */; };
 		BF8CB25D253FE7F53718C5DC /* GameOverMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CB0C818E406A8842E8111 /* GameOverMessage.m */; };
 		BF8CB332BFD951164EBA5B99 /* CardPlayedMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CB13C0F0DA5D226EDCEBE /* CardPlayedMessage.m */; };
 		BF8CB7FB7A452FC8022AA89E /* RoundCompleteMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CBDC29A7A2F5950529C86 /* RoundCompleteMessage.m */; };
@@ -522,7 +522,7 @@
 						DevelopmentTeam = KYTQR8SDCT;
 					};
 					0C5C872C1806988100C6B371 = {
-						TestTargetID = 0C5C87081806988100C6B371 /* NineCards */;
+						TestTargetID = 0C5C87081806988100C6B371;
 					};
 				};
 			};
@@ -660,6 +660,7 @@
 				0CF033D218083D5200C1FE0F /* TextFieldCell.m in Sources */,
 				0C3B48CB183626D3008F9DCD /* PlayerListSectionHeader.m in Sources */,
 				0C5C871D1806988100C6B371 /* AppDelegate.m in Sources */,
+				5BF79944183E4411002A54AC /* GamePointsViewController.m in Sources */,
 				5B182363182D298400FAD9FE /* GetGameConfigurationRequest.m in Sources */,
 				0C66D02318084DE900044B28 /* CreateGameViewController.m in Sources */,
 				0C07CF8618190FE900F07113 /* NSString+StringUtils.m in Sources */,
@@ -671,7 +672,6 @@
 				BF8CBCC6232F6855ECF1E334 /* ConfigureGameResponse.m in Sources */,
 				BF8CB25D253FE7F53718C5DC /* GameOverMessage.m in Sources */,
 				BF8CBD678D7166BC39F8D869 /* PlayCardMessage.m in Sources */,
-				5BDD0FC41831FF5700437515 /* GamePointsViewController.m in Sources */,
 				BF8CB8F91E8B484C2A45B7FB /* PlayerInfo.m in Sources */,
 				BF8CB7FB7A452FC8022AA89E /* RoundCompleteMessage.m in Sources */,
 				BF8CBAA5FAE16A280ECDAC57 /* StartGameMessage.m in Sources */,

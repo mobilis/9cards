@@ -41,7 +41,7 @@
 
 - (void)addPlayer:(NSString *)player
 {
-    Player *newPlayer = [Player playerWithName:player];
+    Player *newPlayer = [Player playerWithJid:[XMPPJID jidWithString:player]];
     [_players addObject:newPlayer];
 }
 
@@ -58,7 +58,7 @@
 - (void)updatePlayer:(NSString *)player withScore:(int)score
 {
     for (Player *_player in _players) {
-        if ([_player.name isEqualToString:player]) {
+        if ([_player isEqual:[Player playerWithJid:[XMPPJID jidWithString:player]]]) {
             [_player addScorePoints:score];
             break;
         }
@@ -70,7 +70,7 @@
     for (PlayerInfo *playerInfo in playerInfos) {
         BOOL playerFound = NO;
         for (Player *player in _players) {
-            if ([player.name isEqualToString:playerInfo.id]) {
+            if ([player.jid isEqualToJID:[XMPPJID jidWithString:playerInfo.id]]) {
                 [player setScorePoints:[playerInfo.score intValue]];
                 playerFound = YES;
                 break;
@@ -104,7 +104,7 @@
     }
     
     Player *player = [_players objectAtIndex:indexPath.row];
-    cell.textLabel.text = player.name;
+    cell.textLabel.text = player.jid.full;
     cell.detailTextLabel.text = [NSString stringWithFormat:@"%i", player.score];
     
     return cell;
