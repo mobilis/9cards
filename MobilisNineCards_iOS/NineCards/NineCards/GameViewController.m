@@ -39,6 +39,7 @@ typedef enum {
 @property (strong, nonatomic) IBOutletCollection(UIButton) NSArray *cardButtons;
 @property (weak, nonatomic) IBOutlet UIButton *startButton;
 @property (weak, nonatomic) IBOutlet UICollectionView *playerStatsView;
+@property (weak, nonatomic) IBOutlet UIView *cardsView;
 - (IBAction)quitGame:(UIBarButtonItem *)sender;
 - (IBAction)cardPlayed:(CardButton *)card;
 - (IBAction)startGame:(UIButton *)startButton;
@@ -62,6 +63,9 @@ typedef enum {
     __strong UIView *_waitingView;
     __strong UIPopoverController *_pointsPopOverView;
     __strong GamePointsViewController *_gamePointsViewController;
+    
+    __strong NSMutableArray *_portraitConstraints;
+    __strong NSMutableArray *_landscapeConstraints;
 }
 
 - (void)viewDidLoad
@@ -84,7 +88,7 @@ typedef enum {
     GamePointsViewController *gamePointsViewController = [[GamePointsViewController alloc] initWithNibName:@"GamePointsView"
                                                                                                     bundle:nil];
     [self addChildViewController:gamePointsViewController];
-	
+	   
 	[self setupWaitingView];
 }
 
@@ -107,6 +111,57 @@ typedef enum {
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
     [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    if (UIInterfaceOrientationIsPortrait(fromInterfaceOrientation)) {
+        if (!_portraitConstraints) {
+            _portraitConstraints = [NSMutableArray arrayWithCapacity:self.view.constraints.count];
+            for (NSLayoutConstraint *layoutConstraint in self.view.constraints) {
+                if (layoutConstraint.firstItem == self.playerStatsView || layoutConstraint.secondItem == self.playerStatsView)
+                    [_portraitConstraints addObject:layoutConstraint];
+                if (layoutConstraint.firstItem == self.cardsView || layoutConstraint.secondItem == self.cardsView)
+                    [_portraitConstraints addObject:layoutConstraint];
+            }
+        }
+        [self.view removeConstraints:_portraitConstraints];
+        
+        if (!_landscapeConstraints) {
+            _landscapeConstraints = [NSMutableArray arrayWithCapacity:10];
+            [_landscapeConstraints addObject:[NSLayoutConstraint constraintWithItem:self.playerStatsView
+                                                                          attribute:NSLayoutAttributeTop
+                                                                          relatedBy:NSLayoutRelationEqual
+                                                                             toItem:self.startButton
+                                                                          attribute:NSLayoutAttributeBottom
+                                                                         multiplier:1.0
+                                                                           constant:8.0]];
+            [_landscapeConstraints addObject:[NSLayoutConstraint constraintWithItem:self.playerStatsView
+                                                                          attribute:NSLayoutAttributeLeading
+                                                                          relatedBy:NSLayoutRelationEqual
+                                                                             toItem:self.cardsView
+                                                                          attribute:NSLayoutAttributeRight
+                                                                         multiplier:1.0
+                                                                           constant:20.0]];
+            [_landscapeConstraints addObject:[NSLayoutConstraint constraintWithItem:self.playerStatsView
+                                                                          attribute:NSLayoutAttributeHeight
+                                                                          relatedBy:NSLayoutRelationEqual
+                                                                             toItem:self.cardsView
+                                                                          attribute:NSLayoutAttributeHeight
+                                                                         multiplier:1.0
+                                                                           constant:0.0]];
+            [_landscapeConstraints addObject:[NSLayoutConstraint constraintWithItem:self.cardsView
+                                                                          attribute:NSLayoutAttributeLeading
+                                                                          relatedBy:NSLayoutRelationEqual
+                                                                             toItem:self.view
+                                                                          attribute:NSLayoutAttributeLeft
+                                                                         multiplier:1.0
+                                                                           constant:(self.view.frame.size.width-self.cardsView.frame.size.width-self.playerStatsView.frame.size.width)/2]];
+            
+        }
+        [self.view addConstraints:_landscapeConstraints];
+        [self.view needsUpdateConstraints];
+    } else {
+        [self.view removeConstraints:_landscapeConstraints];
+        [self.view addConstraints:_portraitConstraints];
+        [self.view setNeedsUpdateConstraints];
+    }
 }
 
 - (NSString *)title

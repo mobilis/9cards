@@ -609,6 +609,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="cardsView" destination="6Vp-G9-6gV" id="t5A-DQ-s7h"/>
                         <outlet property="playerStatsView" destination="YPk-fo-sBu" id="oAf-Qx-WHE"/>
                         <outlet property="startButton" destination="kFb-mW-aC0" id="CKj-9w-5pF"/>
                         <outletCollection property="cardButtons" destination="NQ1-Zu-VrF" id="SVn-SH-Kxl"/>
