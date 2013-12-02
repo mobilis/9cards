@@ -229,7 +229,7 @@ typedef enum {
     XMPPJID *userJid = [XMPPJID jidWithString:fullJid];
     if([userJid.resource isEqualToString:@"9Cards-Service" ignoreCase:YES]) return;
     
-    NSLog(@"User: %@/%@ didJoin: %@", userJid.user, userJid.resource, presence);
+    NSLog(@"User: %@/%@ didJoin: %@", userJid.user, userJid.resource, roomJid);
     if (!_players) {
         _players = [NSMutableArray arrayWithCapacity:[_game.players unsignedIntegerValue]];
     }
@@ -314,7 +314,6 @@ typedef enum {
                                   atIndex:bean.round.unsignedIntegerValue - 1];
                 }
             }
-            NSLog(@"Test");
 		}
 		[_playerStatsView reloadData];
         [self hideWaitingView];

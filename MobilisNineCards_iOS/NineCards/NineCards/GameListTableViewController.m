@@ -11,7 +11,7 @@
 #import "GameListTableViewController.h"
 #import "Game.h"
 
-@interface GameListTableViewController ()<MXiServiceManagerDelegate>
+@interface GameListTableViewController () <MXiServiceManagerDelegate, MXiConnectionHandlerDelegate>
 
 @property (weak, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) NSArray *availableGames;
@@ -29,13 +29,18 @@
 	self.refreshControl = [[UIRefreshControl alloc] init];
 	[self.refreshControl addTarget:self action:@selector(handleRefresh:) forControlEvents:UIControlEventValueChanged];
     self.availableGames = [MXiConnectionHandler sharedInstance].serviceManager.services;
-
+    [MXiConnectionHandler sharedInstance].delegate = self;
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
 	[[MXiConnectionHandler sharedInstance].serviceManager rediscoverServices];
 	[super viewWillAppear:animated];
+}
+
+- (void)dealloc
+{
+    [[MXiConnectionHandler sharedInstance].serviceManager removeDelegate:self];
 }
 
 - (void)didReceiveMemoryWarning
@@ -92,6 +97,23 @@
         [self.tableView reloadData];
         [self.refreshControl endRefreshing];
     }
+}
+
+#pragma mark - MXiConnectionHandlerDelegate
+
+- (void)authenticationFinishedSuccessfully:(BOOL)authenticationState
+{
+    [[MXiConnectionHandler sharedInstance].serviceManager addDelegate:self];
+}
+
+- (void)connectionDidDisconnect:(NSError *)error
+{
+    NSLog(@"%@", error);
+}
+
+- (void)serviceDiscoveryError:(NSError *)error
+{
+    NSLog(@"%@", error);
 }
 
 @end
