@@ -7,10 +7,11 @@
 //
 
 #import <MobilisMXi/MXi/MXiConnectionHandler.h>
+#import <MobilisMXi/MXi/MXiServiceManager.h>
 #import "GameListTableViewController.h"
 #import "Game.h"
 
-@interface GameListTableViewController ()<UITableViewDataSource, UITableViewDelegate>
+@interface GameListTableViewController ()<MXiServiceManagerDelegate>
 
 @property (weak, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) NSArray *availableGames;
@@ -22,18 +23,13 @@
 
 @implementation GameListTableViewController
 
-static void *KVOContext = &KVOContext;
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	self.refreshControl = [[UIRefreshControl alloc] init];
 	[self.refreshControl addTarget:self action:@selector(handleRefresh:) forControlEvents:UIControlEventValueChanged];
-    self.availableGames = [[MXiConnectionHandler sharedInstance] discoveredServiceInstances];
-    [[MXiConnectionHandler sharedInstance] addObserver:self
-											forKeyPath:@"discoveredServiceInstances"
-                                               options:0
-                                               context:KVOContext];
+    self.availableGames = [MXiConnectionHandler sharedInstance].serviceManager.services;
+
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -72,17 +68,6 @@ static void *KVOContext = &KVOContext;
 	return cell;
 }
 
-#pragma mark - KVO Compliance
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    if ([keyPath isEqualToString:@"discoveredServiceInstances"] && context == KVOContext) {
-        self.availableGames = [[MXiConnectionHandler sharedInstance] discoveredServiceInstances];
-        [self.tableView reloadData];
-		[self.refreshControl endRefreshing];
-    }
-}
-
-
 - (Game *)gameForIndexPath:(NSIndexPath *)path
 {
 	MXiService *service = [self.availableGames objectAtIndex:path.row];
@@ -97,5 +82,17 @@ static void *KVOContext = &KVOContext;
 		[self.refreshControl endRefreshing];
 	});
 }
+
+#pragma mark - MXiServiceManagerDelegate
+
+- (void)serviceDiscoveryFinishedWithError:(NSError *)error
+{
+    if (!error) {
+        self.availableGames = [MXiConnectionHandler sharedInstance].serviceManager.services;
+        [self.tableView reloadData];
+        [self.refreshControl endRefreshing];
+    }
+}
+
 
 @end

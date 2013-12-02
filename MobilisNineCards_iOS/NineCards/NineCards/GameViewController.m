@@ -56,13 +56,10 @@ typedef enum {
 
 @implementation GameViewController {
 	BOOL _gameStarted;
-	NSNumber *_rounds;
 	NSNumber *_currentRound;
 	NSMutableArray *_players;
     
     __strong UIView *_waitingView;
-    __strong UIPopoverController *_pointsPopOverView;
-    __strong GamePointsViewController *_gamePointsViewController;
     
     __strong NSMutableArray *_portraitConstraints;
     __strong NSMutableArray *_landscapeConstraints;
@@ -76,12 +73,14 @@ typedef enum {
 	}
 	_gameStarted = NO;
     if ([self.game hasGameConfiguration]) {
-        [[MXiConnectionHandler sharedInstance] connectToMultiUserChatRoom:[_game roomJid].bare withDelegate:self];
+        [[MXiConnectionHandler sharedInstance].connection connectToMultiUserChatRoom:[_game roomJid].bare withDelegate:self];
     } else {
-        [[MXiConnectionHandler sharedInstance] addDelegate:self withSelector:@selector(gameConfigurationReceived:) forBeanClass:[GetGameConfigurationResponse class]];
+        [[MXiConnectionHandler sharedInstance].connection addBeanDelegate:self
+                                                             withSelector:@selector(gameConfigurationReceived:)
+                                                             forBeanClass:[GetGameConfigurationResponse class]];
         GetGameConfigurationRequest *gameConfigurationRequest = [GetGameConfigurationRequest new];
         gameConfigurationRequest.to = self.game.gameJid;
-        [[MXiConnectionHandler sharedInstance] sendBean:gameConfigurationRequest];
+        [[MXiConnectionHandler sharedInstance].connection sendBean:gameConfigurationRequest];
         self.startButton.hidden = YES;
     }
     
@@ -171,8 +170,8 @@ typedef enum {
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    [[MXiConnectionHandler sharedInstance] removeDelegate:self withSelector:@selector(gameConfigurationReceived:) forBeanClass:[GetGameConfigurationResponse class]];
-	[super viewWillDisappear:animated];
+    [[MXiConnectionHandler sharedInstance].connection removeBeanDelegate:self forBeanClass:[GetGameConfigurationResponse class]];
+    [super viewWillDisappear:animated];
 }
 
 - (IBAction)quitGame:(UIBarButtonItem *)sender
@@ -347,7 +346,7 @@ typedef enum {
     self.game.rounds = response.maxRounds;
 	self.game.gameJid = response.from;
     
-    [[MXiConnectionHandler sharedInstance] connectToMultiUserChatRoom:response.muc withDelegate:self];
+    [[MXiConnectionHandler sharedInstance].connection connectToMultiUserChatRoom:response.muc withDelegate:self];
 }
 
 - (void)showWaitingView
@@ -455,7 +454,7 @@ typedef enum {
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
 	PlayerListCardCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"CollectionViewCardCell" forIndexPath:indexPath];
-    if ([[[((Player *)[_players objectAtIndex:indexPath.section]).cardsPlayed objectAtIndex:indexPath.item] objectForKey:@"winner"] boolValue] == NO) {
+    if (![[[((Player *)[_players objectAtIndex:indexPath.section]).cardsPlayed objectAtIndex:indexPath.item] objectForKey:@"winner"] boolValue]) {
         cell.cardLabel.textColor = [UIColor redColor];
     }
     cell.cardLabel.text = [[[((Player *)[_players objectAtIndex:indexPath.section]).cardsPlayed objectAtIndex:indexPath.item] objectForKey:@"card"] stringValue];

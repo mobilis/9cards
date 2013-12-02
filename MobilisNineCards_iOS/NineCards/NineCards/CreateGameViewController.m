@@ -12,9 +12,12 @@
 
 #import "ConfigureGameRequest.h"
 #import "ConfigureGameResponse.h"
+#import "MXiServiceManager.h"
 
-@interface CreateGameViewController () {
+@interface CreateGameViewController () <MXiServiceManagerDelegate>
+{
 @private __strong Game *_game;
+@private __strong MXiServiceManager *_serviceManager;
 }
 
 @property (weak, nonatomic) IBOutlet UITextField *gameNameTextField;
@@ -35,19 +38,16 @@
 
 @implementation CreateGameViewController
 
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    _serviceManager = [MXiConnectionHandler sharedInstance].serviceManager;
+    [_serviceManager addDelegate:self];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [_serviceManager removeDelegate:self];
 }
 
 - (void)didReceiveMemoryWarning
@@ -57,20 +57,7 @@
 }
 
 - (IBAction)createGame:(id)sender {
-    [[MXiConnectionHandler sharedInstance] createServiceWithName:_gameNameTextField.text completionBlock:^(NSString * serviceJID)
-    {
-		NSLog(@"Service with JID %@ created", serviceJID);
-		_game = [[Game alloc] initWithName:_gameNameTextField.text
-						   numberOfPlayers:[NSNumber numberWithDouble:_gamePlayerStepper.value]
-							numberOfRounds:[NSNumber numberWithDouble:_gameRoundsStepper.value]
-								andGameJid:[XMPPJID jidWithString:serviceJID]];
-		
-		ConfigureGameRequest *req = [ConfigureGameRequest new];
-		req.to = _game.gameJid;
-		req.players = _game.players;
-		req.rounds = _game.rounds;
-		[[MXiConnectionHandler sharedInstance] sendBean:req];
-    }];
+    [_serviceManager createServiceWithName:_gameNameTextField.text andPassword:nil];
 }
 
 - (IBAction)cancelGameCreation:(UIBarButtonItem *)sender {
@@ -131,13 +118,38 @@
 
 - (void)viewDidDisappear:(BOOL)animated
 {
-	[[MXiConnectionHandler sharedInstance] removeDelegate:self withSelector:@selector(didReceiveConfigureGameResponse) forBeanClass:[ConfigureGameResponse class]];
+    [[MXiConnectionHandler sharedInstance].connection removeBeanDelegate:self forBeanClass:[ConfigureGameResponse class]];
 	[super viewDidDisappear:animated];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
-	[[MXiConnectionHandler sharedInstance] addDelegate:self withSelector:@selector(didReceiveConfigureGameResponse) forBeanClass:[ConfigureGameResponse class]];
+    [[MXiConnectionHandler sharedInstance].connection addBeanDelegate:self
+                                                         withSelector:@selector(didReceiveConfigureGameResponse)
+                                                         forBeanClass:[ConfigureGameResponse class]];
 	[super viewWillAppear:animated];
 }
+
+#pragma mark - MXiServiceManagerDelegate
+
+- (void)serviceDiscoveryFinishedWithError:(NSError *)error
+{
+    NSLog(@"%@", error);
+}
+
+- (void)createdServiceInstanceSuccessfully:(MXiService *)service
+{
+    NSLog(@"Service with JID %@ created", service.jid);
+    _game = [[Game alloc] initWithName:_gameNameTextField.text
+                       numberOfPlayers:[NSNumber numberWithDouble:_gamePlayerStepper.value]
+                        numberOfRounds:[NSNumber numberWithDouble:_gameRoundsStepper.value]
+                            andGameJid:service.jid];
+
+    ConfigureGameRequest *req = [ConfigureGameRequest new];
+    req.to = _game.gameJid;
+    req.players = _game.players;
+    req.rounds = _game.rounds;
+    [[MXiConnectionHandler sharedInstance].connection sendBean:req];
+}
+
 @end

@@ -173,12 +173,7 @@
     [[MXiConnectionHandler sharedInstance] reconnectWithJID:account.jid
                                                    password:account.password
                                                    hostName:account.hostName
-                                                       port:account.port
-                                        authenticationBlock:^(BOOL success) {
-										   // TODO: trigger reload of data in other views
-										   // implement some kind of notification mechanism or something
-										   NSLog(@"Reconnection from SettingsView successfull? %c", success);
-									   }];
+                                                       port:account.port];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
