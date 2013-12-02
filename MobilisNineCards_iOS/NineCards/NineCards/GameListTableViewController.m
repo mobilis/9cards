@@ -34,7 +34,7 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-	[[MXiConnectionHandler sharedInstance] rediscoverServices:nil];
+	[[MXiConnectionHandler sharedInstance].serviceManager rediscoverServices];
 	[super viewWillAppear:animated];
 }
 
@@ -77,7 +77,7 @@
 
 - (void)handleRefresh:(UIRefreshControl *)sender
 {
-	[[MXiConnectionHandler sharedInstance] rediscoverServices:nil];
+	[[MXiConnectionHandler sharedInstance].serviceManager rediscoverServices];
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10000000000), dispatch_get_main_queue(), ^{
 		[self.refreshControl endRefreshing];
 	});
@@ -93,6 +93,5 @@
         [self.refreshControl endRefreshing];
     }
 }
-
 
 @end
