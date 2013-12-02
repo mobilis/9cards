@@ -6,25 +6,12 @@ var ninecards = {
 	onMessage : function (message){
 
 		var rawMessageBody = $(message).find('body').text();
-		var parsedHtmlMessage = $.parseHTML(rawMessageBody)[0];
+		var parsedMessageHtml = $.parseHTML(rawMessageBody)[0];
 
-		if ( parsedHtmlMessage.nodeName.toLowerCase() == 'mobilismessage' ) {
-
-			console.log('mobilismessage',parsedHtmlMessage);
-
-			var type = $(parsedHtmlMessage).attr('type');
-
-			switch (type) {
-				case 'StartGameMessage' : ninecards.onStartGameMessage(parsedHtmlMessage); break;
-				case 'CardPlayedMessage' : ninecards.onCardPlayedMessage(parsedHtmlMessage); break;
-				case 'RoundCompleteMessage' : ninecards.onRoundCompleteMessage(parsedHtmlMessage); break;
-				case 'GameOverMessage' : ninecards.onGameOverMessage(parsedHtmlMessage); break;
-			}
-
+		if ( parsedMessageHtml.nodeName.toLowerCase() == 'mobilismessage' ) {
+			ninecards.handleMobilisMessage(parsedMessageHtml);
 		} else {
-
-			console.log('chatmessage:',rawMessageBody);
-
+			ninecards.handleChatMessage(rawMessageBody);
 		}
 		return true;
 	},
@@ -39,9 +26,6 @@ var ninecards = {
 
 		return true;
 	},
-
-
-
 
 	onRoster : function (roster){
 
@@ -69,6 +53,24 @@ var ninecards = {
 
 
 
+
+
+	handleMobilisMessage : function (message) {
+
+		console.log('mobilismessage', message);
+		switch ( $(message).attr('type') ) {
+			case 'StartGameMessage' : ninecards.onStartGameMessage(message); break;
+			case 'CardPlayedMessage' : ninecards.onCardPlayedMessage(message); break;
+			case 'RoundCompleteMessage' : ninecards.onRoundCompleteMessage(message); break;
+			case 'GameOverMessage' : ninecards.onGameOverMessage(message); break;
+		}
+	},
+
+
+	handleChatMessage : function (message) {
+
+		console.log('chatmessage:', message);
+	},
 
 
 	onStartGameMessage : function (message) {
