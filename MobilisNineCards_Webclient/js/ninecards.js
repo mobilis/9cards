@@ -3,22 +3,22 @@ var ninecards = {
 
 	// TODO: refactor on…-handlers:
 
-	onMessage : function (rawMessage){
+	onMessage : function (message){
 
-		var rawMessageBody = $(rawMessage).find('body').text();
-		var message = $.parseHTML(rawMessageBody)[0];
+		var rawMessageBody = $(message).find('body').text();
+		var parsedHtmlMessage = $.parseHTML(rawMessageBody)[0];
 
-		if ( message.nodeName.toLowerCase() == 'mobilismessage' ) {
+		if ( parsedHtmlMessage.nodeName.toLowerCase() == 'mobilismessage' ) {
 
-			console.log('mobilismessage',message);
+			console.log('mobilismessage',parsedHtmlMessage);
 
-			var type = $(message).attr('type');
+			var type = $(parsedHtmlMessage).attr('type');
 
 			switch (type) {
-				case 'StartGameMessage' : ninecards.onStartGameMessage(message); break;
-				case 'CardPlayedMessage' : ninecards.onCardPlayedMessage(message); break;
-				case 'RoundCompleteMessage' : ninecards.onRoundCompleteMessage(message); break;
-				case 'GameOverMessage' : ninecards.onGameOverMessage(message); break;
+				case 'StartGameMessage' : ninecards.onStartGameMessage(parsedHtmlMessage); break;
+				case 'CardPlayedMessage' : ninecards.onCardPlayedMessage(parsedHtmlMessage); break;
+				case 'RoundCompleteMessage' : ninecards.onRoundCompleteMessage(parsedHtmlMessage); break;
+				case 'GameOverMessage' : ninecards.onGameOverMessage(parsedHtmlMessage); break;
 			}
 
 		} else {
