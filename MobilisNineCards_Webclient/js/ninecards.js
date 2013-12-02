@@ -1,7 +1,7 @@
 var ninecards = {
 
 
-
+	// TODO: refactor on…-handlers:
 
 	onMessage : function (rawMessage){
 
@@ -255,7 +255,7 @@ var ninecards = {
 		jQuery.jStorage.set('chatroom',chatroom);
 
 		var res;
-		ninecards.joinMuc(
+		MX.core.joinMuc(
 			chatroom,
 			ninecards.onMessage,
 			ninecards.onPresence,
@@ -279,12 +279,12 @@ var ninecards = {
 
 	startGame : function(){
 
-		ninecards.buildMobilisMessage(null,'StartGameMessage', function(message){
-			ninecards.sendChatMessage(
+		MX.core.buildMessage(null,'StartGameMessage', function(message){
+			MX.core.sendChatMessage(
 				jQuery.jStorage.get('serviceNick'),
 				message
 			);
-			ninecards.sendGroupchatMessage(	'sent to '+jQuery.jStorage.get('serviceNick')+': '+message );
+			MX.core.sendGroupchatMessage(	'sent to '+jQuery.jStorage.get('serviceNick')+': '+message );
 		});
 	},
 
@@ -296,15 +296,15 @@ var ninecards = {
 			'round': ninecards.game.round
 		};
 
-		ninecards.buildMobilisMessage(
+		MX.core.buildMessage(
 			message,
 			'PlayCardMessage',
 			function(mobilisMessage){
-				ninecards.sendChatMessage(
+				MX.core.sendChatMessage(
 					jQuery.jStorage.get('serviceNick'),
 					mobilisMessage
 				);
-				ninecards.sendGroupchatMessage(	'sent to '+jQuery.jStorage.get('serviceNick')+': '+mobilisMessage ); // TODO remove
+				MX.core.sendGroupchatMessage(	'sent to '+jQuery.jStorage.get('serviceNick')+': '+mobilisMessage ); // TODO remove
 				result();
 			}
 		);
@@ -313,7 +313,7 @@ var ninecards = {
 
 
 	leaveGame : function(){
-		ninecards.leaveMuc(
+		MX.core.leaveMuc(
 			jQuery.jStorage.get('chatroom'),
 			'left Game',
 			function(){
@@ -384,73 +384,6 @@ var ninecards = {
 
 
 	/* core functions */
-
-	buildMobilisMessage : function(message,type,returnXml) {
-
-		var xml = $build('mobilismessage',{type:type});
-
-		if (message) {
-
-			if (typeof message === 'object' ) {
-
-				$.each(message, function(key,value){
-					xml.c(key).t(value).up();
-				});
-
-			} else {
-				xml = xml.t(message);
-			}
-		}
-
-		returnXml( xml.toString() );
-	},
-
-
-	joinMuc : function(room, onMessage, onPresence, onRoster, result) {
-
-		MX.connection.muc.join(
-			room,
-			jQuery.jStorage.get('settings').username,
-			onMessage,
-			onPresence,
-			onRoster
-		);
-
-		if (result) result('joined', room);
-	},
-
-
-	sendChatMessage : function (nick, message) {
-		MX.connection.muc.message(
-			jQuery.jStorage.get('chatroom'),
-			nick,
-			message,
-			null, // no html markup
-			'chat');
-		return true;
-	},
-
-
-	sendGroupchatMessage : function (message) {
-		MX.connection.muc.groupchat(
-			jQuery.jStorage.get('chatroom'),
-			message,
-			null // no html markup
-			);
-		return true;
-	},
-
-
-	leaveMuc : function(room, exitMessage, onLeft){
-		MX.connection.muc.leave(
-			room,
-			jQuery.jStorage.get('settings').username //,
-			// onLeft,  TODO muc.leave() callback not working?
-			// exitMessage
-		);
-		onLeft();
-	},
-
 
 	onAuthFail : function(){
         $('#error-popup').popup({
@@ -685,7 +618,7 @@ $(document).on('vclick', '#exitgames-button', function(event){
 // 	event.preventDefault();
 // 	var message = $('#message-form #message').val();
 // 	if (message) {
-// 		ninecards.sendGroupchatMessage(message);
+// 		MX.core.sendGroupchatMessage(message);
 // 	}
 // 	$('#message-popup').popup('close');
 // 	return false;
