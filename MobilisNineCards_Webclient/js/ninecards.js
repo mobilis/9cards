@@ -569,7 +569,7 @@ $(document).on('vclick', '#create-game-submit', function(event) {
 $(document).on('vclick', '#startgame-button', function(event){
 
 	event.preventDefault();
-	$('#startgame-button').remove();
+	$('#startgame-button').hide();
 	ninecards.startGame();
 	return false;
 
