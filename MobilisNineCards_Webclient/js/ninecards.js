@@ -187,8 +187,8 @@ var ninecards = {
 				settings.password,
 				function(status) {
 					switch (status) {
-						case MX.core.Status.CONNECTED: ninecards.queryGames(); break;
-						case MX.core.Status.AUTHFAIL: ninecards.onAuthFail(); break;
+						case Strophe.Status.CONNECTED: ninecards.queryGames(); break;
+						case Strophe.Status.AUTHFAIL: ninecards.onAuthFail(); break;
 					}
 				}
 			);
