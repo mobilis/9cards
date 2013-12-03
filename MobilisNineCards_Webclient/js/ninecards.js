@@ -265,7 +265,6 @@ var ninecards = {
 				jQuery.jStorage.get('serviceNick'),
 				message
 			);
-			MX.core.sendGroupchatMessage(	'sent to '+jQuery.jStorage.get('serviceNick')+': '+message );
 		});
 	},
 
@@ -285,7 +284,6 @@ var ninecards = {
 					jQuery.jStorage.get('serviceNick'),
 					mobilisMessage
 				);
-				MX.core.sendGroupchatMessage(	'sent to '+jQuery.jStorage.get('serviceNick')+': '+mobilisMessage ); // TODO remove
 				result();
 			}
 		);
