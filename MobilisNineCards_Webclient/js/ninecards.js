@@ -16,27 +16,19 @@ var ninecards = {
 		return true;
 	},
 
-
-
 	onPresence : function (presence){
 		
 		console.log('presence',presence);
-
 		if ($(presence).attr('type') == 'error') ninecards.onPresenceError(presence);
-
 		return true;
 	},
 
 	onRoster : function (roster){
 
 		console.log('roster',roster);
-
 		ninecards.players = roster;
-
 		$('#players-list').empty();
-
 		$.each(ninecards.players, function(index,player){
-
 			if (player.affiliation == 'owner'){
 				jQuery.jStorage.set('serviceNick',player.nick);
 			} else {
@@ -45,7 +37,6 @@ var ninecards = {
 					+ player.nick +
 					'<p class="ui-li-aside"></p></li>'
 				).listview('refresh');
-
 			}
 		});
 		return true;
@@ -58,11 +49,11 @@ var ninecards = {
 	handleMobilisMessage : function (message) {
 
 		console.log('mobilismessage', message);
-		switch ( $(message).attr('type') ) {
-			case 'StartGameMessage' : ninecards.onStartGameMessage(message); break;
-			case 'CardPlayedMessage' : ninecards.onCardPlayedMessage(message); break;
-			case 'RoundCompleteMessage' : ninecards.onRoundCompleteMessage(message); break;
-			case 'GameOverMessage' : ninecards.onGameOverMessage(message); break;
+		switch ( $(message).attr('type').toLowerCase() ) {
+			case 'startgamemessage' : ninecards.onStartGameMessage(message); break;
+			case 'cardplayedmessage' : ninecards.onCardPlayedMessage(message); break;
+			case 'roundcompletemessage' : ninecards.onRoundCompleteMessage(message); break;
+			case 'gameovermessage' : ninecards.onGameOverMessage(message); break;
 		}
 	},
 
