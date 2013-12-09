@@ -1,0 +1,8 @@
+{
+    "username":    "local1",
+    "jid":         "local1@mcobst.local/Default",
+    "password":    "local1",
+    "gameserver":  "mcobst.local",
+    "chatservice": "conference",
+    "coordinator": "mobilis-server@mcobst.local/Coordinator"
+}

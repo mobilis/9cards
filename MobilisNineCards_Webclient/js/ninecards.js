@@ -208,6 +208,7 @@ var ninecards = {
 				MX.ninecards.ConfigureGame(
 					gameJid, gameName, maxPlayers, numberOfRounds, 
 					function(result){
+						// TODO  mobilis 3.0 änderungen änderungen, siehe mobilis.inf
 						ninecards.joinGame(gameJid, gameName, function(result){
 							console.log(result);
 							$('#startgame-button').css('display','block');
@@ -640,7 +641,7 @@ $( window ).on('beforeunload', function() {
 
 $(document).on('vclick', '#load-defaults-button', function() {
 
-    $.getJSON('settings.json', function(data){
+    $.getJSON('localhost-settings.json', function(data){
 		ninecards.fillSettingsForm(data);
     });
 
