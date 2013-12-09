@@ -187,37 +187,60 @@ var ninecards = {
 				settings.password,
 				function(status) {
 					switch (status) {
-						case Strophe.Status.CONNECTED: ninecards.queryGames(); break;
-						case Strophe.Status.AUTHFAIL: ninecards.onAuthFail(); break;
+						case Strophe.Status.CONNECTED:
+
+							MX.connection.addHandler(
+								ninecards.onIq, // handler
+								MX.NS.APP, // namespace
+								'iq', // name
+								'set' // type
+							);
+							ninecards.queryGames();
+							break;
+
+						case Strophe.Status.AUTHFAIL:
+							ninecards.onAuthFail();
+							break;
 					}
 				}
 			);
 		}
-
 	},
 
+    onIq : function(iq) {
+
+        switch (iq.firstChild.nodeName) {
+			case 'sendNewServiceInstance' : ninecards.onSendNewServiceInstance(iq.firstChild); break;
+		}
+
+    },
+
+    onSendNewServiceInstance : function(iq){
+		console.log('onSendNewServiceInstance',iq);
+    },
 
 	createGame : function(gameName, maxPlayers, numberOfRounds) {
+
 
 		MX.ninecards.createServiceInstance(
 			gameName,
 			function(result){
+				console.log(result);
+				// var gameJid = ($(result).find('jidOfNewService').text());
 
-				var gameJid = ($(result).find('jidOfNewService').text());
-
-				MX.ninecards.ConfigureGame(
-					gameJid, gameName, maxPlayers, numberOfRounds, 
-					function(result){
-						// TODO  mobilis 3.0 änderungen änderungen, siehe mobilis.inf
-						ninecards.joinGame(gameJid, gameName, function(result){
-							console.log(result);
-							$('#startgame-button').css('display','block');
-						});
-					},
-					function(error){
-						console.error('ConfigureGame error',error);
-					}
-				);
+				// MX.ninecards.ConfigureGame(
+				// 	gameJid, gameName, maxPlayers, numberOfRounds, 
+				// 	function(result){
+				// 		// TODO  mobilis 3.0 änderungen änderungen, siehe mobilis.inf
+				// 		ninecards.joinGame(gameJid, gameName, function(result){
+				// 			console.log(result);
+				// 			$('#startgame-button').css('display','block');
+				// 		});
+				// 	},
+				// 	function(error){
+				// 		console.error('ConfigureGame error',error);
+				// 	}
+				// );
 			},
 			function(error){
 				console.error('createServiceInstance error',error);
