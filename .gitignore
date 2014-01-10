@@ -22,11 +22,19 @@ proguard/
 *.iml
 *.ipr
 *.iws
+.idea/
+
+# Xcode
 MobilisNineCards_iOS/NineCards/NineCards.xcworkspace/contents.xcworkspacedata
 MobilisNineCards_iOS/NineCards/NineCards.xcworkspace/xcshareddata/NineCards.xccheckout
+
+# OS X
+.DS_Store
+
 .classpath
 *.out.xml
 
+#Custom
 build.sh
 MobilisNineCards_Service/dist
 Settings.plist
