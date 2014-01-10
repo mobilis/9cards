@@ -61,6 +61,7 @@ typedef enum {
     
     __strong UIView *_waitingView;
     
+    BOOL _initialLandscape;
     __strong NSMutableArray *_portraitConstraints;
     __strong NSMutableArray *_landscapeConstraints;
 }
@@ -89,6 +90,10 @@ typedef enum {
     [self addChildViewController:gamePointsViewController];
 	   
 	[self setupWaitingView];
+    if (UIInterfaceOrientationIsLandscape(self.interfaceOrientation)) {
+        _initialLandscape = YES;
+        [self didRotateFromInterfaceOrientation:UIInterfaceOrientationPortrait];
+    } else _initialLandscape = NO;
 }
 
 - (void)didReceiveMemoryWarning
@@ -145,20 +150,30 @@ typedef enum {
                                                                           attribute:NSLayoutAttributeHeight
                                                                          multiplier:1.0
                                                                            constant:0.0]];
+            CGFloat constant = 0.f;
+            if (_initialLandscape) {
+                constant = (self.view.frame.size.height-self.cardsView.frame.size.width-self.playerStatsView.frame.size.width)/2.0;
+            } else {
+                constant = (self.view.frame.size.width-self.cardsView.frame.size.width-self.playerStatsView.frame.size.width)/2.0;
+            }
             [_landscapeConstraints addObject:[NSLayoutConstraint constraintWithItem:self.cardsView
                                                                           attribute:NSLayoutAttributeLeading
                                                                           relatedBy:NSLayoutRelationEqual
                                                                              toItem:self.view
                                                                           attribute:NSLayoutAttributeLeft
                                                                          multiplier:1.0
-                                                                           constant:(self.view.frame.size.width-self.cardsView.frame.size.width-self.playerStatsView.frame.size.width)/2]];
+                                                                           constant:constant]];
             
         }
         [self.view addConstraints:_landscapeConstraints];
         [self.view needsUpdateConstraints];
     } else {
-        [self.view removeConstraints:_landscapeConstraints];
-        [self.view addConstraints:_portraitConstraints];
+        if (_landscapeConstraints) {
+            [self.view removeConstraints:_landscapeConstraints];
+        }
+        if (_portraitConstraints) {
+            [self.view addConstraints:_portraitConstraints];
+        }
         [self.view setNeedsUpdateConstraints];
     }
 }
@@ -354,7 +369,13 @@ typedef enum {
 }
 - (void)setupWaitingView
 {
-    _waitingView = [[UIView alloc] initWithFrame:self.view.frame];
+    CGRect frame = CGRectZero;
+    if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
+        frame = self.view.frame;
+    } else {
+        frame = CGRectMake(0.f, 0.f, self.view.frame.size.height, self.view.frame.size.width);
+    }
+    _waitingView = [[UIView alloc] initWithFrame:frame];
     _waitingView.backgroundColor = [UIColor clearColor];
     _waitingView.exclusiveTouch = YES;
     

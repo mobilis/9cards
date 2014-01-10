@@ -43,6 +43,7 @@
     [super viewDidLoad];
     _serviceManager = [MXiConnectionHandler sharedInstance].serviceManager;
     [_serviceManager addDelegate:self];
+    self.gameRoundsStepper.value = [self.gameRoundsLabel.text doubleValue];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
