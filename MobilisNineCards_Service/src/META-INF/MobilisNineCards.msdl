@@ -3,30 +3,52 @@
 	xmlns:msdl="http://mobilis.inf.tu-dresden.de/msdl/"
 	xmlns:xmpp="http://mobilis.inf.tu-dresden.de/xmpp/"
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	xmlns:tns="http://mobilis.inf.tu-dresden.de/MobilisNineCards"
+	xmlns:tns="http://mobilis.inf.tu-dresden.de/apps/9cards"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://mobilis.inf.tu-dresden.de/msdl/ http://mobilis.inf.tu-dresden.de/msdl.xsd ">
 	
 	<msdl:types>
-		<xs:schema targetNamespace="http://mobilis.inf.tu-dresden.de/MobilisNineCards">
+		<xs:schema targetNamespace="http://mobilis.inf.tu-dresden.de/apps/9cards">
 		
 			<!-- initial IQs, needed before entering Chat Room -->
+			
 			<xs:element name="ConfigureGameRequest">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="gamename" type="xs:string" />
 						<xs:element name="players" type="xs:int" />
 						<xs:element name="rounds" type="xs:int" />
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="ConfigureGameResponse" />
-
+			
+			<xs:element name="ConfigureGameResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="muc" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			
+			<xs:element name="GetGameConfigurationRequest"/>
+				
+			<xs:element name="GetGameConfigurationResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="muc" type="xs:string" />
+						<xs:element name="maxRounds" type="xs:int" />
+						<xs:element name="maxPlayers" type="xs:int" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			
 			<!-- Messages sent via Multi User Chat or private Chat -->			
 			<xs:complexType name="StartGameMessage">
+				<xs:sequence/>
+			</xs:complexType>
+			
+			<xs:complexType name="GameStartsMessage">
 				<xs:sequence>
 					<xs:element name="rounds" type="xs:int" />
-					<xs:element name="password" type="xs:string" />
 				</xs:sequence>
 			</xs:complexType>
 			
@@ -48,7 +70,7 @@
 				<xs:sequence>
 					<xs:element name="round" type="xs:int" />
 					<xs:element name="winner" type="xs:string" />
-					<xs:element name="PlayerInfos" type="tns:PlayerInfo" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="playerInfos" type="tns:PlayerInfo" minOccurs="0" maxOccurs="unbounded" />
 				</xs:sequence>
 			</xs:complexType>
 			
@@ -56,7 +78,7 @@
 				<xs:sequence>
 					<xs:element name="winner" type="xs:string" />
 					<xs:element name="score" type="xs:int" />
-					<xs:element name="PlayerInfos" type="tns:PlayerInfo" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="playerInfos" type="tns:PlayerInfo" minOccurs="0" maxOccurs="unbounded" />
 				</xs:sequence>
 			</xs:complexType>
 			
@@ -76,10 +98,18 @@
 	
 		<msdl:fault name="InputDataFault" />
 		
+		<msdl:fault name="GameConfigFault"/>
+
 		<msdl:operation name="ConfigureGame" pattern="http://www.w3.org/ns/wsdl/in-out">
 			<msdl:input element="tns:ConfigureGameRequest" />
 			<msdl:output element="tns:ConfigureGameResponse" />
 			<msdl:outfault ref="tns:InputDataFault" />
+		</msdl:operation>
+		
+		<msdl:operation name="GetGameConfiguration" pattern="http://www.w3.org/ns/wsdl/in-out">
+			<msdl:input element="tns:GetGameConfigurationRequest" />
+			<msdl:output element="tns:GetGameConfigurationResponse" />
+			<msdl:outfault ref="tns:GameConfigFault"/>
 		</msdl:operation>
 		
 	</msdl:interface>
@@ -90,20 +120,30 @@
 			xmpp:errortype="modify"
 			xmpp:errorcondition="not-acceptable"
 			xmpp:errortext="Unaccepted data input." />
+		
+		<msdl:fault ref="tns:GameConfigFault"
+			xmpp:errortype="cancel"
+			xmpp:errorcondition="not-allowed"
+			xmpp:errortext="Not allowed in current State." />
 			
-		<msdl:operation ref="tns:ConfigureGame" xmpp:ident="mobilisninecards:iq:configuregame">
+		<msdl:operation ref="tns:ConfigureGame" xmpp:ident="http://mobilis.inf.tu-dresden.de/apps/9cards">
 			<msdl:input xmpp:type="set" />
 			<msdl:output xmpp:type="result" />
 			<msdl:outfault ref="tns:InputDataFault" />
+		</msdl:operation>
+		
+		<msdl:operation ref="tns:GetGameConfiguration" xmpp:ident="http://mobilis.inf.tu-dresden.de/apps/9cards">
+			<msdl:input xmpp:type="set" />
+			<msdl:output xmpp:type="result" />
 		</msdl:operation>
 	</msdl:binding>
 	
 	<msdl:service
 		name="MobilisNineCards"
-		interface="tns:M9CInterface"
+		interface="tns:NineCardsInterface"
 		ident="http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService"
 		version="1">
-		<msdl:endpoint name="M9CEndpoint" binding="tns:M9CBinding" />
+		<msdl:endpoint name="M9CEndpoint" binding="tns:NineCardsBinding" />
 		<msdl:dependencies />
 	</msdl:service>
 	

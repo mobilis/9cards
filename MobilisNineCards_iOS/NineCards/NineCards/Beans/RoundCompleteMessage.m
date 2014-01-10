@@ -7,28 +7,28 @@
 														xmlns:[[self class] iqNamespace]];
 
 	NSXMLElement* roundElement = [NSXMLElement elementWithName:@"round"];
-	[roundElement setStringValue:[NSString stringWithFormat:@"%f", [[self round] floatValue]]];
+	[roundElement setStringValue:[NSString stringWithFormat:@"%d", [[self round] intValue]]];
 	[beanElement addChild:roundElement];
 
 	NSXMLElement* winnerElement = [NSXMLElement elementWithName:@"winner"];
 	[winnerElement setStringValue:[self winner]];
 	[beanElement addChild:winnerElement];
 
-	for (PlayerInfo* PlayerInfosPart in [self PlayerInfos]) {
-		NSXMLElement* PlayerInfosElement = [NSXMLElement elementWithName:@"PlayerInfos"];
+	for (PlayerInfo* playerInfosPart in [self playerInfos]) {
+		NSXMLElement* playerInfosElement = [NSXMLElement elementWithName:@"playerInfos"];
 		NSXMLElement* idElement = [NSXMLElement elementWithName:@"id"];
-		[idElement setStringValue:[PlayerInfosPart id]];
-		[PlayerInfosElement addChild:idElement];
+		[idElement setStringValue:[playerInfosPart id]];
+		[playerInfosElement addChild:idElement];
 		NSXMLElement* scoreElement = [NSXMLElement elementWithName:@"score"];
-		[scoreElement setStringValue:[NSString stringWithFormat:@"%f", [[PlayerInfosPart score] floatValue]]];
-		[PlayerInfosElement addChild:scoreElement];
-		for (NSNumber* usedcardsPart in [PlayerInfosPart usedcards]) {
+		[scoreElement setStringValue:[NSString stringWithFormat:@"%f", [[playerInfosPart score] floatValue]]];
+		[playerInfosElement addChild:scoreElement];
+		for (NSNumber* usedcardsPart in [playerInfosPart usedcards]) {
 			NSXMLElement* usedcardsElement = [NSXMLElement elementWithName:@"usedcards"];
 			[usedcardsElement setStringValue:[NSString stringWithFormat:@"%f", [usedcardsPart floatValue]]];
-			[PlayerInfosElement addChild:usedcardsElement];
+			[playerInfosElement addChild:usedcardsElement];
 		}
 
-		[beanElement addChild:PlayerInfosElement];
+		[beanElement addChild:playerInfosElement];
 	}
 
 	return beanElement;
@@ -42,19 +42,19 @@
 	[self setWinner:[winnerElement stringValue]];
 
 	[self setPlayerInfos:[NSMutableArray array]];
-	NSArray* PlayerInfosElements = [xml elementsForName:@"PlayerInfos"];
-	for (NSXMLElement* PlayerInfosElement in PlayerInfosElements) {
-		PlayerInfo *PlayerInfosObject = [[PlayerInfo alloc] init];
-		NSXMLElement* idElement = [PlayerInfosElement elementForName:@"id"];
-		[PlayerInfosObject setId:[idElement stringValue]];
-		NSXMLElement* scoreElement = [PlayerInfosElement elementForName:@"score"];
-		[PlayerInfosObject setScore:[NSNumber numberWithFloat:[[scoreElement stringValue] floatValue]]];
-		[PlayerInfosObject setUsedcards:[NSMutableArray array]];
-		NSArray* usedcardsElements = [PlayerInfosElement elementsForName:@"usedcards"];
+	NSArray* playerInfosElements = [xml elementsForName:@"PlayerInfo"];
+	for (NSXMLElement* playerInfosElement in playerInfosElements) {
+		PlayerInfo *playerInfosObject = [[PlayerInfo alloc] init];
+		NSXMLElement* idElement = [playerInfosElement elementForName:@"id"];
+		[playerInfosObject setId:[idElement stringValue]];
+		NSXMLElement* scoreElement = [playerInfosElement elementForName:@"score"];
+		[playerInfosObject setScore:[NSNumber numberWithFloat:[[scoreElement stringValue] floatValue]]];
+		[playerInfosObject setUsedcards:[NSMutableArray array]];
+		NSArray* usedcardsElements = [playerInfosElement elementsForName:@"usedcards"];
 		for (NSXMLElement* usedcardsElement in usedcardsElements) {
-			[[PlayerInfosObject usedcards] addObject:[NSNumber numberWithFloat:[[usedcardsElement stringValue] floatValue]]];
+			[[playerInfosObject usedcards] addObject:[NSNumber numberWithFloat:[[usedcardsElement stringValue] floatValue]]];
 		}
-		[[self PlayerInfos] addObject:PlayerInfosObject];
+		[[self playerInfos] addObject:playerInfosObject];
 	}
 }
 
@@ -63,6 +63,6 @@
 }
 
 + (NSString* )iqNamespace {
-	return @"http://mobilis.inf.tu-dresden.de/MobilisNineCards";
+	return @"http://mobilis.inf.tu-dresden.de/apps/9cards";
 }
 @end

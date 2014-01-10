@@ -29,6 +29,7 @@ import de.tudresden.inf.rn.mobilis.services.ninecards.Game.State;
 import de.tudresden.inf.rn.mobilis.services.ninecards.NineCardsService;
 import de.tudresden.inf.rn.mobilis.services.ninecards.Player;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.CardPlayedMessage;
+import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.GameStartsMessage;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.PlayCardMessage;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.StartGameMessage;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
@@ -110,9 +111,8 @@ public class MucPacketProcessor
 				
 				// inform all players about start of game
 				mServiceInstance.getMucConnection().sendMessagetoMuc(
-						new StartGameMessage(
-								mServiceInstance.getSettings().getRounds(),
-								mServiceInstance.getMucConnection().getMucPw()));
+						new GameStartsMessage(mServiceInstance.getSettings()
+								.getRounds()));
 			}
 		}
 	}
@@ -142,7 +142,8 @@ public class MucPacketProcessor
 					
 					// inform other players that this player chose some card
 					mServiceInstance.getMucConnection().sendMessagetoMuc(
-							new CardPlayedMessage(mServiceInstance.getGame().getRound(), player.getID()));
+							new CardPlayedMessage(mServiceInstance.getGame()
+									.getRound(), player.getMucJID()));
 					
 					// check if round is finished
 					mServiceInstance.getMucConnection().checkRoundOver();

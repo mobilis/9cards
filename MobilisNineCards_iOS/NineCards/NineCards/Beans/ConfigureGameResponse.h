@@ -2,6 +2,7 @@
 
 @interface ConfigureGameResponse : MXiBean <MXiIncomingBean>
 
+@property (nonatomic, strong) NSString* muc;
 
 - (instancetype)init;
 

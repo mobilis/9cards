@@ -19,9 +19,15 @@
  ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.services.ninecards.communication;
 
+import java.util.logging.Logger;
+
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.util.StringUtils;
+
 import de.tudresden.inf.rn.mobilis.services.ninecards.Game.State;
 import de.tudresden.inf.rn.mobilis.services.ninecards.NineCardsService;
 import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.ConfigureGameRequest;
+import de.tudresden.inf.rn.mobilis.services.ninecards.proxy.GetGameConfigurationRequest;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 
 /**
@@ -32,6 +38,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
  */
 public class IqPacketProcessor
 {
+	private final static Logger LOGGER = Logger.getLogger(MucConnection.class.getCanonicalName());
 	
 	/**	The ninecards game service instance. */
 	private NineCardsService mServiceInstance;
@@ -57,19 +64,38 @@ public class IqPacketProcessor
 	 */
 	public void processPacket(XMPPBean inBean)
 	{
-		if(inBean instanceof ConfigureGameRequest)
+		if (inBean instanceof ConfigureGameRequest) {
 			onConfigureGame((ConfigureGameRequest) inBean);
-		
-		else {
+		} else if (inBean instanceof GetGameConfigurationRequest) {
+			onGetGameConfigration((GetGameConfigurationRequest) inBean);
+		} else {
 			inBean.errorType = "wait";
 			inBean.errorCondition = "unexpected-request";
-			inBean.errorText = "This request is not supportet!";
+			inBean.errorText = "This request is not supported!";
 			
 			mServiceInstance.getIqConnection().sendXMPPBeanError(inBean, inBean);			
 		}
 	}
 	
 	
+	private void onGetGameConfigration(GetGameConfigurationRequest inBean) {
+		if (mServiceInstance.getGame().getGameState() == State.READY) {
+
+			mServiceInstance
+					.getIqConnection()
+					.getProxy()
+					.GetGameConfiguration(inBean.getFrom(), inBean.getId(),
+							mServiceInstance.getSettings().getChatID(),
+							mServiceInstance.getSettings().getRounds(),
+							mServiceInstance.getSettings().getMaxPlayers());
+		} else {
+			XMPPBean out = inBean
+					.buildGameConfigFault("Not allowed in this state.");
+			mServiceInstance.getIqConnection().getProxy().getBindingStub()
+					.sendXMPPBean(out);
+		}
+	}
+
 	/**
 	 * This method checks whether the game has already been initialized, and if that's not the case,
 	 * settings are configured and the multiuser chat is created.
@@ -80,14 +106,19 @@ public class IqPacketProcessor
 	{
 		if (mServiceInstance.getGame().getGameState() == State.UNINITIALIZED) {
 			
-			mServiceInstance.getSettings().setGameName(inBean.getGamename());
 			mServiceInstance.getSettings().setRounds(inBean.getRounds());
 			mServiceInstance.getSettings().setMaxPlayers(inBean.getPlayers());
 
 			mServiceInstance.getGame().setGameState(State.READY);
-			mServiceInstance.getMucConnection().createMultiUserChat();
 
-			mServiceInstance.getIqConnection().getProxy().ConfigureGame(inBean.getFrom(), inBean.getId());
+			mServiceInstance
+					.getIqConnection()
+					.getProxy()
+					.ConfigureGame(inBean.getFrom(), inBean.getId(),
+							mServiceInstance.getSettings().getChatID());
+
+			// TODO: set MUC admin to game creator and not to first joiner.
+			mServiceInstance.getSettings().setAdminBareJID(StringUtils.parseBareAddress(inBean.getFrom()));
 		}
 
 		else {

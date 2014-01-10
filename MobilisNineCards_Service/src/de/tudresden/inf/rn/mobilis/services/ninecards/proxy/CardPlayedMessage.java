@@ -1,8 +1,6 @@
 package de.tudresden.inf.rn.mobilis.services.ninecards.proxy;
 
-import org.xmlpull.v1.XmlPullParser;
-
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;import org.xmlpull.v1.XmlPullParser;import java.util.List;import java.util.ArrayList;
 
 public class CardPlayedMessage implements XMPPInfo {
 
@@ -63,7 +61,7 @@ public class CardPlayedMessage implements XMPPInfo {
 		return CHILD_ELEMENT;
 	}
 
-	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService#type:CardPlayedMessage";
+	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService";
 
 	@Override
 	public String getNamespace() {
@@ -73,7 +71,8 @@ public class CardPlayedMessage implements XMPPInfo {
 	@Override
 	public String toXML() {
 		StringBuilder sb = new StringBuilder();
-
+		
+		sb.append("<" + getChildElement() + " xmlns=\"" + getNamespace() + "\">");
 		sb.append( "<round>" )
 			.append( this.round )
 			.append( "</round>" );
@@ -82,6 +81,7 @@ public class CardPlayedMessage implements XMPPInfo {
 			.append( this.player )
 			.append( "</player>" );
 
+		sb.append("</" + getChildElement() + ">");
 		return sb.toString();
 	}
 

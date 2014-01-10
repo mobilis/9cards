@@ -35,7 +35,7 @@ import de.tudresden.inf.rn.mobilis.services.ninecards.communication.MucConnectio
 /**
  * This class extends MobilisService and manages the whole game service lifecycle.
  * 
- * @author Matthias Köngeter
+ * @author Matthias Köngeter, Markus Wutzler
  *
  */
 public class NineCardsService extends MobilisService
@@ -65,6 +65,16 @@ public class NineCardsService extends MobilisService
 		mSettings = new Settings(this.getAgent());
 		mGame = new Game(this);
 		
+		try {
+			mIqConnection = new IqConnection(this);
+			mMucConnection = new MucConnection(this);
+			mMucConnection.createMultiUserChat();
+			LOGGER.info("Succesfully setup connections");
+		} catch (Exception e) {
+			LOGGER.severe("Failed to setup connections, shutting down! (" + e.getClass() + " - " + e.getMessage() + ")");
+			this.shutdown();
+		}
+		
 		super.startup(agent);
 	}
 	
@@ -76,15 +86,6 @@ public class NineCardsService extends MobilisService
 	@Override
 	protected void registerPacketListener()
 	{
-		try {
-			mIqConnection = new IqConnection(this);
-			mMucConnection = new MucConnection(this);
-			LOGGER.info("Succesfully setup connections");
-		} catch (Exception e) {
-			LOGGER.severe("Failed to setup connections, shutting down! (" + e.getClass() + " - " + e.getMessage() + ")");
-			this.shutdown();
-		}
-		
 		// set packet filters, ignore packets of type presence
 		PacketTypeFilter iqFilter = new PacketTypeFilter(IQ.class);		
 		getAgent().getConnection().addPacketListener(mIqConnection, iqFilter);
@@ -104,12 +105,16 @@ public class NineCardsService extends MobilisService
 	public void shutdown()
 	{
 		LOGGER.info(getAgent().getFullJid() + " is shutting down.");
+		//
+		// if (mGame != null)
+		// for (String playerJID : mGame.getPlayers().keySet())
+		// mGame.removePlayer(playerJID, "shutting down ninecards service");
 		
-		if (mGame != null)
-			for (String playerJID : mGame.getPlayers().keySet())
-				mGame.removePlayer(playerJID, "shutting down ninecards service");
-		
-		mMucConnection.closeMultiUserChat("shutting down ninecards service");
+		if (mMucConnection != null) {
+			mMucConnection
+					.closeMultiUserChat("shutting down ninecards service");
+			mMucConnection = null;
+		}
 
 		try {
 			super.shutdown();			

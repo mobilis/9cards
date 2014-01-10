@@ -19,7 +19,9 @@
  ******************************************************************************/
 package de.tudresden.inf.rn.mobilis.services.ninecards.communication;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.jivesoftware.smack.Chat;
@@ -32,7 +34,6 @@ import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.Form;
 import org.jivesoftware.smackx.FormField;
-import org.jivesoftware.smackx.muc.Affiliate;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.Occupant;
 import org.jivesoftware.smackx.muc.ParticipantStatusListener;
@@ -62,6 +63,8 @@ public class MucConnection implements PacketListener, MessageListener
 	/** The password for re-entering the muc room after it has been locked. */
 	private String mucPw;
 
+	private Map<String,String> addressMapper;
+	
 	/** The class specific Logger object. */
 	private final static Logger LOGGER = Logger.getLogger(MucConnection.class.getCanonicalName());
 	
@@ -117,6 +120,7 @@ public class MucConnection implements PacketListener, MessageListener
 			
 			LOGGER.info("Chatroom created (ID: " + mServiceInstance.getSettings().getChatID());
 			
+			addressMapper = new HashMap<String, String>();
 		} catch (Exception e) {
 			LOGGER.severe("Failed to create MUC! (" + e.getMessage() + ")");
 			mServiceInstance.shutdown();
@@ -131,14 +135,9 @@ public class MucConnection implements PacketListener, MessageListener
 	 */
 	public void sendMessagetoMuc(XMPPInfo message)
 	{
-		String body = "";
-		body += "<MobilisMessage type='" + message.getClass().getSimpleName() + "'>";
-		body += message.toXML();
-		body += "</MobilisMessage>";
-		
 		try {
 			Message msg = new Message();
-			msg.setBody(body);
+			msg.setBody(message.toXML());
 			msg.setTo(muc.getRoom());
 			msg.setType(Message.Type.groupchat);
 			muc.sendMessage(msg);
@@ -183,6 +182,11 @@ public class MucConnection implements PacketListener, MessageListener
 		if(mucPw == null)
 			mucPw = "9Cards#" + System.currentTimeMillis();
 		return mucPw;
+	}
+	
+	public MultiUserChat getMuc()
+	{
+		return muc;
 	}
 	
 	
@@ -258,7 +262,10 @@ public class MucConnection implements PacketListener, MessageListener
 	public void closeMultiUserChat(String reason)
 	{
 		try {
-			muc.destroy(reason, null);
+			if (muc != null) {
+				muc.destroy(reason, null);
+				muc = null;
+			}
 			LOGGER.info("Muc room destroyed (reason: " + reason + ")");
 		} catch (Exception e) {
 			String excMessage = e instanceof XMPPException
@@ -272,23 +279,12 @@ public class MucConnection implements PacketListener, MessageListener
 	/**
 	 * Determines whether the player corresponding to the specified ID has admin affiliation in the muc room.
 	 * 
-	 * @param id the id of the player
+	 * @param adminBareJID the id of the player
 	 * @return true if player is admin, else if not
 	 */
-	public boolean isAdmin(String id)
+	public boolean isAdmin(String adminBareJID)
 	{
-		String nick = StringUtils.parseResource(id);
-		boolean res = false;
-		
-		try {
-			for(Affiliate aff : muc.getAdmins())
-				if(aff.getNick().equals(nick))
-					res = true;	
-		} catch(Exception e) {
-			LOGGER.severe("Failed to determine whether " + id + "is admin");
-		}
-		
-		return res;
+		return mServiceInstance.getSettings().getAdminBareJID().equalsIgnoreCase(StringUtils.parseBareAddress(adminBareJID));
 	}
 	
 	
@@ -329,20 +325,19 @@ public class MucConnection implements PacketListener, MessageListener
 			
 			// check if end of game is reached
 			if(mServiceInstance.getGame().getRound() == mServiceInstance.getSettings().getRounds()) {
-				sendMessagetoMuc(
-						new GameOverMessage(
-								mServiceInstance.getGame().getGameWinner().getID(),
-								mServiceInstance.getGame().getGameWinner().getScore(),
-								mServiceInstance.getGame().getPlayerInfos()));
+				sendMessagetoMuc(new GameOverMessage(mServiceInstance.getGame()
+						.getGameWinner().getMucJID(), mServiceInstance
+						.getGame().getGameWinner().getScore(), mServiceInstance
+						.getGame().getPlayerInfos()));
+				mServiceInstance.shutdown();
 			}
 			
 			// else start next round
 			else {
-				sendMessagetoMuc(
-						new RoundCompleteMessage(
-								mServiceInstance.getGame().getRound(),
-								mServiceInstance.getGame().getRoundWinner().getID(),
-								mServiceInstance.getGame().getPlayerInfos()));
+				sendMessagetoMuc(new RoundCompleteMessage(mServiceInstance
+						.getGame().getRound(), mServiceInstance.getGame()
+						.getRoundWinner().getMucJID(), mServiceInstance
+						.getGame().getPlayerInfos()));
 				mServiceInstance.getGame().startNewRound();
 			}
 		}
@@ -357,7 +352,10 @@ public class MucConnection implements PacketListener, MessageListener
 		@Override
 		public void left(String participant)
 		{
-			Player player = mServiceInstance.getGame().removePlayer(participant, "player left");
+			Player player = mServiceInstance.getGame().removePlayer(addressMapper.get(participant), "player left");
+			if (player != null) {
+				removePlayerFromChat(participant, "player left");
+			}
 			if(mServiceInstance.getGame().getPlayers().size() > 0 && (player != null && player.getChosenCard() == -1))
 				checkRoundOver();
 		}
@@ -365,7 +363,7 @@ public class MucConnection implements PacketListener, MessageListener
 		@Override
 		public void kicked(String participant, String actor, String reason)
 		{
-			Player player = mServiceInstance.getGame().removePlayer(participant, "player was kicked by "
+			Player player = mServiceInstance.getGame().removePlayer(addressMapper.get(participant), "player was kicked by "
 					+ actor.substring(0, actor.indexOf("@")) + " (reason: " + reason + ")");
 			
 			if(mServiceInstance.getGame().getPlayers().size() > 0 && (player != null && player.getChosenCard() == -1))
@@ -375,7 +373,7 @@ public class MucConnection implements PacketListener, MessageListener
 		@Override
 		public void banned(String participant, String actor, String reason)
 		{
-			Player player = mServiceInstance.getGame().removePlayer(participant, "player was banned by "
+			Player player = mServiceInstance.getGame().removePlayer(addressMapper.get(participant), "player was banned by "
 					+ actor.substring(0, actor.indexOf("@")) + " (reason: " + reason + ")");
 
 			if(mServiceInstance.getGame().getPlayers().size() > 0 && (player != null && player.getChosenCard() == -1))
@@ -393,11 +391,14 @@ public class MucConnection implements PacketListener, MessageListener
 			
 			else {
 				// add player if he's not already joined
-				if(!mServiceInstance.getGame().getPlayers().containsKey(participant)) {
-					mServiceInstance.getGame().addPlayer(new Player(participant));
+				if (!mServiceInstance.getGame().getPlayers()
+						.containsKey(getJID(participant))) {
+					mServiceInstance.getGame().addPlayer(
+							new Player(participant, getJID(participant)));
+					addressMapper.put(participant, getJID(participant));
 					
-					// if he's the first one, he is the creator of the game and will be assigned administrator affiliation
-					if (mServiceInstance.getGame().getPlayers().size() == 1) {
+					// check if the joined user is the admin who triggered the ConfigureGameMessage
+					if (mServiceInstance.getSettings().getAdminBareJID().equalsIgnoreCase(StringUtils.parseBareAddress(getJID(participant)))) {
 						try { muc.grantAdmin(getJID(participant)); }
 						catch (Exception e) { LOGGER.severe("Failed to assign admin affiliation (" + e.getMessage() + ")"); };
 					}

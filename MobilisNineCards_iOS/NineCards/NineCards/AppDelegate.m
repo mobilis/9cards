@@ -21,11 +21,7 @@
                                                               password:account.password
                                                               hostName:account.hostName
                                                            serviceType:MULTI
-                                                                  port:account.port
-                                                   authenticationBlock:^(BOOL b)
-        {
-            NSLog(@"Connection establishment was %i", b);
-        }];
+                                                                  port:account.port];
     } else {
         NSLog(@"No account information stored. Go to Settings.");
     }

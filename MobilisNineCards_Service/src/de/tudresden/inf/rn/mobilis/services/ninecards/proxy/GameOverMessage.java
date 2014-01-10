@@ -1,25 +1,20 @@
 package de.tudresden.inf.rn.mobilis.services.ninecards.proxy;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.xmlpull.v1.XmlPullParser;
-
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;import org.xmlpull.v1.XmlPullParser;import java.util.List;import java.util.ArrayList;
 
 public class GameOverMessage implements XMPPInfo {
 
 	private String winner = null;
 	private int score = Integer.MIN_VALUE;
-	private List< PlayerInfo > PlayerInfos = new ArrayList< PlayerInfo >();
+	private List< PlayerInfo > playerInfos = new ArrayList< PlayerInfo >();
 
 
-	public GameOverMessage( String winner, int score, List< PlayerInfo > PlayerInfos ) {
+	public GameOverMessage( String winner, int score, List< PlayerInfo > playerInfos ) {
 		super();
 		this.winner = winner;
 		this.score = score;
-		for ( PlayerInfo entity : PlayerInfos ) {
-			this.PlayerInfos.add( entity );
+		for ( PlayerInfo entity : playerInfos ) {
+			this.playerInfos.add( entity );
 		}
 	}
 
@@ -49,7 +44,7 @@ public class GameOverMessage implements XMPPInfo {
 					PlayerInfo entity = new PlayerInfo();
 
 					entity.fromXML( parser );
-					this.PlayerInfos.add( entity );
+					this.playerInfos.add( entity );
 					
 					parser.next();
 				}
@@ -78,7 +73,7 @@ public class GameOverMessage implements XMPPInfo {
 		return CHILD_ELEMENT;
 	}
 
-	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService#type:GameOverMessage";
+	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService";
 
 	@Override
 	public String getNamespace() {
@@ -89,6 +84,7 @@ public class GameOverMessage implements XMPPInfo {
 	public String toXML() {
 		StringBuilder sb = new StringBuilder();
 
+		sb.append("<" + getChildElement() + " xmlns=\"" + getNamespace() + "\">");
 		sb.append( "<winner>" )
 			.append( this.winner )
 			.append( "</winner>" );
@@ -97,12 +93,13 @@ public class GameOverMessage implements XMPPInfo {
 			.append( this.score )
 			.append( "</score>" );
 
-		for( PlayerInfo entry : PlayerInfos ) {
+		for( PlayerInfo entry : playerInfos ) {
 			sb.append( "<" + PlayerInfo.CHILD_ELEMENT + ">" );
 			sb.append( entry.toXML() );
 			sb.append( "</" + PlayerInfo.CHILD_ELEMENT + ">" );
 		}
 
+		sb.append("</" + getChildElement() + ">");
 		return sb.toString();
 	}
 
@@ -125,11 +122,11 @@ public class GameOverMessage implements XMPPInfo {
 	}
 
 	public List< PlayerInfo > getPlayerInfos() {
-		return this.PlayerInfos;
+		return this.playerInfos;
 	}
 
-	public void setPlayerInfos( List< PlayerInfo > PlayerInfos ) {
-		this.PlayerInfos = PlayerInfos;
+	public void setPlayerInfos( List< PlayerInfo > playerInfos ) {
+		this.playerInfos = playerInfos;
 	}
 
 }

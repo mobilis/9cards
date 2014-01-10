@@ -30,6 +30,6 @@
 }
 
 + (NSString* )iqNamespace {
-	return @"http://mobilis.inf.tu-dresden.de/MobilisNineCards";
+	return @"http://mobilis.inf.tu-dresden.de/apps/9cards";
 }
 @end

@@ -39,6 +39,8 @@ public class Settings
 	/** The chat ID. */
 	private String chatID;
 	
+	private String adminBareJID;
+	
 	
 	/**
 	 * Initializes the settings with predefined values.
@@ -137,5 +139,15 @@ public class Settings
 	public int getRounds()
 	{
 		return rounds;
+	}
+
+
+	public String getAdminBareJID() {
+		return adminBareJID;
+	}
+
+
+	public void setAdminBareJID(String adminBareJID) {
+		this.adminBareJID = adminBareJID;
 	}
 }

@@ -46,7 +46,11 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
-	self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"LaunchImage"]];
+	NSString *imageName = @"9Cards-BG-iPhone";
+	if ([UIScreen mainScreen].bounds.size.height == 568.0) {
+		imageName = [NSString stringWithFormat:@"%@-568h", imageName];
+	}
+	self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:imageName]];
 	_tvCtr = [[UITableViewController alloc] init];
 	_tvCtr.tableView = self.tableView;
 	_tvCtr.tableView.delegate = self;
@@ -169,12 +173,7 @@
     [[MXiConnectionHandler sharedInstance] reconnectWithJID:account.jid
                                                    password:account.password
                                                    hostName:account.hostName
-                                                       port:account.port
-                                        authenticationBlock:^(BOOL success) {
-										   // TODO: trigger reload of data in other views
-										   // implement some kind of notification mechanism or something
-										   NSLog(@"Reconnection from SettingsView successfull? %c", success);
-									   }];
+                                                       port:account.port];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 

@@ -28,4 +28,9 @@
 	return jid;
 }
 
+- (BOOL)hasGameConfiguration
+{
+    return self.players && self.rounds;
+}
+
 @end

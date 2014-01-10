@@ -18,4 +18,7 @@
 
 - (instancetype) initWithName:(NSString *)gameName numberOfPlayers:(NSNumber *)players numberOfRounds:(NSNumber *)rounds andGameJid:(XMPPJID *)gameJid;
 - (XMPPJID *) roomJid;
+
+- (BOOL)hasGameConfiguration;
+
 @end

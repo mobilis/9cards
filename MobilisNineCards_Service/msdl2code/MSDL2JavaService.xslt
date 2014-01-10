@@ -7,7 +7,7 @@
 	<xsl:output method="text" version="1.0" encoding="UTF-8" indent="yes"/>
 	
 	<!-- the output folder where the classes will be created. this folder has to be create before -->
-	<xsl:variable name="outputFolder" select="'build/service/'"/>
+	<xsl:param name="outputFolder" select="'build/service/'"/>
 	
 	<!-- set package namespace if required. default = '' -->
 	<xsl:variable name="packageNamespace" select="'de.tudresden.inf.rn.mobilis.services.ninecards.proxy'" />
@@ -83,6 +83,7 @@
 				<xsl:value-of select="$newline" /><xsl:value-of select="$newline" />
 			</xsl:if>
 			
+			<xsl:text>import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;</xsl:text>
 			<xsl:text>import java.util.List;</xsl:text>
 			<xsl:text>import java.util.ArrayList;</xsl:text>
 			
@@ -336,6 +337,7 @@
 				<xsl:value-of select="$newline" /><xsl:value-of select="$newline" />
 			</xsl:if>
 			
+			<xsl:text>import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;</xsl:text>
 			<xsl:text>public interface </xsl:text><xsl:value-of select="$IIncomingInterfaceName" /><xsl:text> {</xsl:text>
 			<xsl:value-of select="$newline" />
 
@@ -396,6 +398,9 @@
 				<xsl:value-of select="$newline" /><xsl:value-of select="$newline" />
 			</xsl:if>
 			
+			<xsl:text>import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;</xsl:text>
+			<xsl:text>import de.tudresden.inf.rn.mobilis.xmpp.beans.IXMPPCallback;</xsl:text>
+			
 						<xsl:text>public interface </xsl:text><xsl:value-of select="$IOutgoingInterfaceName" /><xsl:text> {
 
 	void sendXMPPBean( XMPPBean out, IXMPPCallback&lt; ? extends XMPPBean &gt; callback );
@@ -421,7 +426,8 @@
 				<xsl:text>package </xsl:text><xsl:value-of select="$packageNamespace" /><xsl:text>;</xsl:text>
 				<xsl:value-of select="$newline" /><xsl:value-of select="$newline" />
 			</xsl:if>
-	
+			
+			<xsl:text>import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;</xsl:text>
 			<xsl:text>import org.xmlpull.v1.XmlPullParser;</xsl:text>
 			<xsl:text>import java.util.List;</xsl:text>
 			<xsl:text>import java.util.ArrayList;</xsl:text>
@@ -459,7 +465,7 @@
 				
 				<xsl:apply-templates select="/" mode="generateFunctionGetNamespace" >
 					<xsl:with-param name="namespace" >
-						<xsl:value-of select="$serviceNS" /><xsl:text>#type:</xsl:text><xsl:value-of select="$typeInfoClassName" />
+						<xsl:value-of select="$serviceNS" />
 					</xsl:with-param>
 				</xsl:apply-templates>
 				<xsl:value-of select="$newline" /><xsl:value-of select="$newline" />
@@ -501,6 +507,7 @@
 							<xsl:value-of select="$newline" /><xsl:value-of select="$newline" />
 						</xsl:if>
 					
+						<xsl:text>import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;</xsl:text>
 						<xsl:text>import org.xmlpull.v1.XmlPullParser;</xsl:text>
 						<xsl:text>import java.util.List;</xsl:text>
 						<xsl:text>import java.util.ArrayList;</xsl:text>
