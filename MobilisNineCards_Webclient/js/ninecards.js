@@ -8,17 +8,14 @@ var ninecards = {
 		var rawMessageBody = $(message).find('body').text();
 		var parsedMessageHtml = $.parseHTML(rawMessageBody)[0];
 
-		if ( parsedMessageHtml.nodeName.toLowerCase() == 'mobilismessage' ) {
-			console.log('mobilismessage', parsedMessageHtml);
-			switch ( $(parsedMessageHtml).attr('type').toLowerCase() ) {
-				case 'startgamemessage' : ninecards.onStartGameMessage(parsedMessageHtml); break;
-				case 'cardplayedmessage' : ninecards.onCardPlayedMessage(parsedMessageHtml); break;
-				case 'roundcompletemessage' : ninecards.onRoundCompleteMessage(parsedMessageHtml); break;
-				case 'gameovermessage' : ninecards.onGameOverMessage(parsedMessageHtml); break;
-			}
-		} else {
-			console.log('chatmessage:', rawMessageBody);
+		switch ( parsedMessageHtml.nodeName.toLowerCase() ) {
+			case 'gamestartsmessage' : ninecards.onStartGameMessage(parsedMessageHtml); break;
+			case 'cardplayedmessage' : ninecards.onCardPlayedMessage(parsedMessageHtml); break;
+			case 'roundcompletemessage' : ninecards.onRoundCompleteMessage(parsedMessageHtml); break;
+			case 'gameovermessage' : ninecards.onGameOverMessage(parsedMessageHtml); break;
+			default : ninecards.onTextMessage(rawMessageBody); break;
 		}
+
 		return true;
 	},
 
@@ -70,10 +67,7 @@ var ninecards = {
 
 
 	onCardPlayedMessage : function (message) {
-
-		console.log('cardplayedmessage',message);
 		var nick = Strophe.getResourceFromJid( $(message).find('player').text() );
-		console.log('nick',nick);
 		$('#'+ninecards.clearString(nick)).buttonMarkup({ icon: 'check' });
 	},
 
@@ -81,6 +75,7 @@ var ninecards = {
 
 
 	onRoundCompleteMessage : function (message) {
+		console.log('RoundCompleteMessage',message);
 		ninecards.updateScore(message);
 		ninecards.game.round = parseInt($(message).find('round').text())+1;
 		$('#round-count #round').html(ninecards.game.round);
@@ -90,7 +85,16 @@ var ninecards = {
 
 
 
+	onTextMessage : function (message) {
+		console.log('Text Message:', message);
+	},
+
+
+
+
+
 	onGameOverMessage : function (message) {
+		console.log('GameOverMessage',message);
 
 		ninecards.updateScore(message);
 
@@ -104,7 +108,14 @@ var ninecards = {
 				$(this).find('h1').html('Game Over');
 				$(this).find('.ui-content h3').html('Winner:');
 				$(this).find('.ui-content p').html(winner+' ('+score+')');
-			}
+			},
+            afterclose: function( event, ui ) {
+                jQuery.mobile.changePage('#games', {
+                    transition: 'slide',
+                    reverse: true,
+                    changeHash: true
+                });
+            }
 		});
 		$('#dialog-popup').popup('open', {
 			positionTo: 'window'
@@ -191,7 +202,7 @@ var ninecards = {
 
 							MX.connection.addHandler(
 								ninecards.onIq, // handler
-								MX.NS.APP, // namespace
+								null, // namespace
 								'iq', // name
 								'set' // type
 							);
@@ -209,59 +220,87 @@ var ninecards = {
 
     onIq : function(iq) {
 
-        switch (iq.firstChild.nodeName) {
-			case 'sendNewServiceInstance' : ninecards.onSendNewServiceInstance(iq.firstChild); break;
+        switch (iq.firstChild.nodeName.toLowerCase()) {
+			case 'sendnewserviceinstance' : ninecards.onSendNewServiceInstance(iq.firstChild); break;
 		}
 
     },
 
     onSendNewServiceInstance : function(iq){
-		console.log('onSendNewServiceInstance',iq);
+
+		MX.addNamespace('SERVICE', $(iq).find('serviceNamespace').text() );
+
+		var game = jQuery.jStorage.get('game');
+
+		game.serviceJid = $(iq).find('jidOfNewService').text();
+
+		jQuery.jStorage.set('game',game);
+
+		MX.ninecards.configureGame(
+			game.serviceJid, game.numPlayers, game.numRounds,
+			function(configureGameResponse){
+				console.log('configureGameResponse',configureGameResponse);
+				game.muc = $(configureGameResponse).find('muc').text();
+				jQuery.jStorage.set('game',game);
+
+				ninecards.joinGame(game.muc, game.name, function(joinGameResult){
+					console.log(joinGameResult);
+					$('#startgame-button').css('display','block');
+				});
+			},
+			function(configureGameError){
+				console.error('configureGameError',configureGameError);
+			}
+		);
+
     },
 
-	createGame : function(gameName, maxPlayers, numberOfRounds) {
 
+	createGame : function(name) {
 
 		MX.ninecards.createServiceInstance(
-			gameName,
-			function(result){
-				console.log(result);
-				// var gameJid = ($(result).find('jidOfNewService').text());
-
-				// MX.ninecards.ConfigureGame(
-				// 	gameJid, gameName, maxPlayers, numberOfRounds, 
-				// 	function(result){
-				// 		// TODO  mobilis 3.0 änderungen änderungen, siehe mobilis.inf
-				// 		ninecards.joinGame(gameJid, gameName, function(result){
-				// 			console.log(result);
-				// 			$('#startgame-button').css('display','block');
-				// 		});
-				// 	},
-				// 	function(error){
-				// 		console.error('ConfigureGame error',error);
-				// 	}
-				// );
+			name,
+			function(createServiceInstanceResult){
+				console.log('createServiceInstanceResult',createServiceInstanceResult);
 			},
-			function(error){
-				console.error('createServiceInstance error',error);
+			function(createServiceInstanceError){
+				console.error('createServiceInstanceError',createServiceInstanceError);
 			}
 
 		);
 	},
 
 
-	joinGame : function(serviceJid, gameName, result){
+	requestConfiguration : function(jid,name) {
 
-		var resource = Strophe.getResourceFromJid(serviceJid).toLowerCase();
-		var domain = Strophe.getDomainFromJid(serviceJid);
-		var chatservice = jQuery.jStorage.get('settings').chatservice;
-		var chatroom = resource+'@'+chatservice+'.'+domain;
+		MX.ninecards.getGameConfiguration(
+			jid,
+			function(getGameConfigurationResponse){
+				console.log('getGameConfigurationResponse',getGameConfigurationResponse );
+				game.serviceJid = jid;
+				game.name = name;
+				game.muc = $(getGameConfigurationResponse).find('muc').text();
+				game.numPlayers = $(getGameConfigurationResponse).find('maxPlayers').text();
+				game.numRounds = $(getGameConfigurationResponse).find('maxRounds').text();
+				jQuery.jStorage.set('game',game);
 
-		jQuery.jStorage.set('chatroom',chatroom);
+				ninecards.joinGame(game.muc, game.name, function(joinGameResult){
+					console.log('joinGameResult',joinGameResult);
+				});
+			},
+			function(getGameConfigurationError){
+				console.error('getGameConfigurationResponse',getGameConfigurationError);
+			}
+		);
+
+	},
+
+
+	joinGame : function(muc, gameName, result){
 
 		var res;
 		MX.core.joinMuc(
-			chatroom,
+			muc,
 			ninecards.onMessage,
 			ninecards.onPresence,
 			ninecards.onRoster,
@@ -285,10 +324,12 @@ var ninecards = {
 	startGame : function(){
 
 		MX.core.buildMessage(null,'StartGameMessage', function(message){
-			MX.core.sendChatMessage(
-				jQuery.jStorage.get('serviceNick'),
+
+			MX.core.sendDirectMessage(
+				jQuery.jStorage.get('game').serviceJid,
 				message
 			);
+
 		});
 	},
 
@@ -303,10 +344,10 @@ var ninecards = {
 		MX.core.buildMessage(
 			message,
 			'PlayCardMessage',
-			function(mobilisMessage){
-				MX.core.sendChatMessage(
-					jQuery.jStorage.get('serviceNick'),
-					mobilisMessage
+			function(message){
+				MX.core.sendDirectMessage(
+					jQuery.jStorage.get('game').serviceJid,
+					message
 				);
 				result();
 			}
@@ -536,19 +577,7 @@ $(document).on('vclick', '#refresh-games-button', function(event) {
 $(document).on('vclick', '.available-game', function (event) {
 
 	event.preventDefault();
-	ninecards.joinGame(
-		$(this).attr('id'),
-		$(this).attr('data-name'),
-		function (result){
-			console.log(result);
-			jQuery.mobile.changePage(
-				'#game', {
-					transition: 'slide',
-					changeHash: true
-				}
-			);
-		}
-	);
+	ninecards.requestConfiguration($(this).attr('id'),$(this).attr('data-name'));
 
 });
 
@@ -556,13 +585,15 @@ $(document).on('vclick', '.available-game', function (event) {
 $(document).on('vclick', '#create-game-submit', function(event) {
 
 	event.preventDefault();
-	var gameName = $('#create-game-form #gamename').val();
-	var numPlayers = $('#create-game-form #numplayers').val();
-	var numRounds = $('#create-game-form #numrounds').val();
+	var game = {};
+	game.name = $('#create-game-form #gamename').val();
+	game.numPlayers = $('#create-game-form #numplayers').val();
+	game.numRounds = $('#create-game-form #numrounds').val();
 
-	if (gameName && numPlayers && numRounds) {
-		ninecards.createGame(gameName, numPlayers, numRounds);
-	}
+	if (game.name && game.numPlayers && game.numRounds) {
+		jQuery.jStorage.set('game',game);
+		ninecards.createGame(game.name);
+	} // TODO catch else
 
 	$('#create-game-popup').popup('close');
 	return false;
@@ -664,7 +695,9 @@ $( window ).on('beforeunload', function() {
 
 $(document).on('vclick', '#load-defaults-button', function() {
 
-    $.getJSON('localhost-settings.json', function(data){
+    $.getJSON('mobilis-dev-settings.json', function(data){
+    // $.getJSON('mobilis-settings.json', function(data){
+    // $.getJSON('localhost-settings.json', function(data){
 		ninecards.fillSettingsForm(data);
     });
 
@@ -673,7 +706,7 @@ $(document).on('vclick', '#load-defaults-button', function() {
 $(document).on('pageshow', '#games', function(){
 
 	$('#create-game-form #gamename').val('asdf');
-	$('#create-game-form #numplayers').val('4');
-	$('#create-game-form #numrounds').val('4');
+	$('#create-game-form #numplayers').val('3');
+	$('#create-game-form #numrounds').val('3');
 
 });
