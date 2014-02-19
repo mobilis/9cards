@@ -192,6 +192,8 @@ var ninecards = {
 				$('#numpad a').each(function(){
 					$(this).addClass('ui-disabled');
 				});
+
+				ninecards.queryGames();
 			}
 		);
 	},
@@ -366,11 +368,7 @@ var ninecards = {
 				$(this).find('.ui-content p').html(winner+' ('+score+')');
 			},
             afterclose: function( event, ui ) {
-                jQuery.mobile.changePage('#games', {
-                    transition: 'slide',
-                    reverse: true,
-                    changeHash: true
-                });
+				ninecards.leaveGame();
             }
 		});
 		$('#dialog-popup').popup('open', {
