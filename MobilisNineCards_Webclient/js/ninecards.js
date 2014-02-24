@@ -87,7 +87,7 @@ var ninecards = {
 		MX.ninecards.getGameConfiguration(
 			jid,
 			function(getGameConfigurationResponse){
-
+				var game = {};
 				game.serviceJid = jid;
 				game.name = name;
 				game.muc = $(getGameConfigurationResponse).find('muc').text();
@@ -344,7 +344,6 @@ var ninecards = {
 
 
 	onRoundCompleteMessage : function (message) {
-
 		ninecards.updateScore(message);
 		ninecards.game.round = parseInt($(message).find('round').text())+1;
 		$('#round-count #round').html(ninecards.game.round);
