@@ -5,9 +5,5 @@
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
-	<classpathentry kind="lib" path="libs/smack.jar"/>
-	<classpathentry kind="lib" path="libs/smackx-debug.jar"/>
-	<classpathentry kind="lib" path="libs/smackx.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/MobilisServer"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
