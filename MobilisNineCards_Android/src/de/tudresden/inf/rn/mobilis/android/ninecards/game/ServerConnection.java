@@ -62,6 +62,8 @@ import de.tudresden.inf.rn.mobilis.android.ninecards.message.RoundCompleteMessag
 import de.tudresden.inf.rn.mobilis.android.ninecards.message.StartGameMessage;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.BackgroundService;
 
+
+
 /**
  * The class responsible for handling the connection to the XMPP server
  * as well as for sending and receiving messages.
