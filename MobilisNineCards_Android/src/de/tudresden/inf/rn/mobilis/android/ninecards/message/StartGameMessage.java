@@ -6,17 +6,7 @@ import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPInfo;
 
 public class StartGameMessage implements XMPPInfo {
 
-	private int rounds = Integer.MIN_VALUE;
-	private String password = null;
-
-
-	public StartGameMessage( int rounds, String password ) {
-		super();
-		this.rounds = rounds;
-		this.password = password;
-	}
-
-	public StartGameMessage(){}
+public StartGameMessage(){}
 
 
 
@@ -31,12 +21,6 @@ public class StartGameMessage implements XMPPInfo {
 				
 				if (tagName.equals(getChildElement())) {
 					parser.next();
-				}
-				else if (tagName.equals( "rounds" ) ) {
-					this.rounds = Integer.parseInt( parser.nextText() );
-				}
-				else if (tagName.equals( "password" ) ) {
-					this.password = parser.nextText();
 				}
 				else
 					parser.next();
@@ -74,33 +58,9 @@ public class StartGameMessage implements XMPPInfo {
 	public String toXML() {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append( "<rounds>" )
-			.append( this.rounds )
-			.append( "</rounds>" );
-
-		sb.append( "<password>" )
-			.append( this.password )
-			.append( "</password>" );
-
 		return sb.toString();
 	}
 
 
-
-	public int getRounds() {
-		return this.rounds;
-	}
-
-	public void setRounds( int rounds ) {
-		this.rounds = rounds;
-	}
-
-	public String getPassword() {
-		return this.password;
-	}
-
-	public void setPassword( String password ) {
-		this.password = password;
-	}
 
 }

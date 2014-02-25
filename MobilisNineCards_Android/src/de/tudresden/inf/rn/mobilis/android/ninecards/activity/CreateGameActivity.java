@@ -20,6 +20,7 @@
 package de.tudresden.inf.rn.mobilis.android.ninecards.activity;
 
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -34,10 +35,12 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import de.tudresden.inf.rn.mobilis.android.ninecards.R;
 import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.CreateNewServiceInstanceBean;
+import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.SendNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPBean;
 import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPInfo;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.ServerConnection;
+import de.tudresden.inf.rn.mobilis.android.ninecards.message.ConfigureGameResponse;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.BackgroundService;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.ServiceConnector;
 
@@ -58,6 +61,9 @@ public class CreateGameActivity extends PreferenceActivity
 	private EditTextPreference mEditGameName;
 	private EditTextPreference mEditMaxPlayers;
 	private EditTextPreference mEditRounds;
+
+	/** A wait dialog which is shown until a new game service was started. */
+	private ProgressDialog mWaitDialog;
 	
 
 	/*
@@ -189,12 +195,8 @@ public class CreateGameActivity extends PreferenceActivity
 		} catch (Exception e) { Log.e(this.getClass().toString(), e.getMessage()); }
 		
 		mServerConnection.sendGameConfiguration(
-				mBackgroundServiceConnector.getBackgroundService().getGame().getName(),
 				maxplayers,
 				rounds);
-		
-		startActivity(new Intent(CreateGameActivity.this, PlayActivity.class));
-		CreateGameActivity.this.finish();
 	}
 	
 	
@@ -259,12 +261,40 @@ public class CreateGameActivity extends PreferenceActivity
 			
 			// Handle CreateNewServiceInstanceBean
 			if(inBean instanceof CreateNewServiceInstanceBean) {
-				CreateNewServiceInstanceBean bean = (CreateNewServiceInstanceBean)inBean;
+				CreateNewServiceInstanceBean bean = (CreateNewServiceInstanceBean) inBean;
+
+				// display a progress dialog until the new game service instance was created.
+				mWaitDialog = new ProgressDialog(CreateGameActivity.this);
+				mWaitDialog.setTitle("Please wait...");
+				mWaitDialog.setCancelable(true);
+				mWaitDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+				mWaitDialog.setIndeterminate(true);
+				mWaitDialog.show();
+			}
+			
+			if(inBean instanceof SendNewServiceInstanceBean) {
+				SendNewServiceInstanceBean bean = (SendNewServiceInstanceBean) inBean;
 				
 				if((bean != null) && (bean.getType() != XMPPBean.TYPE_ERROR)) {
-					mBackgroundServiceConnector.getBackgroundService().setGameServiceJID(bean.jidOfNewService);
+					mBackgroundServiceConnector.getBackgroundService().setGameServiceJID(bean.getJidOfNewService());
 					mCreateNewInstanceHandler.sendEmptyMessage(0);
 				}
+			}
+			
+			// Handle ConfigureGameResponse
+			if(inBean instanceof ConfigureGameResponse) {
+				ConfigureGameResponse bean = (ConfigureGameResponse) inBean;
+				
+				if((bean != null) && bean.getType() != (XMPPBean.TYPE_ERROR)) {
+					mBackgroundServiceConnector.getBackgroundService().setMucId(bean.getMuc());
+					
+					if(mWaitDialog.isShowing())
+						mWaitDialog.dismiss();
+
+					startActivity(new Intent(CreateGameActivity.this, PlayActivity.class));
+					CreateGameActivity.this.finish();
+				}
+
 			}
 			
 			// Other Beans of type get or set will be responded with an ERROR

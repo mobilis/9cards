@@ -4,19 +4,23 @@ import org.xmlpull.v1.XmlPullParser;
 
 import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPBean;
 
-public class ConfigureGameResponse extends XMPPBean {
+public class GetGameConfigurationResponse extends XMPPBean {
 
 	private String muc = null;
+	private int maxRounds = Integer.MIN_VALUE;
+	private int maxPlayers = Integer.MIN_VALUE;
 
 
-	public ConfigureGameResponse( String muc ) {
+	public GetGameConfigurationResponse( String muc, int maxRounds, int maxPlayers ) {
 		super();
 		this.muc = muc;
+		this.maxRounds = maxRounds;
+		this.maxPlayers = maxPlayers;
 
 		this.setType( XMPPBean.TYPE_RESULT );
 	}
 
-	public ConfigureGameResponse(){
+	public GetGameConfigurationResponse(){
 		this.setType( XMPPBean.TYPE_RESULT );
 	}
 
@@ -35,6 +39,12 @@ public class ConfigureGameResponse extends XMPPBean {
 				}
 				else if (tagName.equals( "muc" ) ) {
 					this.muc = parser.nextText();
+				}
+				else if (tagName.equals( "maxRounds" ) ) {
+					this.maxRounds = Integer.parseInt( parser.nextText() );
+				}
+				else if (tagName.equals( "maxPlayers" ) ) {
+					this.maxPlayers = Integer.parseInt( parser.nextText() );
 				}
 				else if (tagName.equals("error")) {
 					parser = parseErrorAttributes(parser);
@@ -57,7 +67,7 @@ public class ConfigureGameResponse extends XMPPBean {
 		} while (!done);
 	}
 
-	public static final String CHILD_ELEMENT = "ConfigureGameResponse";
+	public static final String CHILD_ELEMENT = "GetGameConfigurationResponse";
 
 	@Override
 	public String getChildElement() {
@@ -73,7 +83,7 @@ public class ConfigureGameResponse extends XMPPBean {
 
 	@Override
 	public XMPPBean clone() {
-		ConfigureGameResponse clone = new ConfigureGameResponse( muc );
+		GetGameConfigurationResponse clone = new GetGameConfigurationResponse( muc, maxRounds, maxPlayers );
 		this.cloneBasicAttributes( clone );
 
 		return clone;
@@ -87,6 +97,14 @@ public class ConfigureGameResponse extends XMPPBean {
 			.append( this.muc )
 			.append( "</muc>" );
 
+		sb.append( "<maxRounds>" )
+			.append( this.maxRounds )
+			.append( "</maxRounds>" );
+
+		sb.append( "<maxPlayers>" )
+			.append( this.maxPlayers )
+			.append( "</maxPlayers>" );
+
 		sb = appendErrorPayload(sb);
 
 		return sb.toString();
@@ -99,6 +117,22 @@ public class ConfigureGameResponse extends XMPPBean {
 
 	public void setMuc( String muc ) {
 		this.muc = muc;
+	}
+
+	public int getMaxRounds() {
+		return this.maxRounds;
+	}
+
+	public void setMaxRounds( int maxRounds ) {
+		this.maxRounds = maxRounds;
+	}
+
+	public int getMaxPlayers() {
+		return this.maxPlayers;
+	}
+
+	public void setMaxPlayers( int maxPlayers ) {
+		this.maxPlayers = maxPlayers;
 	}
 
 }

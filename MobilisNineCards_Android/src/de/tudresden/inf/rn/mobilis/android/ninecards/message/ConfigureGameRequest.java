@@ -6,14 +6,12 @@ import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPBean;
 
 public class ConfigureGameRequest extends XMPPBean {
 
-	private String gamename = null;
 	private int players = Integer.MIN_VALUE;
 	private int rounds = Integer.MIN_VALUE;
 
 
-	public ConfigureGameRequest( String gamename, int players, int rounds ) {
+	public ConfigureGameRequest( int players, int rounds ) {
 		super();
-		this.gamename = gamename;
 		this.players = players;
 		this.rounds = rounds;
 
@@ -36,9 +34,6 @@ public class ConfigureGameRequest extends XMPPBean {
 				
 				if (tagName.equals(getChildElement())) {
 					parser.next();
-				}
-				else if (tagName.equals( "gamename" ) ) {
-					this.gamename = parser.nextText();
 				}
 				else if (tagName.equals( "players" ) ) {
 					this.players = Integer.parseInt( parser.nextText() );
@@ -74,7 +69,7 @@ public class ConfigureGameRequest extends XMPPBean {
 		return CHILD_ELEMENT;
 	}
 
-	public static final String NAMESPACE = "mobilisninecards:iq:configuregame";
+	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de/apps/9cards";
 
 	@Override
 	public String getNamespace() {
@@ -83,7 +78,7 @@ public class ConfigureGameRequest extends XMPPBean {
 
 	@Override
 	public XMPPBean clone() {
-		ConfigureGameRequest clone = new ConfigureGameRequest( gamename, players, rounds );
+		ConfigureGameRequest clone = new ConfigureGameRequest( players, rounds );
 		this.cloneBasicAttributes( clone );
 
 		return clone;
@@ -92,10 +87,6 @@ public class ConfigureGameRequest extends XMPPBean {
 	@Override
 	public String payloadToXML() {
 		StringBuilder sb = new StringBuilder();
-
-		sb.append( "<gamename>" )
-			.append( this.gamename )
-			.append( "</gamename>" );
 
 		sb.append( "<players>" )
 			.append( this.players )
@@ -110,14 +101,6 @@ public class ConfigureGameRequest extends XMPPBean {
 		return sb.toString();
 	}
 
-
-	public String getGamename() {
-		return this.gamename;
-	}
-
-	public void setGamename( String gamename ) {
-		this.gamename = gamename;
-	}
 
 	public int getPlayers() {
 		return this.players;

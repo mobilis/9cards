@@ -4,19 +4,17 @@ import org.xmlpull.v1.XmlPullParser;
 
 import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPInfo;
 
-public class CardPlayedMessage implements XMPPInfo {
+public class GameStartsMessage implements XMPPInfo {
 
-	private int round = Integer.MIN_VALUE;
-	private String player = null;
+	private int rounds = Integer.MIN_VALUE;
 
 
-	public CardPlayedMessage( int round, String player ) {
+	public GameStartsMessage( int rounds ) {
 		super();
-		this.round = round;
-		this.player = player;
+		this.rounds = rounds;
 	}
 
-	public CardPlayedMessage(){}
+	public GameStartsMessage(){}
 
 
 
@@ -32,11 +30,8 @@ public class CardPlayedMessage implements XMPPInfo {
 				if (tagName.equals(getChildElement())) {
 					parser.next();
 				}
-				else if (tagName.equals( "round" ) ) {
-					this.round = Integer.parseInt( parser.nextText() );
-				}
-				else if (tagName.equals( "player" ) ) {
-					this.player = parser.nextText();
+				else if (tagName.equals( "rounds" ) ) {
+					this.rounds = Integer.parseInt( parser.nextText() );
 				}
 				else
 					parser.next();
@@ -56,14 +51,14 @@ public class CardPlayedMessage implements XMPPInfo {
 		} while (!done);
 	}
 
-	public static final String CHILD_ELEMENT = "CardPlayedMessage";
+	public static final String CHILD_ELEMENT = "GameStartsMessage";
 
 	@Override
 	public String getChildElement() {
 		return CHILD_ELEMENT;
 	}
 
-	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService#type:CardPlayedMessage";
+	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/MobilisNineCardsService#type:GameStartsMessage";
 
 	@Override
 	public String getNamespace() {
@@ -74,33 +69,21 @@ public class CardPlayedMessage implements XMPPInfo {
 	public String toXML() {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append( "<round>" )
-			.append( this.round )
-			.append( "</round>" );
-
-		sb.append( "<player>" )
-			.append( this.player )
-			.append( "</player>" );
+		sb.append( "<rounds>" )
+			.append( this.rounds )
+			.append( "</rounds>" );
 
 		return sb.toString();
 	}
 
 
 
-	public int getRound() {
-		return this.round;
+	public int getRounds() {
+		return this.rounds;
 	}
 
-	public void setRound( int round ) {
-		this.round = round;
-	}
-
-	public String getPlayer() {
-		return this.player;
-	}
-
-	public void setPlayer( String player ) {
-		this.player = player;
+	public void setRounds( int rounds ) {
+		this.rounds = rounds;
 	}
 
 }
