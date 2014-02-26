@@ -62,6 +62,8 @@ import de.tudresden.inf.rn.mobilis.android.ninecards.message.ConfigureGameReques
 import de.tudresden.inf.rn.mobilis.android.ninecards.message.ConfigureGameResponse;
 import de.tudresden.inf.rn.mobilis.android.ninecards.message.GameOverMessage;
 import de.tudresden.inf.rn.mobilis.android.ninecards.message.GameStartsMessage;
+import de.tudresden.inf.rn.mobilis.android.ninecards.message.GetGameConfigurationRequest;
+import de.tudresden.inf.rn.mobilis.android.ninecards.message.GetGameConfigurationResponse;
 import de.tudresden.inf.rn.mobilis.android.ninecards.message.RoundCompleteMessage;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.BackgroundService;
 
@@ -169,8 +171,8 @@ public class ServerConnection
 	
 	
 	/**
-	 * Registers custom message types which are needed for discovering services in the mobilis server or
-	 * for creating a new ninecards service instance.
+	 * Registers custom message types which to enable the parsing of their tags. Only
+	 * messages which are being received need to be registered.
 	 */
 	public void registerXmppExtensions()
 	{
@@ -191,6 +193,10 @@ public class ServerConnection
 		ConfigureGameResponse confResponseBean = new ConfigureGameResponse();
 		iqProvider = new IQImplProvider(confResponseBean.getNamespace(), confResponseBean.getChildElement());
 		ProviderManager.getInstance().addIQProvider(confResponseBean.getChildElement(), confResponseBean.getNamespace(), iqProvider);
+		
+		GetGameConfigurationResponse getConfResponseBean = new GetGameConfigurationResponse();
+		iqProvider = new IQImplProvider(getConfResponseBean.getNamespace(), getConfResponseBean.getChildElement());
+		ProviderManager.getInstance().addIQProvider(getConfResponseBean.getChildElement(), getConfResponseBean.getNamespace(), iqProvider);
 	}
 	
 	
@@ -250,13 +256,14 @@ public class ServerConnection
 		}*/
 
 		// initialise private chat for messages to ninecards service
-		String serviceJID = "";
-		try {
+		String serviceJID = mBgService.getGameServiceJID();
+		/*try {
 			for(Affiliate a : mPublicChat.getOwners()) { 
 				serviceJID = a.getJid();
 				break;
 			}
-		} catch(Exception e) { System.out.println("Failed to get service JID (" + e.getMessage() + ")"); }
+		} catch(Exception e) { System.out.println("Failed to get service JID (" + e.getMessage() + ")"); }*/
+
 		mPrivateChat = mXmppConnection.getChatManager().createChat(serviceJID, mChatMessageListener);
 		
 		// also listen to messages of private chats which were initiated by the other side
@@ -410,6 +417,27 @@ public class ServerConnection
 	
 	
 	/**
+	 * Sends a GetGameConfigurationRequest to the game service.
+	 */
+	public void sendGetGameConfiguration()
+	{
+		if(!isConnected())
+			connectToXmppServer(mServer, mUserJid, mUserPw);
+		
+		if(isConnected()) {
+			GetGameConfigurationRequest bean = new GetGameConfigurationRequest();
+			
+			bean.setType(XMPPBean.TYPE_SET);
+			bean.setFrom(mBgService.getUserJID());
+			bean.setTo(mBgService.getGameServiceJID());
+			
+			mXmppConnection.sendPacket(new BeanIQAdapter(bean));
+			Log.i(getClass().getSimpleName(), "GetGameConfigurationRequest sent (" + (new BeanIQAdapter(bean)).toXML() + ")");
+		}
+	}
+	
+	
+	/**
 	 * Send an XMPPBean of type ERROR.
 	 * 
 	 * @param inBean the XMPPBean to reply to with an ERROR. The payload will be copied.
@@ -483,15 +511,20 @@ public class ServerConnection
 				else if(iq.getChildElementXML().toLowerCase().startsWith("<configuregameresponse"))
 					bean = new ConfigureGameResponse();
 				
+				else if(iq.getChildElementXML().toLowerCase().startsWith("<getgameconfigurationresponse"))
+					bean = new GetGameConfigurationResponse();
+				
 				if(bean != null) {
 					try {
 						XmlPullParser xmlParser = XmlPullParserFactory.newInstance().newPullParser();
 						xmlParser.setInput(new StringReader(iq.getChildElementXML()));
 						bean.fromXML(xmlParser);
-						mBgService.getGameState().processPacket(bean);
 					} catch (Exception e) {
-						Log.e(getClass().getSimpleName(), "Failed to parse XML (" + e.getMessage() + ")");
+						Log.e("ServerConnection.mPacketListener", "Failed to parse XML (" + e.getMessage() + ")");
+						return;
 					}
+
+					mBgService.getGameState().processPacket(bean);
 				}
 				
 				else Log.w("ServerConnection.mPacketListener", "Unhandled IQ type received! (" + iq.getChildElementXML() + ")");
@@ -540,10 +573,12 @@ public class ServerConnection
 						XmlPullParser xmlParser = XmlPullParserFactory.newInstance().newPullParser();
 						xmlParser.setInput(new StringReader(mesg.getBody()));
 						info.fromXML(xmlParser);
-						mBgService.getGameState().processChatMessage(info);
 					} catch (Exception e) {
-						Log.e(getClass().getSimpleName(), "Failed to parse XML (" + e.getMessage() + ")");
+						Log.e("ServerConnection.mMucMessageListener", "Failed to parse XML (" + e.getMessage() + ")");
+						return;
 					}
+
+					mBgService.getGameState().processChatMessage(info);
 				}
 				
 				else Log.w("ServerConnection.mMucMessageListener", "Unhandled Message type received! (" + mesg.getBody() + ")");

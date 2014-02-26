@@ -528,8 +528,7 @@ public class PlayActivity extends Activity
 				if(mGame.getCurrentRound() == 0) {
 					// set round to 1 to prevent more start messages from being accepted
 					mGame.setCurrentRound(1);
-					mGame.setRounds(((GameStartsMessage) xmppInfo).getRounds());
-System.out.println("check");					
+					mGame.setRounds(((GameStartsMessage) xmppInfo).getRounds());				
 					mUpdateUIHandler.sendEmptyMessage(BackgroundService.CODE_START_GAME);
 				}
 			}

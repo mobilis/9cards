@@ -51,6 +51,7 @@ import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPBean;
 import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPInfo;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.GameState;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.ServerConnection;
+import de.tudresden.inf.rn.mobilis.android.ninecards.message.GetGameConfigurationResponse;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.BackgroundService;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.ServiceConnector;
 
@@ -141,14 +142,14 @@ public class OpenGamesActivity extends Activity
 			@Override
 			public void onItemClick(AdapterView<?> adapter, View view, int position, long id)
 			{
-				// If user clicks on a game in the list, try to join it
+				// If user clicks on a game in the list, request more information and join on response
 				OpenGameItem openGameItem = mOpenGamesListAdapter.getItem(position);
 				Log.i(OpenGamesActivity.class.getSimpleName(), "Game item tapped (itemId: " + openGameItem.gameID + ")");
-				
+
 				mBackgroundServiceConnector.getBackgroundService().setGameServiceJID(openGameItem.gameJID);
 				mBackgroundServiceConnector.getBackgroundService().createGame(openGameItem.gameName);
-
-	        	startActivity(new Intent(OpenGamesActivity.this, PlayActivity.class));
+				
+				mServerConnection.sendGetGameConfiguration();
 			}
 		});
     	
@@ -411,6 +412,27 @@ public class OpenGamesActivity extends Activity
 					} else {
 						mDiscoverGamesHandler.sendEmptyMessage(BackgroundService.CODE_NO_GAMES_AVAILABLE);
 					}
+				}
+			}
+			
+			// Handle GetGameConfigurationResponse
+			if(inBean instanceof GetGameConfigurationResponse) {
+				GetGameConfigurationResponse bean = (GetGameConfigurationResponse) inBean;
+				
+				if((bean != null) && bean.getType() != (XMPPBean.TYPE_ERROR)) {
+					BackgroundService bgService = mBackgroundServiceConnector.getBackgroundService();
+					
+					// re-set game service JID because player could have tried to join more than one game
+//System.out.println(bean.getFrom()); -- ist null
+//bgService.setGameServiceJID(bean.getFrom());
+					bgService.setMucId(bean.getMuc());
+					bgService.getGame().setRounds(bean.getMaxRounds());
+					
+					// TODO bean contains max players which is useless, should contain game name instead. rounds is also useless because it is contained in gamestartsmessage!
+					
+					// destroy view and go to play view
+					startActivity(new Intent(OpenGamesActivity.this, PlayActivity.class));
+					OpenGamesActivity.this.finish();
 				}
 			}
 			
