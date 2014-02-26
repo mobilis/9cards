@@ -47,19 +47,24 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.os.StrictMode;
 import android.util.Log;
 import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.BeanIQAdapter;
 import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.CreateNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.IQImplProvider;
 import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.MobilisServiceDiscoveryBean;
+import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.SendNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPBean;
 import de.tudresden.inf.rn.mobilis.android.ninecards.borrowed.XMPPInfo;
 import de.tudresden.inf.rn.mobilis.android.ninecards.message.CardPlayedMessage;
 import de.tudresden.inf.rn.mobilis.android.ninecards.message.ConfigureGameRequest;
+import de.tudresden.inf.rn.mobilis.android.ninecards.message.ConfigureGameResponse;
 import de.tudresden.inf.rn.mobilis.android.ninecards.message.GameOverMessage;
+import de.tudresden.inf.rn.mobilis.android.ninecards.message.GameStartsMessage;
+import de.tudresden.inf.rn.mobilis.android.ninecards.message.GetGameConfigurationRequest;
+import de.tudresden.inf.rn.mobilis.android.ninecards.message.GetGameConfigurationResponse;
 import de.tudresden.inf.rn.mobilis.android.ninecards.message.RoundCompleteMessage;
-import de.tudresden.inf.rn.mobilis.android.ninecards.message.StartGameMessage;
 import de.tudresden.inf.rn.mobilis.android.ninecards.service.BackgroundService;
 
 /**
@@ -77,7 +82,8 @@ public class ServerConnection
 	private Chat mPrivateChat;
 	/** The multiuser chat room to send/receive messages to/from all users. */
 	private MultiUserChat mPublicChat;
-
+	/** The information needed for logging in on the XMPP server. */
+	private String mServer, mUserJid, mUserPw;
 	/** The nickname used by the ninecards service inside of the muc room. */
 	private static final String serviceNick = "9Cards-Service";
 	
@@ -117,6 +123,10 @@ public class ServerConnection
 		}
 		
 		// Create connection to XMPP server
+		mServer = server;
+		mUserJid = userJid;
+		mUserPw = userPw;
+		
 		try {
 			AndroidConnectionConfiguration config = new AndroidConnectionConfiguration(server, 5222);
 			mXmppConnection = new XMPPConnection(config);
@@ -144,8 +154,10 @@ public class ServerConnection
 				new PacketTypeFilter(Message.class),
 				new PacketTypeFilter(IQ.class));
 		
-		// subfilter for sender (coordinator service running on mobilis server)
-		PacketFilter subFilterFrom = new FromContainsFilter(mBgService.getMobilisServerJID());
+		// subfilter for sender (coordinator service running on mobilis server or service instance)
+		PacketFilter subFilterFrom = new OrFilter(
+				new FromContainsFilter(mBgService.getMobilisServerJID()),
+				new FromContainsFilter("mobilisninecards"));
 		
 		// set filters
 		PacketFilter filter = new AndFilter(
@@ -159,18 +171,32 @@ public class ServerConnection
 	
 	
 	/**
-	 * Registers custom message types which are needed for discovering services in the mobilis server or
-	 * for creating a new ninecards service instance.
+	 * Registers custom message types which to enable the parsing of their tags. Only
+	 * messages which are being received need to be registered.
 	 */
 	public void registerXmppExtensions()
 	{
+		IQImplProvider iqProvider;
+		
 		MobilisServiceDiscoveryBean discoveryBean = new MobilisServiceDiscoveryBean();
-		IQImplProvider iqProv_1 = new IQImplProvider(discoveryBean.getNamespace(), discoveryBean.getChildElement());
-		ProviderManager.getInstance().addIQProvider(discoveryBean.getChildElement(), discoveryBean.getNamespace(), iqProv_1);
+		iqProvider = new IQImplProvider(discoveryBean.getNamespace(), discoveryBean.getChildElement());
+		ProviderManager.getInstance().addIQProvider(discoveryBean.getChildElement(), discoveryBean.getNamespace(), iqProvider);
 
-		CreateNewServiceInstanceBean createBean = new CreateNewServiceInstanceBean();
-		IQImplProvider iqProv_2 = new IQImplProvider(createBean.getNamespace(), createBean.getChildElement());
-		ProviderManager.getInstance().addIQProvider(createBean.getChildElement(), createBean.getNamespace(), iqProv_2);
+		CreateNewServiceInstanceBean createServiceBean = new CreateNewServiceInstanceBean();
+		iqProvider = new IQImplProvider(createServiceBean.getNamespace(), createServiceBean.getChildElement());
+		ProviderManager.getInstance().addIQProvider(createServiceBean.getChildElement(), createServiceBean.getNamespace(), iqProvider);
+		
+		SendNewServiceInstanceBean serviceCreatedBean = new SendNewServiceInstanceBean();
+		iqProvider = new IQImplProvider(serviceCreatedBean.getNamespace(), serviceCreatedBean.getChildElement());
+		ProviderManager.getInstance().addIQProvider(serviceCreatedBean.getChildElement(), serviceCreatedBean.getNamespace(), iqProvider);
+		
+		ConfigureGameResponse confResponseBean = new ConfigureGameResponse();
+		iqProvider = new IQImplProvider(confResponseBean.getNamespace(), confResponseBean.getChildElement());
+		ProviderManager.getInstance().addIQProvider(confResponseBean.getChildElement(), confResponseBean.getNamespace(), iqProvider);
+		
+		GetGameConfigurationResponse getConfResponseBean = new GetGameConfigurationResponse();
+		iqProvider = new IQImplProvider(getConfResponseBean.getNamespace(), getConfResponseBean.getChildElement());
+		ProviderManager.getInstance().addIQProvider(getConfResponseBean.getChildElement(), getConfResponseBean.getNamespace(), iqProvider);
 	}
 	
 	
@@ -183,18 +209,14 @@ public class ServerConnection
 	public boolean initializeMucAndChat(Handler updateUIHandler)
 	{		
 		// return if connection has not been established yet
-		if (mXmppConnection == null || !mXmppConnection.isConnected()) {
-			Log.e(getClass().getSimpleName(), "Can't create chat - not connected to XMPP Server!");
-			return false;
+		if (!isConnected()) {
+			if(!connectToXmppServer(mServer, mUserJid, mUserPw)) {
+				Log.w(getClass().getSimpleName(), "Couldn't initialize MUC and chat (couldn't connect to XMPP server)");
+				return false;
+			}
 		}
 		
 		mUpdateUIHandler = updateUIHandler;
-		
-		// generate game instance chat room ID using the JID of the game instance
-		String gameJid = mBgService.getGameServiceJID();
-		String roomName = gameJid.substring(gameJid.indexOf("/") + 1);
-		String servername = gameJid.substring(gameJid.indexOf("@") + 1, gameJid.indexOf("/"));
-		String roomId = roomName + "@conference." + servername;
 
 		// initialise multi user chat
 		if (mPublicChat == null) {
@@ -203,7 +225,7 @@ public class ServerConnection
 			if (nick == null || nick.equals(""))
 				nick = mBgService.getUserJID().substring(0, mBgService.getUserJID().indexOf("@"));
 
-			mPublicChat = new MultiUserChat(mXmppConnection, roomId);
+			mPublicChat = new MultiUserChat(mXmppConnection, mBgService.getMucId());
 			mPublicChat.addMessageListener(mMucMessageListener);
 			mPublicChat.addParticipantStatusListener(mParticipantStatusListener);
 			mPublicChat.addUserStatusListener(new DefaultUserStatusListener() {
@@ -222,16 +244,27 @@ public class ServerConnection
 			}
 		}
 		
-		// initialise private chat for messages to ninecards service
-		if(mPrivateChat == null) {
+		// initialise private MUC chat for messages to ninecards service
+		/*if(mPrivateMucChat == null) {
 			for(Iterator<String> it = mPublicChat.getOccupants(); it.hasNext();) {
 				String id = it.next();
 				if(id.toLowerCase().endsWith(serviceNick.toLowerCase())) {
-					mPrivateChat = mPublicChat.createPrivateChat(id, mChatMessageListener);
+					mPrivateMucChat = mPublicChat.createPrivateChat(id, mChatMessageListener);
 					break;
 				}
 			}
-		}
+		}*/
+
+		// initialise private chat for messages to ninecards service
+		String serviceJID = mBgService.getGameServiceJID();
+		/*try {
+			for(Affiliate a : mPublicChat.getOwners()) { 
+				serviceJID = a.getJid();
+				break;
+			}
+		} catch(Exception e) { System.out.println("Failed to get service JID (" + e.getMessage() + ")"); }*/
+
+		mPrivateChat = mXmppConnection.getChatManager().createChat(serviceJID, mChatMessageListener);
 		
 		// also listen to messages of private chats which were initiated by the other side
 		mXmppConnection.getChatManager().addChatListener(new ChatManagerListener() {
@@ -278,7 +311,7 @@ public class ServerConnection
 	 */
 	public void leaveChat()
 	{
-		if(mPublicChat != null)// && publicChat.isJoined())
+		if(mPublicChat != null && isConnected())// && publicChat.isJoined())
 			mPublicChat.leave();
 		
 		mPublicChat = null;
@@ -311,14 +344,21 @@ public class ServerConnection
 	 */
 	public void sendServiceDiscovery(String namespace)
 	{
-		MobilisServiceDiscoveryBean bean = new MobilisServiceDiscoveryBean(namespace, Integer.MIN_VALUE, false);
+		if(!isConnected())
+			connectToXmppServer(mServer, mUserJid, mUserPw);
 		
-		bean.setType(XMPPBean.TYPE_GET);
-		bean.setFrom(mBgService.getUserJID());
-		bean.setTo(mBgService.getMobilisServerJID());
-		
-		mXmppConnection.sendPacket(new BeanIQAdapter(bean));
-		Log.i(getClass().getSimpleName(), "MobilisServiceDiscoveryBean sent (" + (new BeanIQAdapter(bean)).toXML() + ")");
+		if(isConnected()) {
+			MobilisServiceDiscoveryBean bean = new MobilisServiceDiscoveryBean(namespace, Integer.MIN_VALUE, false);
+			
+			bean.setType(XMPPBean.TYPE_GET);
+			bean.setFrom(mBgService.getUserJID());
+			bean.setTo(mBgService.getMobilisServerJID());
+			
+			mXmppConnection.sendPacket(new BeanIQAdapter(bean));
+			Log.i(getClass().getSimpleName(), "MobilisServiceDiscoveryBean sent (" + (new BeanIQAdapter(bean)).toXML() + ")");
+		}
+
+		else Log.w(ServerConnection.class.getSimpleName(), "Couldn't send MobilisServiceDiscoveryBean (couldn't connect to server)");
 	}
 	
 	
@@ -331,35 +371,69 @@ public class ServerConnection
 	 */
 	public void sendCreateNewServiceInstance(String serviceNamespace, String serviceName, String servicePassword)
 	{
-		CreateNewServiceInstanceBean bean = new CreateNewServiceInstanceBean(serviceNamespace, servicePassword);
+		if(!isConnected())
+			connectToXmppServer(mServer, mUserJid, mUserPw);
 		
-		bean.setServiceName(serviceName);
-		bean.setType(XMPPBean.TYPE_SET);
-		bean.setFrom(mBgService.getUserJID());
-		bean.setTo(mBgService.getMobilisServerJID());
+		if(isConnected()) {
+			CreateNewServiceInstanceBean bean = new CreateNewServiceInstanceBean(serviceNamespace, servicePassword);
+			
+			bean.setServiceName(serviceName);
+			bean.setType(XMPPBean.TYPE_SET);
+			bean.setFrom(mBgService.getUserJID());
+			bean.setTo(mBgService.getMobilisServerJID());
+			
+			mXmppConnection.sendPacket(new BeanIQAdapter(bean));
+			Log.i(getClass().getSimpleName(), "CreateNewServiceInstanceBean sent (" + (new BeanIQAdapter(bean)).toXML() + ")");
+		}
 		
-		mXmppConnection.sendPacket(new BeanIQAdapter(bean));
-		Log.i("IQProxy", "CreateNewServiceInstanceBean sent");
+		else Log.w(ServerConnection.class.getSimpleName(), "Couldn't send CreateNewServiceInstanceBean (couldn't connect to server)");
 	}
 	
 	
 	/**
 	 * Sends a ConfigureGameRequest containing specific game settings.
 	 * 
-	 * @param gamename the name which shall be used for the game
 	 * @param players the maximum number of players
 	 * @param rounds the number of rounds
 	 */
-	public void sendGameConfiguration(String gamename, int players, int rounds)
+	public void sendGameConfiguration(int players, int rounds)
 	{
-		ConfigureGameRequest bean = new ConfigureGameRequest(gamename, players, rounds);
-
-		bean.setType(XMPPBean.TYPE_SET);
-		bean.setFrom(mBgService.getUserJID());
-		bean.setTo(mBgService.getGameServiceJID());
+		if(!isConnected())
+			connectToXmppServer(mServer, mUserJid, mUserPw);
 		
-		mXmppConnection.sendPacket(new BeanIQAdapter(bean));
-		Log.i("IQProxy", "ConfigureGameBean sent");
+		if(isConnected()) {
+			ConfigureGameRequest bean = new ConfigureGameRequest(players, rounds);
+
+			bean.setType(XMPPBean.TYPE_SET);
+			bean.setFrom(mBgService.getUserJID());
+			bean.setTo(mBgService.getGameServiceJID());
+			
+			mXmppConnection.sendPacket(new BeanIQAdapter(bean));
+			Log.i(getClass().getSimpleName(), "ConfigureGameBean sent (" + (new BeanIQAdapter(bean)).toXML() + ")");
+		}
+
+		else Log.w(ServerConnection.class.getSimpleName(), "Couldn't send ConfigureGameRequest (couldn't connect to server)");
+	}
+	
+	
+	/**
+	 * Sends a GetGameConfigurationRequest to the game service.
+	 */
+	public void sendGetGameConfiguration()
+	{
+		if(!isConnected())
+			connectToXmppServer(mServer, mUserJid, mUserPw);
+		
+		if(isConnected()) {
+			GetGameConfigurationRequest bean = new GetGameConfigurationRequest();
+			
+			bean.setType(XMPPBean.TYPE_SET);
+			bean.setFrom(mBgService.getUserJID());
+			bean.setTo(mBgService.getGameServiceJID());
+			
+			mXmppConnection.sendPacket(new BeanIQAdapter(bean));
+			Log.i(getClass().getSimpleName(), "GetGameConfigurationRequest sent (" + (new BeanIQAdapter(bean)).toXML() + ")");
+		}
 	}
 	
 	
@@ -376,7 +450,7 @@ public class ServerConnection
 		resultBean.setType(XMPPBean.TYPE_ERROR);
 		
 		mXmppConnection.sendPacket(new BeanIQAdapter(resultBean));
-		Log.i(getClass().getSimpleName(), "Errorbean sent");
+		Log.i(getClass().getSimpleName(), "ErrorBean sent (" + (new BeanIQAdapter(resultBean)).toXML() + ")");
 	}
 
 // -------------------------------------------------------------------------------------------------------------------------------
@@ -390,15 +464,15 @@ public class ServerConnection
 	public boolean sendPrivateToService(XMPPInfo xmppInfo)
 	{
 		Message mesg = new Message();
-		
-		mesg.setBody("<MobilisMessage type='" + xmppInfo.getClass().getSimpleName() + "'>"
+		mesg.setBody("<" + xmppInfo.getChildElement() + " xmlns=\"http://mobilis.inf.tu-dresden.de/apps/9cards\">"
 				+ xmppInfo.toXML()
-				+ "</MobilisMessage>");
+				+ "</" + xmppInfo.getChildElement() + ">");
 		
 		try {
 			mPrivateChat.sendMessage(mesg);
+			Log.i(getClass().getSimpleName(), "Private Message sent: " + mesg.toXML());
 		} catch (Exception e) {
-			Log.e(getClass().getSimpleName(), "Failed to send start game message (" + e.getClass().toString() + ": " + e.getMessage() + ")");
+			Log.w(getClass().getSimpleName(), "Failed to send start game message (" + e.getClass().toString() + ": " + e.getMessage() + ")");
 			return false;
 		}
 		
@@ -412,10 +486,14 @@ public class ServerConnection
 	 * Received packets will be converted to XMPPBeans and be passed to the current GameState for further processing.
 	 */
 	private PacketListener mPacketListener = new PacketListener() {
-		
+
 		@Override
 		public void processPacket(Packet packet) {
 			Log.i("ServerConnection.mPacketListener", "Packet received (" + packet.toXML() + ")");
+			
+			// needed for some Android versions (observed crash on 2.3.3 when missing)
+			try { Looper.prepare(); }
+			catch (Exception ignore) {}
 			
 			if(packet instanceof IQ) {
 				IQ iq = (IQ) packet;
@@ -427,21 +505,30 @@ public class ServerConnection
 				else if(iq.getChildElementXML().toLowerCase().startsWith("<createnewserviceinstance"))
 					bean = new CreateNewServiceInstanceBean();
 				
+				else if(iq.getChildElementXML().toLowerCase().startsWith("<sendnewserviceinstance"))
+					bean = new SendNewServiceInstanceBean();
+				
+				else if(iq.getChildElementXML().toLowerCase().startsWith("<configuregameresponse"))
+					bean = new ConfigureGameResponse();
+				
+				else if(iq.getChildElementXML().toLowerCase().startsWith("<getgameconfigurationresponse"))
+					bean = new GetGameConfigurationResponse();
+				
 				if(bean != null) {
 					try {
 						XmlPullParser xmlParser = XmlPullParserFactory.newInstance().newPullParser();
 						xmlParser.setInput(new StringReader(iq.getChildElementXML()));
 						bean.fromXML(xmlParser);
-						mBgService.getGameState().processPacket(bean);
 					} catch (Exception e) {
-						Log.e(getClass().getSimpleName(), "Failed to parse XML (" + e.getMessage() + ")");
+						Log.e("ServerConnection.mPacketListener", "Failed to parse XML (" + e.getMessage() + ")");
+						return;
 					}
+
+					mBgService.getGameState().processPacket(bean);
 				}
 				
 				else Log.w("ServerConnection.mPacketListener", "Unhandled IQ type received! (" + iq.getChildElementXML() + ")");
 			}
-			
-			else Log.w(getClass().getSimpleName(), "Unhandled Packet type received (" + packet.toXML() + ")");
 		}
 	};
 	
@@ -466,14 +553,14 @@ public class ServerConnection
 	{
 		@Override
 		public void processPacket(Packet packet) {
-			Log.i(getClass().getSimpleName(), "Received public MUC message: " + packet.toXML());
+			Log.i("ServerConnection.mMucMessageListener", "Received public MUC message: " + packet.toXML());
 			
 			if(packet instanceof Message) {
 				Message mesg = (Message) packet;
 				XMPPInfo info = null;
 				
-				if(mesg.getBody().toLowerCase().contains("startgamemessage"))
-					info = new StartGameMessage();
+				if(mesg.getBody().toLowerCase().contains("gamestartsmessage"))
+					info = new GameStartsMessage();
 				if(mesg.getBody().toLowerCase().contains("cardplayedmessage"))
 					info = new CardPlayedMessage();
 				if(mesg.getBody().toLowerCase().contains("roundcompletemessage"))
@@ -486,11 +573,15 @@ public class ServerConnection
 						XmlPullParser xmlParser = XmlPullParserFactory.newInstance().newPullParser();
 						xmlParser.setInput(new StringReader(mesg.getBody()));
 						info.fromXML(xmlParser);
-						mBgService.getGameState().processChatMessage(info);
 					} catch (Exception e) {
-						Log.e(getClass().getSimpleName(), "Failed to parse XML (" + e.getMessage() + ")");
+						Log.e("ServerConnection.mMucMessageListener", "Failed to parse XML (" + e.getMessage() + ")");
+						return;
 					}
+
+					mBgService.getGameState().processChatMessage(info);
 				}
+				
+				else Log.w("ServerConnection.mMucMessageListener", "Unhandled Message type received! (" + mesg.getBody() + ")");
 			}
 		}
 	}; 
@@ -607,7 +698,7 @@ public class ServerConnection
 					res = true;
 			}
 		} catch (XMPPException e) {
-			Log.e("ServerConnection", "Failed to check if user is admin (" + e.getMessage() + " / " + e.getXMPPError());
+			Log.w("ServerConnection", "Failed to check if user is admin (" + e.getMessage() + " / " + e.getXMPPError());
 		}
 
 		return res;

@@ -43,6 +43,8 @@ public class BackgroundService extends Service
 	private ServerConnection mServerConnection;
 	/** The JID of the current NineCards game service instance */
 	private String mGameServiceJid;
+	/** The ID of the current game's MUC room. */
+	private String mMucId;
 
 	/** The game instance. */
 	private Game mGame;
@@ -209,6 +211,28 @@ public class BackgroundService extends Service
     public void setGameServiceJID(String gameServiceJid)
     {
     	this.mGameServiceJid = gameServiceJid;
+    }
+    
+    
+    /**
+     * Returns the ID of the current game's MUC room.
+     * 
+     * @return the ID of the MUC room.
+     */
+    public String getMucId()
+    {
+    	return mMucId;
+    }
+    
+    
+    /**
+     * Sets the ID of the current game's MUC room.
+     * 
+     * @param mucId the ID of the MUC room.
+     */
+    public void setMucId(String mucId)
+    {
+    	mMucId = mucId;
     }
 
  // -------------------------------------------------------------------------------------------------------------------------------

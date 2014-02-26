@@ -57,6 +57,7 @@ import de.tudresden.inf.rn.mobilis.android.ninecards.game.Player;
 import de.tudresden.inf.rn.mobilis.android.ninecards.game.ServerConnection;
 import de.tudresden.inf.rn.mobilis.android.ninecards.message.CardPlayedMessage;
 import de.tudresden.inf.rn.mobilis.android.ninecards.message.GameOverMessage;
+import de.tudresden.inf.rn.mobilis.android.ninecards.message.GameStartsMessage;
 import de.tudresden.inf.rn.mobilis.android.ninecards.message.PlayCardMessage;
 import de.tudresden.inf.rn.mobilis.android.ninecards.message.PlayerInfo;
 import de.tudresden.inf.rn.mobilis.android.ninecards.message.RoundCompleteMessage;
@@ -521,14 +522,13 @@ public class PlayActivity extends Activity
 		 */
 		public void processChatMessage(XMPPInfo xmppInfo)
 		{
-			// Handle StartGameMessage
-			if(xmppInfo instanceof StartGameMessage) {
+			// Handle GameStartsMessage
+			if(xmppInfo instanceof GameStartsMessage) {
 				
 				if(mGame.getCurrentRound() == 0) {
 					// set round to 1 to prevent more start messages from being accepted
 					mGame.setCurrentRound(1);
-					mGame.setRounds(((StartGameMessage) xmppInfo).getRounds());
-					
+					mGame.setRounds(((GameStartsMessage) xmppInfo).getRounds());				
 					mUpdateUIHandler.sendEmptyMessage(BackgroundService.CODE_START_GAME);
 				}
 			}
