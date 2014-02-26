@@ -34,8 +34,10 @@ MobilisNineCards_iOS/NineCards/NineCards.xcworkspace/xcshareddata/NineCards.xcch
 .classpath
 *.out.xml
 
+
 #Custom
 build.sh
 MobilisNineCards_Service/dist
 Settings.plist
-MobilisNineCards_Service/.settings/
+*.settings/
+
