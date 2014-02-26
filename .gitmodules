@@ -1,0 +1,3 @@
+[submodule "MobilisNineCards_Webclient/js/mxjs"]
+	path = MobilisNineCards_Webclient/js/mxjs
+	url = git@github.com:mobilis/mobilis.git

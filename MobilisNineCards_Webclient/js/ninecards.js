@@ -1,86 +1,80 @@
-
 var ninecards = {
 
 
-
-
-	connect : function(userJid, userPassword, serverURL) {
-
-		Mobilis.core.connect(
-			serverURL, 
-			userJid, 
-			userPassword, 
-			function(status) {
-				if (status == Mobilis.core.Status.CONNECTED) {
-					ninecards.queryGames();
-				}
-			}
-		);
-	},
-
-
-
-
+	/* application functions */
 
 	queryGames : function() {
 
-		Mobilis.core.mobilisServiceDiscovery(
-			[Mobilis.ninecards.NS.SERVICE],
-			function(result) {
-				$('#game-list').empty().listview();
+		if ( MX.connection && MX.connection.connected ) {
 
-				if ($(result).find('mobilisService').length){
-					$(result).find('mobilisService').each( function() {
-						Mobilis.core.SERVICES[$(this).attr('namespace')] = {
-							'version': $(this).attr('version'),
-							'jid': $(this).attr('jid'),
-							'servicename' : $(this).attr('serviceName')
-						};
-						$('#game-list').append(
-							'<li><a class="available-game" id="'
-							+ $(this).attr('jid')
-							+ '" href="#game" data-transition="slide">'
-							+ $(this).attr('serviceName')
-							+ ' (' + Strophe.getResourceFromJid($(this).attr('jid')) + ')'
-							+ '</a></li>');
-					});
-				} else {
-					$('#game-list').append('<li>No games found</li>');
-				}
-				$('#game-list').listview('refresh');
-			},
-			function(error) {
-				console.error('queryGames error:',error);
-			}
-		);
+			MX.core.discoverService(
+				MX.NS.SERVICE,
+				function(result) {
+					$('#games-list').empty().listview();
 
-	},
-
-
-
-
-
-	createGame : function(gameName, maxPlayers, numberOfRounds) {
-
-		Mobilis.ninecards.createServiceInstance(
-			gameName,
-			function(result){
-
-				var gameJid = ($(result).find('jidOfNewService').text());
-
-				Mobilis.ninecards.ConfigureGame(
-					gameJid, gameName, maxPlayers, numberOfRounds, 
-					function(result){
-						ninecards.joinGame(gameJid);
-						jQuery.mobile.changePage('#game', { transition: "slide"} );
-					},
-					function(error){
-						console.error('ConfigureGame error',error);
+					if ($(result).find('mobilisService').length){
+						$(result).find('mobilisService').each( function() {
+							$('#games-list').append(
+								'<li><a class="available-game" id="'
+								+ $(this).attr('jid')
+								+ '" data-name="'
+								+ $(this).attr('serviceName')
+								+ '" href="#game" data-transition="slide">'
+								+ $(this).attr('serviceName')
+								+ ' (' + Strophe.getResourceFromJid($(this).attr('jid')) + ')'
+								+ '</a></li>');
+						});
+					} else {
+						$('#games-list').append('<li>No games found</li>');
 					}
-				);
+					$('#games-list').listview('refresh');
+				},
+				function(error) {
+					console.error('queryGames error:',error);
+				}
+			);
+
+		} else {
+
+			var settings = jQuery.jStorage.get('settings');
+
+			MX.core.connect(
+				settings.gameserver,
+				settings.jid,
+				settings.password,
+				function(status) {
+					switch (status) {
+						case Strophe.Status.CONNECTED:
+
+							MX.connection.addHandler(
+								ninecards.onIq, // handler
+								null, // namespace
+								'iq', // name
+								'set' // type
+							);
+							ninecards.queryGames();
+							break;
+
+						case Strophe.Status.AUTHFAIL:
+							ninecards.onAuthFail();
+							break;
+					}
+				}
+			);
+		}
+	},
+
+
+
+	createGame : function(name) {
+
+		MX.ninecards.createServiceInstance(
+			name,
+			function(createServiceInstanceResult){
+				// console.log('createServiceInstanceResult',createServiceInstanceResult);
 			},
-			function(error){
-				console.error('createServiceInstance error',error);
+			function(createServiceInstanceError){
+				console.error('createServiceInstanceError',createServiceInstanceError);
 			}
 
 		);
@@ -88,170 +82,377 @@ var ninecards = {
 
 
 
+	requestConfiguration : function(jid,name) {
 
+		MX.ninecards.getGameConfiguration(
+			jid,
+			function(getGameConfigurationResponse){
+				var game = {};
+				game.serviceJid = jid;
+				game.name = name;
+				game.muc = $(getGameConfigurationResponse).find('muc').text();
+				game.numPlayers = $(getGameConfigurationResponse).find('maxPlayers').text();
+				game.numRounds = $(getGameConfigurationResponse).find('maxRounds').text();
+				jQuery.jStorage.set('game',game);
 
-	joinGame : function(gameJid){
-
-		Mobilis.ninecards.joinGame(gameJid,
-			function(result){
-
-				ninecards.storeData({
-					'chatRoom':     ($(result).find('ChatRoom').text()),
-					'chatPassword':     ($(result).find('ChatPassword').text()),
-					'creatorJid':   ($(result).find('CreatorJid').text())
+				ninecards.joinGame(game.muc, game.name, function(joinGameResult){
+					// console.log('joinGameResult',joinGameResult);
 				});
-
-				ninecards.joinMuc();
-
 			},
-			function(error){
-				console.error('joinGame error',error);
+			function(getGameConfigurationError){
+				console.error('getGameConfigurationResponse',getGameConfigurationError);
 			}
 		);
+
 	},
 
 
 
+	joinGame : function(muc, gameName, result){
 
-
-	joinMuc : function() {
-
-		var chatRoom = ninecards.loadData(['chatRoom']).chatRoom; 
-		var userName = ninecards.loadData(['username']).username;
-		var chatPassword = ninecards.loadData(['chatPassword']).chatPassword;
-
-		Mobilis.connection.muc.join(
-			chatRoom,
-			userName,
+		var res;
+		MX.core.joinMuc(
+			muc,
 			ninecards.onMessage,
 			ninecards.onPresence,
 			ninecards.onRoster,
-			chatPassword,
-			null, null
+			function(result){
+
+				$('#round-count span').hide();
+				$('#game h1').append('<span id="hgn">'+gameName+'</span>');
+
+				jQuery.mobile.changePage('#game', {
+					transition: 'slide',
+					changeHash: true
+				});
+
+				res = result;
+			}
+		);
+		if (result) result(res);
+	},
+
+
+
+	startGame : function(){
+
+		MX.core.buildMessage(null,'StartGameMessage', function(message){
+
+			MX.core.sendDirectMessage(
+				jQuery.jStorage.get('game').serviceJid,
+				message
+			);
+
+		});
+	},
+
+
+
+	sendCard : function(card, result){
+
+		var message = {
+			'card': card,
+			'round': ninecards.game.round
+		};
+
+		MX.core.buildMessage(
+			message,
+			'PlayCardMessage',
+			function(message){
+				MX.core.sendDirectMessage(
+					jQuery.jStorage.get('game').serviceJid,
+					message
+				);
+				result();
+			}
 		);
 
 	},
 
 
 
+	leaveGame : function(){
+		MX.core.leaveMuc(
+			jQuery.jStorage.get('chatroom'),
+			'left Game',
+			function(){
+
+				jQuery.mobile.changePage(
+					'#games', {
+						transition: 'slide',
+						reverse: true,
+						changeHash: true
+					}
+				);
+
+				$('#players-list').empty();
+				$('#startgame-button').hide();
+				$('#hgn').remove();
+				$('#round-count span').hide();
+				$('#numpad a').each(function(){
+					$(this).addClass('ui-disabled');
+				});
+
+				ninecards.queryGames();
+			}
+		);
+	},
 
 
-	processSystemMessage : function (message) {
 
-		console.log('system message:', message);
+	fillSettingsForm : function(settings){
 
-		var messageType = $(message).find('MessageType');
-		var messageString = $(message).find('MessageString');
-
-		console.log(messageString, messageType);
+		if (settings) {
+			$.each(settings, function(key,value){
+	            $('#settings-form #'+key).val(value);
+	        });
+		}
 
 	},
 
 
 
+	updateScore : function(message){
+		$(message).find('playerinfo').each( function(index,playerInfo){
 
+			var nick = Strophe.getResourceFromJid( $(playerInfo).find('id').text() );
 
-	processChatMessage : function (message) {
+			ninecards.players[nick].score = $(playerInfo).find('score').text();
 
-		console.log('chat message:',message);
+			var usedCardsHTML = '';
+			$(playerInfo).find('usedcards').each(function(index,usedCard){
+				usedCardsHTML += '<span class="used-card">'+$(usedCard).text()+'</span>';
+			});
 
+			$('#'+ninecards.clearString(nick)+' p.ui-li-aside').html(usedCardsHTML).append(
+				'<strong>/ '+ninecards.players[nick].score+'</strong>');
+
+			$('#'+ninecards.clearString(nick)).buttonMarkup({ icon: 'clear' });
+		});
 	},
 
 
+
+    onIq : function(iq) {
+
+        switch (iq.firstChild.nodeName.toLowerCase()) {
+			case 'sendnewserviceinstance' : ninecards.onSendNewServiceInstance(iq.firstChild); break;
+		}
+
+    },
 
 
 
 	onMessage : function (message){
 
-		var messageBody = $(message).find('body').text();
-		var messageXml = $.parseXML('<xml>'+messageBody+'</xml>');
+		var rawMessageBody = $(message).find('body').text();
+		var parsedMessageHtml = $.parseHTML(rawMessageBody)[0];
 
-		if ( $(messageXml).find('IsSystemMessage').length > 0 ) {
-			ninecards.processSystemMessage(messageXml);
-		} else {
-			ninecards.processChatMessage(messageBody);
+		switch ( parsedMessageHtml.nodeName.toLowerCase() ) {
+			case 'gamestartsmessage' : ninecards.onStartGameMessage(parsedMessageHtml); break;
+			case 'cardplayedmessage' : ninecards.onCardPlayedMessage(parsedMessageHtml); break;
+			case 'roundcompletemessage' : ninecards.onRoundCompleteMessage(parsedMessageHtml); break;
+			case 'gameovermessage' : ninecards.onGameOverMessage(parsedMessageHtml); break;
+			default : ninecards.onTextMessage(rawMessageBody); break;
 		}
 
 		return true;
 	},
-
-
 
 
 
 	onPresence : function (presence){
 		
-		var presenceJid = $(presence).find('item').attr('jid');
-
-		if ($(presence).attr('type') == 'unavailable') {
-			$('#'+ninecards.clearJid(presenceJid)).remove();
-			$('#players-list').listview('refresh');
-		} else {
-			$('#players-list').append(
-				'<li class="player" id="' + ninecards.clearJid(presenceJid) + '">'
-				+ presenceJid +
-				'<span class="ui-li-count">4</span></li>'
-			).listview('refresh');
-		}
-
+		if ($(presence).attr('type') == 'error') ninecards.onPresenceError(presence);
 		return true;
 	},
-
-
 
 
 
 	onRoster : function (roster){
-		console.log('the roster:', roster);
-		return true;
-	},
 
-
-
-
-
-	sendMessage : function (message) {
-		Mobilis.connection.muc.message(
-			ninecards.loadData(['chatRoom']).chatRoom, 
-			null, // no private message
-			message, 
-			null, // no html markup
-			'groupchat');
-		return true;
-	},
-
-
-
-
-
-	clearJid : function(jid){
-		return jid = jid.replace(/@/g,'-').replace(/\./g,'-').replace(/\//g,'-');
-	},
-
-
-
-
-
-	loadData : function(data) {
-		var loadedObjects = {};
-		$.each(data, function(index,value){
-			loadedObjects[value] = localStorage.getItem('mobilis.ninecards.'+value);
-			// console.log('loaded from localStorage:', value, '=', loadedObjects[value]);
-		});
-		return loadedObjects;
-	},
-
-
-
-
-
-	storeData : function(storedObjects) {
-
-		$.each(storedObjects, function(index,value){
-			localStorage.setItem('mobilis.ninecards.'+index, value);
-			console.log('stored in localStorage:', index, '=', value);
+		ninecards.players = roster;
+		$('#players-list').empty();
+		$.each(ninecards.players, function(index,player){
+			if (player.affiliation == 'owner'){
+				jQuery.jStorage.set('serviceNick',player.nick);
+			} else {
+				$('#players-list').append(
+					'<li id="' + ninecards.clearString(player.nick) + '" data-icon="clear"><a href="#">'
+					+ player.nick +
+					'<p class="ui-li-aside"></p></li>'
+				).listview('refresh');
+			}
 		});
 		return true;
+	},
+
+
+
+    onSendNewServiceInstance : function(iq){
+
+		MX.addNamespace('SERVICE', $(iq).find('serviceNamespace').text() );
+
+		var game = jQuery.jStorage.get('game');
+
+		game.serviceJid = $(iq).find('jidOfNewService').text();
+
+		jQuery.jStorage.set('game',game);
+
+		MX.ninecards.configureGame(
+			game.serviceJid, game.numPlayers, game.numRounds,
+			function(configureGameResponse){
+
+				game.muc = $(configureGameResponse).find('muc').text();
+				jQuery.jStorage.set('game',game);
+
+				ninecards.joinGame(game.muc, game.name, function(joinGameResult){
+					console.log('joinGameResult',joinGameResult);
+					$('#startgame-button').css('display','block');
+				});
+			},
+			function(configureGameError){
+				console.error('configureGameError',configureGameError);
+			}
+		);
+
+    },
+
+
+
+	onStartGameMessage : function (message) {
+		$('#numpad a').removeClass('ui-disabled');
+
+		ninecards.game = {};
+		ninecards.game.password = $(message).find('password').text();
+		ninecards.game.round = 1;
+		ninecards.game.rounds = parseInt( $(message).find('rounds').text() );
+
+		$('#round-count #round').html(ninecards.game.round);
+		$('#round-count #rounds').html(ninecards.game.rounds);
+		$('#round-count .ingame').show();
+
+	},
+
+
+
+	onCardPlayedMessage : function (message) {
+		var nick = Strophe.getResourceFromJid( $(message).find('player').text() );
+		$('#'+ninecards.clearString(nick)).buttonMarkup({ icon: 'check' });
+	},
+
+
+
+	onRoundCompleteMessage : function (message) {
+		ninecards.updateScore(message);
+		ninecards.game.round = parseInt($(message).find('round').text())+1;
+		$('#round-count #round').html(ninecards.game.round);
+	},
+
+
+
+	onGameOverMessage : function (message) {
+
+		ninecards.updateScore(message);
+
+		var winner = Strophe.getResourceFromJid( $(message).find('winner').text() );
+		var score = ninecards.players[winner].score;
+		$('#round-count .ingame').hide();
+		$('#round-count #gameover').show();
+
+		$('#dialog-popup').popup({
+			afteropen: function( event, ui ) {
+				$(this).find('h1').html('Game Over');
+				$(this).find('.ui-content h3').html('Winner:');
+				$(this).find('.ui-content p').html(winner+' ('+score+')');
+			},
+            afterclose: function( event, ui ) {
+				ninecards.leaveGame();
+            }
+		});
+		$('#dialog-popup').popup('open', {
+			positionTo: 'window'
+		});
+
+	},
+
+
+
+	onTextMessage : function (message) {
+		console.log('Text Message:', message);
+	},
+
+
+
+	onAuthFail : function(){
+        $('#error-popup').popup({
+            afteropen: function( event, ui ) {
+                $(this).find('h1').html('Error');
+                $(this).find('.ui-content h3').html('Authentication Fail');
+                $(this).find('.ui-content p').html('Please check the settings');
+            },
+            afterclose: function( event, ui ) {
+                MX.connection.disconnect();
+                jQuery.mobile.changePage('#start', {
+                    transition: 'slide',
+                    reverse: true,
+                    changeHash: true
+                });
+            }
+        });
+        $('#error-popup').popup('open', {
+            positionTo: 'window'
+        });
+	},
+
+
+
+	onPresenceError : function (presence) {
+
+		var code = $(presence).find('error').attr('code');
+		var children = $(presence).find('error').children().prop('tagName');
+		$('#dialog-popup').popup({
+			afteropen: function( event, ui ) {
+				$(this).find('h1').html('Error');
+				$(this).find('.ui-content h3').html(code);
+				$(this).find('.ui-content p').html(children);
+			},
+			afterclose: function( event, ui ) {
+				jQuery.mobile.changePage('#games', {
+					transition: 'slide',
+					reverse: true,
+					changeHash: true
+				});
+			}
+		});
+		$('#dialog-popup').popup('open', {
+			positionTo: 'window'
+		});
+
+	},
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	/* helper functions */
+
+	clearString : function(string){
+		return string.replace(/@/g,'-').replace(/\./g,'-').replace(/\//g,'-');
 	}
 
 }
@@ -265,91 +466,191 @@ var ninecards = {
 
 
 
-/* jQuery Event Handlers */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* application jQuery handlers */
 
 $(document).on('pageshow', '#settings', function() {
 
-	var settingsData = ninecards.loadData(['username','gameserver','jid','password']);
+	ninecards.fillSettingsForm( jQuery.jStorage.get('settings') );
 
-	$('#settings-form #username').val(settingsData.username);
-	$('#settings-form #gameserver').val(settingsData.gameserver);
-	$('#settings-form #jid').val(settingsData.jid);
-	$('#settings-form #password').val(settingsData.password);
-
-	return true;
 });
 
 
+$(document).on('vclick', '#settings-submit', function() {
+
+	var settings  = {};
+	$('#settings-form input[placeholder]').each(function(key,value){
+		settings[$(value).attr('id')] = $(value).val();
+	});
+	jQuery.jStorage.set('settings',settings);
+	return true;
+
+});
 
 
 $(document).on('pageshow', '#games', function(){
-	
-	var connData = ninecards.loadData(['gameserver','jid','password']);
 
-	ninecards.connect(
-		connData.jid,
-		connData.password,
-		connData.gameserver
-		);
+	ninecards.queryGames();
 
-	// return true;
 });
 
 
+$(document).on('vclick', '#refresh-games-button', function(event) {
 
+	event.preventDefault();
+	ninecards.queryGames();
+	return false;
 
-$(document).on('vclick', '#settings-form #submit', function() {
-
-	ninecards.storeData({
-		'username':     $('#settings-form #username').val(),
-		'gameserver':   $('#settings-form #gameserver').val(),
-		'jid':          $('#settings-form #jid').val(),
-		'password':     $('#settings-form #password').val()
-	});
-
-	return true;
 });
 
 
+$(document).on('vclick', '.available-game', function (event) {
+
+	event.preventDefault();
+	ninecards.requestConfiguration($(this).attr('id'),$(this).attr('data-name'));
+
+});
 
 
-$(document).on('vclick', '#create-game-form #submit', function() {
+$(document).on('vclick', '#create-game-submit', function(event) {
 
-	var gamename = $('#create-game-form #gamename').val();
-	var numplayers = $('#create-game-form #numplayers').val();
-	var numrounds = $('#create-game-form #numrounds').val();
-	
-	if (gamename && numplayers && numrounds) {
-	
-		ninecards.createGame(gamename, numplayers, numrounds);
+	event.preventDefault();
+	var game = {};
+	game.name = $('#create-game-form #gamename').val();
+	game.numPlayers = $('#create-game-form #numplayers').val();
+	game.numRounds = $('#create-game-form #numrounds').val();
+
+	if (game.name && game.numPlayers && game.numRounds) {
+		jQuery.jStorage.set('game',game);
+		ninecards.createGame(game.name);
+	} else {
+		console.error('fill out all fields');
 	}
+
+	$('#create-game-popup').popup('close');
 	return false;
 });
 
 
-$(document).on('vclick', '.available-game', function () {
+$(document).on('vclick', '#startgame-button', function(event){
 
-	ninecards.joinGame( $(this).attr('id') );
-	
-});
-
-
-$(document).on('vclick', '#message-button', function() {
-	$('#message-container').popup('open', {
-		positionTo: 'window',
-		theme: 'b',
-		corners: true
-	});
-});
-
-
-
-$(document).on('vclick', '#message-form #submit', function() {
-	var message = $('#message-form #message').val();
-	if (message) {
-		ninecards.sendMessage(message);
-	}
-	$('#message-container').popup('close');
+	event.preventDefault();
+	$('#startgame-button').hide();
+	ninecards.startGame();
 	return false;
+
 });
 
+
+$(document).on('click', '#numpad a', function(event) {
+
+	event.preventDefault();
+	var card  = $(this).attr('data-id');
+	ninecards.sendCard(card, function(){
+		$('a[data-id='+card+']').addClass('ui-disabled');
+	});
+	return false;
+
+});
+
+
+$(document).on('vclick', '#exitgame-button', function(event){
+
+	event.preventDefault();
+	ninecards.leaveGame();
+	return false;
+
+});
+
+
+$(document).on('vclick', '#exitgames-button', function(event){
+
+	event.preventDefault();
+	MX.core.disconnect('Application Closed');
+	jQuery.mobile.changePage(
+		'#start', {
+			transition: 'slide',
+			reverse: true,
+			changeHash: true
+		}
+	);
+	return false;
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* core jQuery handlers */
+
+$( window ).on('beforeunload', function() {
+	MX.core.disconnect('Browser Window Closed');
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Development Hooks */
+
+$(document).on('vclick', '#load-defaults-button', function() {
+
+    $.getJSON('settings.json', function(data){
+		ninecards.fillSettingsForm(data);
+    });
+
+});
+
+$(document).on('pageshow', '#games', function(){
+
+	$('#create-game-form #gamename').val('asdf');
+	$('#create-game-form #numplayers').val('3');
+	$('#create-game-form #numrounds').val('3');
+
+});

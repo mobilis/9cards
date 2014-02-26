@@ -37,9 +37,9 @@
                 type: 'set'
             })
             .c('ConfigureGameRequest', {xmlns : Mobilis.ninecards.NS.CONFIGUREGAME})
-            .c('GameName').t(GameName).up()
-            .c('MaxPlayers').t(MaxPlayers).up()
-            .c('NumberOfRounds').t(NumberOfRounds).up();
+            .c('gamename').t(GameName).up()
+            .c('players').t(MaxPlayers).up()
+            .c('rounds').t(NumberOfRounds).up();
 
             Mobilis.core.sendIQ(customIq, resultcallback, errorcallback);
         }, 

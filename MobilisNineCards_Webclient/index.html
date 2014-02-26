@@ -1,23 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>mobilis 9Cards</title>
-	<link rel="shortcut icon" href="images/favicon.ico">
-	<link rel="stylesheet" href="css/libs/jquery.mobile-1.3.2.min.css">
-	<link rel="stylesheet" href="css/fonts/open-sans/stylesheet.css">
-	<link rel="stylesheet" href="css/ninecards.css">
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<meta name="apple-mobile-web-app-capable" content="no"/>
+
+	<title>9Cards</title>
+	<link rel="shortcut icon" href="images/favicon.ico"/>
+	<link rel="stylesheet" href="css/libs/jquery.mobile-1.3.2.min.css"/>
+	<link rel="stylesheet" href="css/fonts/open-sans/stylesheet.css"/>
+	<link rel="stylesheet" href="css/ninecards.css"/>
 
 	<script src="js/libs/jquery-2.0.3.min.js"></script>
 	<script src="js/libs/strophe.js"></script>
 	<script src="js/libs/strophe.muc.js"></script>
 	<script src="js/libs/jquery.mobile-1.3.2.min.js"></script>
+	<script src="js/libs/jstorage-0.4.5.min.js"></script>
 
-	<script src="js/mobilis/mobilis.js"></script>
-	<script src="js/mobilis/mobilis.core.js"></script>
-	<script src="js/mobilis/mobilis.utils.js"></script>
-	<script src="js/mobilis/mobilis.ninecards.js"></script>
+	<script src="js/mxjs/MXJS/mx.js"></script>
+	<script src="js/mxjs/MXJS/mx.core.js"></script>
+	<script src="js/mxjs/MXJS/mx.ninecards.js"></script>
 
 	<script src="js/ninecards.js"></script>
 </head>
@@ -28,7 +30,7 @@
 <div id="start" data-role="page">
 
 	<div data-role="header">
-		<h1>Mobilis 9Cards</h1>
+		<h1>9Cards</h1>
 	</div><!-- /header -->
 
 	<div data-role="content">	
@@ -50,18 +52,23 @@
 
 	<div data-role="header">
 		<a href="#start" data-icon="back">Back</a>
-		<h1>Mobilis 9Cards: Settings</h1>
+		<h1>9Cards: Settings</h1>
 	</div><!-- /header -->
 
 	<div data-role="content">	
 
 		<form id="settings-form" method="post">
 			<input type="text" name="username" id="username" placeholder="Username" value="">
-			<input type="text" name="gameserver" id="gameserver" placeholder="Game Server" value="">
 			<input type="text" name="jid" id="jid" placeholder="Jabber ID" value="">
 			<input type="password" name="password" id="password" placeholder="Password" value="" autocomplete="off">
-			<input type="submit" name"submit" id="submit" value="Save settings" data-theme="b">
+			<input type="text" name="gameserver" id="gameserver" placeholder="Game Server" value="">
+			<input type="text" name="chatservice" id="chatservice" placeholder="Chat Service" value="">
+			<input type="text" name="coordinator" id="coordinator" placeholder="Coordinator" value="">
+			<input type="submit" name="submit" id="settings-submit" value="Save settings" data-theme="b">
 		</form>
+		<div>
+			<a href="#" id="load-defaults-button" data-role="button">Load defaults</a>
+		</div>
 
 	</div><!-- /content -->
 	
@@ -74,33 +81,49 @@
 <div id="games" data-role="page">
 
 	<div data-role="header">
-		<a href="#start" data-icon="back">Back</a>
-		<h1>Mobilis 9Cards: Games</h1>
-		<a href="#create-game-popup" id="create-game-button" data-rel="popup" data-position-to="window" data-icon="plus">Create</a>
+		<a id="exitgames-button" href="#start" data-icon="back">Back</a>
+		<h1>9Cards: Games</h1>
+		<a href="#" id="refresh-games-button" data-icon="refresh">Refresh</a>
 	</div><!-- /header -->
 
 	<div data-role="content">	
 
-	<ul id="game-list" data-role="listview">
+	<ul id="games-list" data-role="listview" data-inset="true">
 	</ul>
+	<div>
+		<a href="#create-game-popup" id="create-game-button" data-role="button" data-rel="popup" data-position-to="window" data-theme="b">Create new Game</a>
+	</div>
 
 	</div><!-- /content -->
-	<div data-role="popup" id="create-game-popup" data-theme="a" class="ui-corner-all">
-	    <form id="create-game-form" method="post">
-	        <div style="padding:10px">
-	            <h3>Create new game:</h3>
-	            <label for="gamename" class="ui-hidden-accessible">game name:</label>
-	            <input type="text" name="gamename" id="gamename" value="asdf" placeholder="game name" data-theme="a">
-	            <label for="numplayers" class="ui-hidden-accessible">number of players:</label>
-	            <input type="text" name="numplayers" id="numplayers" value="4" placeholder="number of players" data-theme="a">
-	            <label for="numrounds" class="ui-hidden-accessible">number of rounds:</label>
-	            <input type="text" name="numrounds" id="numrounds" value="4" placeholder="number of rounds" data-theme="a">
-	            <button type="submit" id="submit" data-theme="b" data-icon="check">Create</button>
-	        </div>
-	    </form>
-	</div>
-</div><!-- /games-page -->
 
+	<div data-role="popup" id="create-game-popup" data-theme="a" class="ui-corner-all">
+		<form id="create-game-form" method="post">
+			<div style="padding:10px">
+				<h3>Create new game:</h3>
+				<label for="gamename" class="ui-hidden-accessible">game name:</label>
+				<input type="text" name="gamename" id="gamename" value="" placeholder="game name" data-theme="a">
+				<label for="numplayers" class="ui-hidden-accessible">number of players:</label>
+				<input type="text" name="numplayers" id="numplayers" value="" placeholder="number of players" data-theme="a">
+				<label for="numrounds" class="ui-hidden-accessible">number of rounds:</label>
+				<input type="text" name="numrounds" id="numrounds" value="" placeholder="number of rounds" data-theme="a">
+				<button type="submit" id="create-game-submit" data-theme="b" data-icon="check">Create</button>
+			</div>
+		</form>
+	</div><!-- /create-game-popup -->
+
+	<div data-role="popup" id="error-popup" data-theme="c" class="ui-corner-all" data-dismissible="false">
+		<div data-role="header" data-theme="a" class="ui-corner-top">
+			<h1></h1>
+		</div>
+		<div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+			<h3 class="ui-title"></h3>
+			<p></p>
+			<a href="#" data-role="button" data-rel="back" data-transition="flow" data-theme="b">OK</a>
+		</div>
+	</div><!-- /dialog-popup -->
+
+
+</div><!-- /games-page -->
 
 
 
@@ -109,43 +132,59 @@
 
 	<div data-role="header">
 		<a id="exitgame-button" href="#games" data-icon="back" data-transition="slide" data-direction="reverse">Quit</a>
-		<h1>Mobilis 9Cards: Game</h1>
-		<a id="message-button" href="#" data-icon="info">Message</a>
+		<h1>9Cards: </h1>
+		<!-- <a id="message-button" href="#message-popup" data-rel="popup" data-icon="info" data-position-to="window">Chat</a> -->
+		<div id="round-count"><span class="ingame">Round</span><span id="round" class="ingame"></span><span class="ingame">of</span><span id="rounds" class="ingame"></span><span id="gameover">Game Over</span></div>
 	</div><!-- /header -->
 
-	<div data-role="content">	
+	<div id="game-area" data-role="content">
 
-	<ul id="players-list" data-role="listview" data-count-theme="c" data-inset="true"></ul>
+		<ul id="players-list" data-role="listview" data-count-theme="c" data-inset="true"></ul>
 
-	<table id="numpad">
-		<tr>
-			<td><a href="#" data-role="button" data-theme="b" data-inline="false">1</a></td>
-			<td><a href="#" data-role="button" data-theme="b" data-inline="false">2</a></td>
-			<td><a href="#" data-role="button" data-theme="b" data-inline="false">3</a></td>
-		</tr>
-		<tr>
-			<td><a href="#" data-role="button" data-theme="b" data-inline="false">4</a></td>
-			<td><a href="#" data-role="button" data-theme="b" data-inline="false">5</a></td>
-			<td><a href="#" data-role="button" data-theme="b" data-inline="false">6</a></td>
-		</tr>
-		<tr>
-			<td><a href="#" data-role="button" data-theme="b" data-inline="false">7</a></td>
-			<td><a href="#" data-role="button" data-theme="b" data-inline="false">8</a></td>
-			<td><a href="#" data-role="button" data-theme="b" data-inline="false">9</a></td>
-		</tr>
-	</table>
+		<table id="numpad">
+			<tr>
+				<td><a href="#" data-id="1" data-role="button" data-theme="b" data-inline="false" class="ui-disabled">1</a></td>
+				<td><a href="#" data-id="2" data-role="button" data-theme="b" data-inline="false" class="ui-disabled">2</a></td>
+				<td><a href="#" data-id="3" data-role="button" data-theme="b" data-inline="false" class="ui-disabled">3</a></td>
+			</tr>
+			<tr>
+				<td><a href="#" data-id="4" data-role="button" data-theme="b" data-inline="false" class="ui-disabled">4</a></td>
+				<td><a href="#" data-id="5" data-role="button" data-theme="b" data-inline="false" class="ui-disabled">5</a></td>
+				<td><a href="#" data-id="6" data-role="button" data-theme="b" data-inline="false" class="ui-disabled">6</a></td>
+			</tr>
+			<tr>
+				<td><a href="#" data-id="7" data-role="button" data-theme="b" data-inline="false" class="ui-disabled">7</a></td>
+				<td><a href="#" data-id="8" data-role="button" data-theme="b" data-inline="false" class="ui-disabled">8</a></td>
+				<td><a href="#" data-id="9" data-role="button" data-theme="b" data-inline="false" class="ui-disabled">9</a></td>
+			</tr>
+		</table>
+		
+		<div>
+			<a href="#" id="startgame-button" data-theme="a" data-role="button">Start Game</a>
+		</div>
 
 	</div><!-- /content -->
 
-	<div data-role="popup" id="message-container" data-theme="a" class="ui-corner-all">
-	    <form id="message-form" method="post">
-	        <div style="padding:10px;">
-	            <label for="message" class="ui-hidden-accessible">Message:</label>
-	            <input type="text" name="message" id="message" value="testmessage" placeholder="message" data-theme="a">
-	            <button type="submit" id="submit" data-theme="b" data-icon="check">Send</button>
-	        </div>
-	    </form>
-	</div>
+	<div data-role="popup" id="message-popup" data-theme="a" class="ui-corner-all">
+		<form id="message-form" method="post">
+			<div style="padding:10px;">
+				<label for="message" class="ui-hidden-accessible">Message:</label>
+				<input type="text" name="message" id="message" value="testmessage" placeholder="message" data-theme="a">
+				<button type="submit" id="message-submit" data-theme="b" data-icon="check">Send</button>
+			</div>
+		</form>
+	</div><!-- /message-popup -->
+
+	<div data-role="popup" id="dialog-popup" data-theme="c" class="ui-corner-all" data-dismissible="false">
+		<div data-role="header" data-theme="a" class="ui-corner-top">
+			<h1></h1>
+		</div>
+		<div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+			<h3 class="ui-title"></h3>
+			<p></p>
+			<a href="#" data-role="button" data-rel="back" data-transition="flow" data-theme="b">OK</a>
+		</div>
+	</div><!-- /dialog-popup -->
 
 </div><!-- /game-page -->
 
