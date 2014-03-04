@@ -243,27 +243,9 @@ public class ServerConnection
 				return false;
 			}
 		}
-		
-		// initialise private MUC chat for messages to ninecards service
-		/*if(mPrivateMucChat == null) {
-			for(Iterator<String> it = mPublicChat.getOccupants(); it.hasNext();) {
-				String id = it.next();
-				if(id.toLowerCase().endsWith(serviceNick.toLowerCase())) {
-					mPrivateMucChat = mPublicChat.createPrivateChat(id, mChatMessageListener);
-					break;
-				}
-			}
-		}*/
 
 		// initialise private chat for messages to ninecards service
 		String serviceJID = mBgService.getGameServiceJID();
-		/*try {
-			for(Affiliate a : mPublicChat.getOwners()) { 
-				serviceJID = a.getJid();
-				break;
-			}
-		} catch(Exception e) { System.out.println("Failed to get service JID (" + e.getMessage() + ")"); }*/
-
 		mPrivateChat = mXmppConnection.getChatManager().createChat(serviceJID, mChatMessageListener);
 		
 		// also listen to messages of private chats which were initiated by the other side

@@ -421,14 +421,8 @@ public class OpenGamesActivity extends Activity
 				
 				if((bean != null) && bean.getType() != (XMPPBean.TYPE_ERROR)) {
 					BackgroundService bgService = mBackgroundServiceConnector.getBackgroundService();
-					
-					// re-set game service JID because player could have tried to join more than one game
-//System.out.println(bean.getFrom()); -- ist null
-//bgService.setGameServiceJID(bean.getFrom());
 					bgService.setMucId(bean.getMuc());
 					bgService.getGame().setRounds(bean.getMaxRounds());
-					
-					// TODO bean contains max players which is useless, should contain game name instead. rounds is also useless because it is contained in gamestartsmessage!
 					
 					// destroy view and go to play view
 					startActivity(new Intent(OpenGamesActivity.this, PlayActivity.class));
