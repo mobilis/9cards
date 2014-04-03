@@ -15,11 +15,13 @@
 @property (retain) NSString *jid;
 @property (retain) NSString *password;
 @property (retain) NSString *hostName;
+@property (retain) NSString *runtimeName;
 @property (retain) NSNumber *port;
 
 @property (weak) UITextField *jidField;
 @property (weak) UITextField *passwordField;
 @property (weak) UITextField *hostNameField;
+@property (weak) UITextField *runtimeTextField;
 @property (weak) UITextField *portField;
 
 @property (retain) UITableViewController *tvCtr;
@@ -66,6 +68,7 @@
     self.jid = account.jid;
     self.password = account.password;
     self.port = account.port;
+    self.runtimeName = account.runtimeName;
 }
 
 - (void)didReceiveMemoryWarning
@@ -81,7 +84,7 @@
 #pragma mark - UITableViewDataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-	return 4;
+	return 5;
 }
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -102,17 +105,22 @@
 			tf.keyboardType = UIKeyboardTypeURL;
 			tf.text = self.hostName;
 			break;
-		case 1:
+        case 1:
+            self.runtimeTextField = tf;
+            tf.keyboardType = UIKeyboardTypeDefault;
+            tf.text = self.runtimeName;
+            break;
+		case 2:
 			self.jidField = tf;
 			tf.keyboardType = UIKeyboardTypeEmailAddress;
 			tf.text = self.jid;
 			break;
-		case 2:
+		case 3:
 			self.passwordField = tf;
 			tf.secureTextEntry = YES;
 			tf.text = self.password;
 			break;
-		case 3:
+		case 4:
 			self.portField = tf;
 			tf.keyboardType = UIKeyboardTypeNumberPad;
 			tf.text = [NSString stringWithFormat:@"%@", self.port];
@@ -127,11 +135,13 @@
 	switch (section) {
 		case 0:
 			return @"Host";
-		case 1:
-			return @"Your Account (JID)";
+        case 1:
+            return @"Runtime Name";
 		case 2:
-			return @"Password";
+			return @"Your Account (JID)";
 		case 3:
+			return @"Password";
+		case 4:
 			return @"Port";
         default:
 			return @"";
@@ -153,8 +163,11 @@
 		self.password = self.passwordField.text;
 	}
 	if (textField == self.portField) {
-		self.port = [NSNumber numberWithInt:[self.portField.text integerValue]];
+		self.port = [NSNumber numberWithInt:[self.portField.text intValue]];
 	}
+    if (textField == self.runtimeTextField) {
+        self.runtimeName = self.runtimeTextField.text;
+    }
 }
 
 #pragma mark - Interface Implementation
@@ -168,11 +181,13 @@
     account.jid = self.jid;
     account.password = self.password;
     account.hostName = self.hostName;
+    account.runtimeName = self.runtimeName;
     account.port = self.port;
     [AccountManager storeAccount:account];
     [[MXiConnectionHandler sharedInstance] reconnectWithJID:account.jid
                                                    password:account.password
                                                    hostName:account.hostName
+                                                runtimeName:account.runtimeName
                                                        port:account.port];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }

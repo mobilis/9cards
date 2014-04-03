@@ -1,12 +1,12 @@
 PODS:
-  - CocoaAsyncSocket (7.3.2)
-  - CocoaLumberjack (1.6.4):
+  - CocoaAsyncSocket (7.3.4)
+  - CocoaLumberjack (1.6.5.1):
     - CocoaLumberjack/Core
     - CocoaLumberjack/Extensions
-  - CocoaLumberjack/Core (1.6.4)
-  - CocoaLumberjack/Extensions (1.6.4):
+  - CocoaLumberjack/Core (1.6.5.1)
+  - CocoaLumberjack/Extensions (1.6.5.1):
     - CocoaLumberjack/Core
-  - FXKeychain (1.4)
+  - FXKeychain (1.5)
   - MobilisMXi (0.5.0):
     - FXKeychain
     - MobilisMXi/no_arc
@@ -54,7 +54,7 @@ PODS:
     - XMPPFramework/XEP-0082
 
 DEPENDENCIES:
-  - MobilisMXi (from `/Users/martin/Development/Mobilis/Mobilis`)
+  - MobilisMXi (from `https://github.com/mobilis/mobilis.git`)
   - XMPPFramework/Core (from `xmpp.podspec`)
   - XMPPFramework/Reconnect (from `xmpp.podspec`)
   - XMPPFramework/Roster (from `xmpp.podspec`)
@@ -62,15 +62,15 @@ DEPENDENCIES:
 
 EXTERNAL SOURCES:
   MobilisMXi:
-    :path: /Users/martin/Development/Mobilis/Mobilis
+    :git: https://github.com/mobilis/mobilis.git
   XMPPFramework:
     :podspec: xmpp.podspec
 
 SPEC CHECKSUMS:
-  CocoaAsyncSocket: 977404129ec8505fee1c3701956b769e3bb10ea7
-  CocoaLumberjack: 006187e7e3c52f505aab43d7b5ba6af35838bf23
-  FXKeychain: 649efca683aa602c446620701a46780515d25610
-  MobilisMXi: 94efe63b89ed81b119a4c7119791c0e981ea7b9a
+  CocoaAsyncSocket: 534d09416f992fd51efb23f534742ce70b3a7999
+  CocoaLumberjack: 17803afbade3126a377d32b8d23367264b44ced6
+  FXKeychain: 90cc7bf9ba005e4d099a113a194792e7983c5778
+  MobilisMXi: 68b4696c2c64032cf8fd304ad4a28d10b6fb7cf8
   XMPPFramework: 497aa5e1173ad51124b81f53264fd64e83adc4e3
 
-COCOAPODS: 0.27.1
+COCOAPODS: 0.29.0

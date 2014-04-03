@@ -20,6 +20,7 @@
         [[MXiConnectionHandler sharedInstance] launchConnectionWithJID:account.jid
                                                               password:account.password
                                                               hostName:account.hostName
+                                                           runtimeName:account.runtimeName
                                                            serviceType:MULTI
                                                                   port:account.port];
     } else {
