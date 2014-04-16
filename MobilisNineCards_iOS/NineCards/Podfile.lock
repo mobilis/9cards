@@ -54,7 +54,7 @@ PODS:
     - XMPPFramework/XEP-0082
 
 DEPENDENCIES:
-  - MobilisMXi (from `https://github.com/mobilis/mobilis.git`)
+  - MobilisMXi (from `/Users/cmdaltent/Development/Projects/Mobilis/Mobilis`)
   - XMPPFramework/Core (from `xmpp.podspec`)
   - XMPPFramework/Reconnect (from `xmpp.podspec`)
   - XMPPFramework/Roster (from `xmpp.podspec`)
@@ -62,7 +62,7 @@ DEPENDENCIES:
 
 EXTERNAL SOURCES:
   MobilisMXi:
-    :git: https://github.com/mobilis/mobilis.git
+    :path: /Users/cmdaltent/Development/Projects/Mobilis/Mobilis
   XMPPFramework:
     :podspec: xmpp.podspec
 
@@ -70,7 +70,7 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 534d09416f992fd51efb23f534742ce70b3a7999
   CocoaLumberjack: 17803afbade3126a377d32b8d23367264b44ced6
   FXKeychain: 90cc7bf9ba005e4d099a113a194792e7983c5778
-  MobilisMXi: 68b4696c2c64032cf8fd304ad4a28d10b6fb7cf8
+  MobilisMXi: 94efe63b89ed81b119a4c7119791c0e981ea7b9a
   XMPPFramework: 497aa5e1173ad51124b81f53264fd64e83adc4e3
 
-COCOAPODS: 0.29.0
+COCOAPODS: 0.32.1

@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Mobilis. All rights reserved.
 //
 
-#import <MobilisMXi/MXi/MXiConnectionHandler.h>
+#import "MXiConnection.h"
 #import "CreateGameViewController.h"
 #import "GameViewController.h"
 

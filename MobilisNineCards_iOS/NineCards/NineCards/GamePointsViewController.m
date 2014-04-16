@@ -11,6 +11,8 @@
 #import "Player.h"
 #import "PlayerInfo.h"
 
+#import "XMPPJID.h"
+
 @interface GamePointsViewController ()
 
 @end

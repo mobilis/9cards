@@ -76,22 +76,22 @@
 		0CF033CF18083CC000C1FE0F /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF033CE18083CC000C1FE0F /* SettingsViewController.m */; };
 		0CF033D218083D5200C1FE0F /* TextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF033D118083D5200C1FE0F /* TextFieldCell.m */; };
 		0CFEBBB6180C8FAD00631DD2 /* StartViewController_iPad.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CFEBBB5180C8FAD00631DD2 /* StartViewController_iPad.m */; };
-		5B182362182D298400FAD9FE /* GetGameConfigurationResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B18235C182D298400FAD9FE /* GetGameConfigurationResponse.m */; };
-		5B182363182D298400FAD9FE /* GetGameConfigurationRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B18235E182D298400FAD9FE /* GetGameConfigurationRequest.m */; };
-		5B182364182D298400FAD9FE /* GameStartsMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B182360182D298400FAD9FE /* GameStartsMessage.m */; };
 		5B1C401F180E94A60029030E /* Settings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5B1C401E180E94A60029030E /* Settings.plist */; };
 		5B219C861811312000C64C54 /* Settings.plist.example in Resources */ = {isa = PBXBuildFile; fileRef = 5B219C851811312000C64C54 /* Settings.plist.example */; };
 		5BDD0FC71832031E00437515 /* GamePointsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5BDD0FC61832031E00437515 /* GamePointsView.xib */; };
 		5BDD0FCA183207C100437515 /* Player.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BDD0FC9183207C100437515 /* Player.m */; };
 		5BF79944183E4411002A54AC /* GamePointsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BDD0FC21831FF5700437515 /* GamePointsViewController.m */; };
-		BF8CB25D253FE7F53718C5DC /* GameOverMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CB0C818E406A8842E8111 /* GameOverMessage.m */; };
-		BF8CB332BFD951164EBA5B99 /* CardPlayedMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CB13C0F0DA5D226EDCEBE /* CardPlayedMessage.m */; };
-		BF8CB7FB7A452FC8022AA89E /* RoundCompleteMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CBDC29A7A2F5950529C86 /* RoundCompleteMessage.m */; };
-		BF8CB8F91E8B484C2A45B7FB /* PlayerInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CB4168DC46DDB5C62E976 /* PlayerInfo.m */; };
-		BF8CBAA5FAE16A280ECDAC57 /* StartGameMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CB5A415A60865B797F832 /* StartGameMessage.m */; };
-		BF8CBCC6232F6855ECF1E334 /* ConfigureGameResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CB1D49EEA7A572593CFDC /* ConfigureGameResponse.m */; };
-		BF8CBD1A178A1036AC0AE64E /* ConfigureGameRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CBBE600492B98F33C9A8E /* ConfigureGameRequest.m */; };
-		BF8CBD678D7166BC39F8D869 /* PlayCardMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CBE6470A28025CEA6A5E1 /* PlayCardMessage.m */; };
+		63049B8518F05A6C0071424B /* ConfigureGameRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 63049B6C18F05A6C0071424B /* ConfigureGameRequest.m */; };
+		63049B8618F05A6C0071424B /* ConfigureGameResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 63049B6E18F05A6C0071424B /* ConfigureGameResponse.m */; };
+		63049B8718F05A6C0071424B /* GetGameConfigurationRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 63049B7018F05A6C0071424B /* GetGameConfigurationRequest.m */; };
+		63049B8818F05A6C0071424B /* GetGameConfigurationResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 63049B7218F05A6C0071424B /* GetGameConfigurationResponse.m */; };
+		63049B8918F05A6C0071424B /* CardPlayedMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 63049B7518F05A6C0071424B /* CardPlayedMessage.m */; };
+		63049B8A18F05A6C0071424B /* GameOverMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 63049B7718F05A6C0071424B /* GameOverMessage.m */; };
+		63049B8B18F05A6C0071424B /* GameStartsMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 63049B7918F05A6C0071424B /* GameStartsMessage.m */; };
+		63049B8C18F05A6C0071424B /* PlayCardMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 63049B7B18F05A6C0071424B /* PlayCardMessage.m */; };
+		63049B8D18F05A6C0071424B /* RoundCompleteMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 63049B7D18F05A6C0071424B /* RoundCompleteMessage.m */; };
+		63049B8E18F05A6C0071424B /* StartGameMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 63049B7F18F05A6C0071424B /* StartGameMessage.m */; };
+		63049B8F18F05A6C0071424B /* PlayerInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 63049B8218F05A6C0071424B /* PlayerInfo.m */; };
 		EAAF1D87FD8B459FB2E1C965 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 201482854538406FBF9698BD /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -193,12 +193,6 @@
 		0CFEBBB5180C8FAD00631DD2 /* StartViewController_iPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StartViewController_iPad.m; sourceTree = "<group>"; };
 		201482854538406FBF9698BD /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		38D6716BF7E24CD28EC41FF0 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
-		5B18235C182D298400FAD9FE /* GetGameConfigurationResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetGameConfigurationResponse.m; sourceTree = "<group>"; };
-		5B18235D182D298400FAD9FE /* GetGameConfigurationResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetGameConfigurationResponse.h; sourceTree = "<group>"; };
-		5B18235E182D298400FAD9FE /* GetGameConfigurationRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetGameConfigurationRequest.m; sourceTree = "<group>"; };
-		5B18235F182D298400FAD9FE /* GetGameConfigurationRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetGameConfigurationRequest.h; sourceTree = "<group>"; };
-		5B182360182D298400FAD9FE /* GameStartsMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameStartsMessage.m; sourceTree = "<group>"; };
-		5B182361182D298400FAD9FE /* GameStartsMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameStartsMessage.h; sourceTree = "<group>"; };
 		5B1C401E180E94A60029030E /* Settings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Settings.plist; sourceTree = "<group>"; };
 		5B219C851811312000C64C54 /* Settings.plist.example */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Settings.plist.example; sourceTree = "<group>"; };
 		5BDD0FC11831FF5700437515 /* GamePointsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GamePointsViewController.h; sourceTree = "<group>"; };
@@ -206,22 +200,32 @@
 		5BDD0FC61832031E00437515 /* GamePointsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GamePointsView.xib; sourceTree = "<group>"; };
 		5BDD0FC8183207C100437515 /* Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Player.h; sourceTree = "<group>"; };
 		5BDD0FC9183207C100437515 /* Player.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Player.m; sourceTree = "<group>"; };
-		BF8CB0A720CE579AE6AE27D3 /* GameOverMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameOverMessage.h; sourceTree = "<group>"; };
-		BF8CB0C818E406A8842E8111 /* GameOverMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameOverMessage.m; sourceTree = "<group>"; };
-		BF8CB0D87C5E36E9110BC480 /* PlayCardMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayCardMessage.h; sourceTree = "<group>"; };
-		BF8CB13C0F0DA5D226EDCEBE /* CardPlayedMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CardPlayedMessage.m; sourceTree = "<group>"; };
-		BF8CB1D49EEA7A572593CFDC /* ConfigureGameResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigureGameResponse.m; sourceTree = "<group>"; };
-		BF8CB4168DC46DDB5C62E976 /* PlayerInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerInfo.m; sourceTree = "<group>"; };
-		BF8CB5A415A60865B797F832 /* StartGameMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StartGameMessage.m; sourceTree = "<group>"; };
-		BF8CB60FFED84F6B86707F82 /* ConfigureGameResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigureGameResponse.h; sourceTree = "<group>"; };
-		BF8CB9757B6F63C0DA5E8598 /* PlayerInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerInfo.h; sourceTree = "<group>"; };
-		BF8CB9FF65CEC580F9DD53D1 /* ConfigureGameRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigureGameRequest.h; sourceTree = "<group>"; };
-		BF8CBBE600492B98F33C9A8E /* ConfigureGameRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigureGameRequest.m; sourceTree = "<group>"; };
-		BF8CBBF15E4E738FFD707811 /* RoundCompleteMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoundCompleteMessage.h; sourceTree = "<group>"; };
-		BF8CBDC29A7A2F5950529C86 /* RoundCompleteMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RoundCompleteMessage.m; sourceTree = "<group>"; };
-		BF8CBE6470A28025CEA6A5E1 /* PlayCardMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayCardMessage.m; sourceTree = "<group>"; };
-		BF8CBF714526D0AF8DDD4EE3 /* StartGameMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StartGameMessage.h; sourceTree = "<group>"; };
-		BF8CBFB35C4ECE6650B205C5 /* CardPlayedMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CardPlayedMessage.h; sourceTree = "<group>"; };
+		63049B6818F05A6C0071424B /* ClientIQListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientIQListener.h; sourceTree = "<group>"; };
+		63049B6918F05A6C0071424B /* ClientMessageListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientMessageListener.h; sourceTree = "<group>"; };
+		63049B6B18F05A6C0071424B /* ConfigureGameRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigureGameRequest.h; sourceTree = "<group>"; };
+		63049B6C18F05A6C0071424B /* ConfigureGameRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigureGameRequest.m; sourceTree = "<group>"; };
+		63049B6D18F05A6C0071424B /* ConfigureGameResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigureGameResponse.h; sourceTree = "<group>"; };
+		63049B6E18F05A6C0071424B /* ConfigureGameResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigureGameResponse.m; sourceTree = "<group>"; };
+		63049B6F18F05A6C0071424B /* GetGameConfigurationRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetGameConfigurationRequest.h; sourceTree = "<group>"; };
+		63049B7018F05A6C0071424B /* GetGameConfigurationRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetGameConfigurationRequest.m; sourceTree = "<group>"; };
+		63049B7118F05A6C0071424B /* GetGameConfigurationResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetGameConfigurationResponse.h; sourceTree = "<group>"; };
+		63049B7218F05A6C0071424B /* GetGameConfigurationResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetGameConfigurationResponse.m; sourceTree = "<group>"; };
+		63049B7418F05A6C0071424B /* CardPlayedMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CardPlayedMessage.h; sourceTree = "<group>"; };
+		63049B7518F05A6C0071424B /* CardPlayedMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CardPlayedMessage.m; sourceTree = "<group>"; };
+		63049B7618F05A6C0071424B /* GameOverMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameOverMessage.h; sourceTree = "<group>"; };
+		63049B7718F05A6C0071424B /* GameOverMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameOverMessage.m; sourceTree = "<group>"; };
+		63049B7818F05A6C0071424B /* GameStartsMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameStartsMessage.h; sourceTree = "<group>"; };
+		63049B7918F05A6C0071424B /* GameStartsMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameStartsMessage.m; sourceTree = "<group>"; };
+		63049B7A18F05A6C0071424B /* PlayCardMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayCardMessage.h; sourceTree = "<group>"; };
+		63049B7B18F05A6C0071424B /* PlayCardMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayCardMessage.m; sourceTree = "<group>"; };
+		63049B7C18F05A6C0071424B /* RoundCompleteMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoundCompleteMessage.h; sourceTree = "<group>"; };
+		63049B7D18F05A6C0071424B /* RoundCompleteMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RoundCompleteMessage.m; sourceTree = "<group>"; };
+		63049B7E18F05A6C0071424B /* StartGameMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StartGameMessage.h; sourceTree = "<group>"; };
+		63049B7F18F05A6C0071424B /* StartGameMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StartGameMessage.m; sourceTree = "<group>"; };
+		63049B8118F05A6C0071424B /* PlayerInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerInfo.h; sourceTree = "<group>"; };
+		63049B8218F05A6C0071424B /* PlayerInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerInfo.m; sourceTree = "<group>"; };
+		63049B8318F05A6C0071424B /* ServiceIQListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServiceIQListener.h; sourceTree = "<group>"; };
+		63049B8418F05A6C0071424B /* ServiceMessageListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServiceMessageListener.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -440,31 +444,68 @@
 			name = Images;
 			sourceTree = "<group>";
 		};
+		63049B6718F05A6C0071424B /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				63049B6818F05A6C0071424B /* ClientIQListener.h */,
+				63049B6918F05A6C0071424B /* ClientMessageListener.h */,
+				63049B6A18F05A6C0071424B /* IQs */,
+				63049B7318F05A6C0071424B /* Messages */,
+				63049B8018F05A6C0071424B /* Model */,
+				63049B8318F05A6C0071424B /* ServiceIQListener.h */,
+				63049B8418F05A6C0071424B /* ServiceMessageListener.h */,
+			);
+			name = Classes;
+			path = NineCards/Classes;
+			sourceTree = SOURCE_ROOT;
+		};
+		63049B6A18F05A6C0071424B /* IQs */ = {
+			isa = PBXGroup;
+			children = (
+				63049B6B18F05A6C0071424B /* ConfigureGameRequest.h */,
+				63049B6C18F05A6C0071424B /* ConfigureGameRequest.m */,
+				63049B6D18F05A6C0071424B /* ConfigureGameResponse.h */,
+				63049B6E18F05A6C0071424B /* ConfigureGameResponse.m */,
+				63049B6F18F05A6C0071424B /* GetGameConfigurationRequest.h */,
+				63049B7018F05A6C0071424B /* GetGameConfigurationRequest.m */,
+				63049B7118F05A6C0071424B /* GetGameConfigurationResponse.h */,
+				63049B7218F05A6C0071424B /* GetGameConfigurationResponse.m */,
+			);
+			path = IQs;
+			sourceTree = "<group>";
+		};
+		63049B7318F05A6C0071424B /* Messages */ = {
+			isa = PBXGroup;
+			children = (
+				63049B7418F05A6C0071424B /* CardPlayedMessage.h */,
+				63049B7518F05A6C0071424B /* CardPlayedMessage.m */,
+				63049B7618F05A6C0071424B /* GameOverMessage.h */,
+				63049B7718F05A6C0071424B /* GameOverMessage.m */,
+				63049B7818F05A6C0071424B /* GameStartsMessage.h */,
+				63049B7918F05A6C0071424B /* GameStartsMessage.m */,
+				63049B7A18F05A6C0071424B /* PlayCardMessage.h */,
+				63049B7B18F05A6C0071424B /* PlayCardMessage.m */,
+				63049B7C18F05A6C0071424B /* RoundCompleteMessage.h */,
+				63049B7D18F05A6C0071424B /* RoundCompleteMessage.m */,
+				63049B7E18F05A6C0071424B /* StartGameMessage.h */,
+				63049B7F18F05A6C0071424B /* StartGameMessage.m */,
+			);
+			path = Messages;
+			sourceTree = "<group>";
+		};
+		63049B8018F05A6C0071424B /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				63049B8118F05A6C0071424B /* PlayerInfo.h */,
+				63049B8218F05A6C0071424B /* PlayerInfo.m */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		BF8CB60FE278B02A25291DD0 /* Beans */ = {
 			isa = PBXGroup;
 			children = (
-				5B18235C182D298400FAD9FE /* GetGameConfigurationResponse.m */,
-				5B18235D182D298400FAD9FE /* GetGameConfigurationResponse.h */,
-				5B18235E182D298400FAD9FE /* GetGameConfigurationRequest.m */,
-				5B18235F182D298400FAD9FE /* GetGameConfigurationRequest.h */,
-				5B182360182D298400FAD9FE /* GameStartsMessage.m */,
-				5B182361182D298400FAD9FE /* GameStartsMessage.h */,
-				BF8CBFB35C4ECE6650B205C5 /* CardPlayedMessage.h */,
-				BF8CB13C0F0DA5D226EDCEBE /* CardPlayedMessage.m */,
-				BF8CB9FF65CEC580F9DD53D1 /* ConfigureGameRequest.h */,
-				BF8CBBE600492B98F33C9A8E /* ConfigureGameRequest.m */,
-				BF8CB60FFED84F6B86707F82 /* ConfigureGameResponse.h */,
-				BF8CB1D49EEA7A572593CFDC /* ConfigureGameResponse.m */,
-				BF8CB0A720CE579AE6AE27D3 /* GameOverMessage.h */,
-				BF8CB0C818E406A8842E8111 /* GameOverMessage.m */,
-				BF8CB0D87C5E36E9110BC480 /* PlayCardMessage.h */,
-				BF8CBE6470A28025CEA6A5E1 /* PlayCardMessage.m */,
-				BF8CB9757B6F63C0DA5E8598 /* PlayerInfo.h */,
-				BF8CB4168DC46DDB5C62E976 /* PlayerInfo.m */,
-				BF8CBBF15E4E738FFD707811 /* RoundCompleteMessage.h */,
-				BF8CBDC29A7A2F5950529C86 /* RoundCompleteMessage.m */,
-				BF8CBF714526D0AF8DDD4EE3 /* StartGameMessage.h */,
-				BF8CB5A415A60865B797F832 /* StartGameMessage.m */,
+				63049B6718F05A6C0071424B /* Classes */,
 			);
 			path = Beans;
 			sourceTree = "<group>";
@@ -522,7 +563,7 @@
 						DevelopmentTeam = KYTQR8SDCT;
 					};
 					0C5C872C1806988100C6B371 = {
-						TestTargetID = 0C5C87081806988100C6B371 /* NineCards */;
+						TestTargetID = 0C5C87081806988100C6B371;
 					};
 				};
 			};
@@ -651,32 +692,32 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C5C874D1806B7C300C6B371 /* GameViewController.m in Sources */,
+				63049B8F18F05A6C0071424B /* PlayerInfo.m in Sources */,
+				63049B8C18F05A6C0071424B /* PlayCardMessage.m in Sources */,
+				63049B8A18F05A6C0071424B /* GameOverMessage.m in Sources */,
 				0C5C87261806988100C6B371 /* GameListTableViewController.m in Sources */,
 				0C3B48CE183626F8008F9DCD /* PlayerListCardCell.m in Sources */,
 				0C7E38F8180D5CD5009F9158 /* StartViewController_iPhone.m in Sources */,
+				63049B8B18F05A6C0071424B /* GameStartsMessage.m in Sources */,
 				0C40AB5C1816631600CA06A5 /* CardButton.m in Sources */,
 				0CF033CF18083CC000C1FE0F /* SettingsViewController.m in Sources */,
-				5B182364182D298400FAD9FE /* GameStartsMessage.m in Sources */,
 				0CF033D218083D5200C1FE0F /* TextFieldCell.m in Sources */,
+				63049B8618F05A6C0071424B /* ConfigureGameResponse.m in Sources */,
+				63049B8918F05A6C0071424B /* CardPlayedMessage.m in Sources */,
+				63049B8718F05A6C0071424B /* GetGameConfigurationRequest.m in Sources */,
 				0C3B48CB183626D3008F9DCD /* PlayerListSectionHeader.m in Sources */,
 				0C5C871D1806988100C6B371 /* AppDelegate.m in Sources */,
 				5BF79944183E4411002A54AC /* GamePointsViewController.m in Sources */,
-				5B182363182D298400FAD9FE /* GetGameConfigurationRequest.m in Sources */,
 				0C66D02318084DE900044B28 /* CreateGameViewController.m in Sources */,
 				0C07CF8618190FE900F07113 /* NSString+StringUtils.m in Sources */,
+				63049B8818F05A6C0071424B /* GetGameConfigurationResponse.m in Sources */,
 				0C5C87191806988100C6B371 /* main.m in Sources */,
+				63049B8E18F05A6C0071424B /* StartGameMessage.m in Sources */,
+				63049B8518F05A6C0071424B /* ConfigureGameRequest.m in Sources */,
 				0CFEBBB6180C8FAD00631DD2 /* StartViewController_iPad.m in Sources */,
 				0C7E391F180FD04D009F9158 /* Game.m in Sources */,
-				BF8CB332BFD951164EBA5B99 /* CardPlayedMessage.m in Sources */,
-				BF8CBD1A178A1036AC0AE64E /* ConfigureGameRequest.m in Sources */,
-				BF8CBCC6232F6855ECF1E334 /* ConfigureGameResponse.m in Sources */,
-				BF8CB25D253FE7F53718C5DC /* GameOverMessage.m in Sources */,
-				BF8CBD678D7166BC39F8D869 /* PlayCardMessage.m in Sources */,
-				BF8CB8F91E8B484C2A45B7FB /* PlayerInfo.m in Sources */,
-				BF8CB7FB7A452FC8022AA89E /* RoundCompleteMessage.m in Sources */,
-				BF8CBAA5FAE16A280ECDAC57 /* StartGameMessage.m in Sources */,
-				5B182362182D298400FAD9FE /* GetGameConfigurationResponse.m in Sources */,
 				5BDD0FCA183207C100437515 /* Player.m in Sources */,
+				63049B8D18F05A6C0071424B /* RoundCompleteMessage.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

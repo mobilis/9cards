@@ -25,6 +25,7 @@
 #import "RoundCompleteMessage.h"
 #import "GameStartsMessage.h"
 #import "PlayCardMessage.h"
+#import "PlayerInfo.h"
 
 #import "NSString+StringUtils.h"
 
