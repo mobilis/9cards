@@ -52,7 +52,7 @@
 		 if source files shouldn't be included in jar) -->
 	<target name="jar" depends="compile">
 		<jar jarfile="${dist.dir}\${jar.filename}">
-			<fileset dir="${build.dir}" includes="${root.packages}" />
+			<fileset dir="${build.dir}" includes="**/*.class" />
 			<fileset dir="${src.dir}" includes="" />
 			<fileset dir="${basedir}" includes="${res.dir}/${required.resources}" />
 
