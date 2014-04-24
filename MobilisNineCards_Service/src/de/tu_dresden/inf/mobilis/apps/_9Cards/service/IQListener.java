@@ -3,15 +3,19 @@ package de.tu_dresden.inf.mobilis.apps._9Cards.service;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.ProxyBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanIQAdapter;
+
+import de.tu_dresden.inf.mobilis.apps._9Cards.beans.GetGameConfigurationRequest;
+import de.tu_dresden.inf.mobilis.apps._9Cards.beans.GetGameConfigurationResponse;
+import de.tu_dresden.inf.mobilis.apps._9Cards.beans.ConfigureGameRequest;
+import de.tu_dresden.inf.mobilis.apps._9Cards.beans.ConfigureGameResponse;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.packet.Packet;
 
-import de.tu_dresden.inf.rn.mobilis.services.ninecards.communication.MucConnection;
 import java.util.logging.Logger;
 
 public abstract class AbstractServiceIQListener implements PacketListener {
 
-private final static Logger LOGGER = Logger.getLogger(MucConnection.class.getCanonicalName());
+private final static Logger LOGGER = Logger.getLogger(AbstractServiceIQListener.class.getCanonicalName());
 
 @Override
 	public void processPacket(Packet packet) {
@@ -22,11 +26,11 @@ private final static Logger LOGGER = Logger.getLogger(MucConnection.class.getCan
 
 			if (inBean instanceof ProxyBean) {
 				ProxyBean proxyBean = (ProxyBean) inBean;
-				if (proxyBean.isTypeOf(GetGameConfigurationRequest.NAMESPACE,
+					if (proxyBean.isTypeOf(GetGameConfigurationRequest.NAMESPACE,
 						GetGameConfigurationRequest.CHILD_ELEMENT)) {
 					_onGetGameConfigurationRequest((GetGameConfigurationRequest) proxyBean
 							.parsePayload(new GetGameConfigurationRequest()));
-				} else if (proxyBean.isTypeOf(ConfigureGameRequest.NAMESPACE,
+					} else if (proxyBean.isTypeOf(ConfigureGameRequest.NAMESPACE,
 						ConfigureGameRequest.CHILD_ELEMENT)) {
 					_onConfigureGameRequest((ConfigureGameRequest) proxyBean
 							.parsePayload(new ConfigureGameRequest()));

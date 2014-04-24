@@ -57,15 +57,12 @@ public class PlayerInfo implements XMPPInfo {
 	public String getNamespace() {
 		return NAMESPACE;
 	}
-
-	@Override
-	public XMPPBean clone() {
-	PlayerInfo clone = new PlayerInfo(players, rounds);
-		this.cloneBasicAttributes(clone);
-		return clone;
-	}
 	
 	@Override
+	public String toXML() {
+		return this.payloadToXML();
+	}
+
 	public String payloadToXML() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<id>");
@@ -100,7 +97,7 @@ public class PlayerInfo implements XMPPInfo {
 						Integer value = new Integer(parser.nextText());
 						this.score = value;
 					} else if (tagName.equals("usedcards")) {
-						List<Integer> value = new Integer(parser.nextText());
+						Integer value = new Integer(parser.nextText());
 						if (null == this.usedcards)
 							this.usedcards = new ArrayList<>();
 						this.usedcards.add(value);

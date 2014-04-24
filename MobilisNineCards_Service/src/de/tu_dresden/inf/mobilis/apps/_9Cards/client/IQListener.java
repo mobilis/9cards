@@ -3,15 +3,19 @@ package de.tu_dresden.inf.mobilis.apps._9Cards.client;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.ProxyBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanIQAdapter;
+
+import de.tu_dresden.inf.mobilis.apps._9Cards.beans.GetGameConfigurationRequest;
+import de.tu_dresden.inf.mobilis.apps._9Cards.beans.GetGameConfigurationResponse;
+import de.tu_dresden.inf.mobilis.apps._9Cards.beans.ConfigureGameRequest;
+import de.tu_dresden.inf.mobilis.apps._9Cards.beans.ConfigureGameResponse;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.packet.Packet;
 
-import de.tu_dresden.inf.rn.mobilis.services.ninecards.communication.MucConnection;
 import java.util.logging.Logger;
 
 public abstract class AbstractClientIQListener implements PacketListener {
 
-private final static Logger LOGGER = Logger.getLogger(MucConnection.class.getCanonicalName());
+private final static Logger LOGGER = Logger.getLogger(AbstractClientIQListener.class.getCanonicalName());
 
 @Override
 	public void processPacket(Packet packet) {
@@ -22,13 +26,13 @@ private final static Logger LOGGER = Logger.getLogger(MucConnection.class.getCan
 
 			if (inBean instanceof ProxyBean) {
 				ProxyBean proxyBean = (ProxyBean) inBean;
-				} else if (proxyBean.isTypeOf(GetGameConfigurationResponse.NAMESPACE,
+					if (proxyBean.isTypeOf(GetGameConfigurationResponse.NAMESPACE,
 						GetGameConfigurationResponse.CHILD_ELEMENT)) {
-					_onGetGameConfigurationResponse((GetGameConfigurationResponse) proxyBean
+					onGetGameConfigurationResponse((GetGameConfigurationResponse) proxyBean
 							.parsePayload(new GetGameConfigurationResponse()));
-				} else if (proxyBean.isTypeOf(ConfigureGameResponse.NAMESPACE,
+					} else if (proxyBean.isTypeOf(ConfigureGameResponse.NAMESPACE,
 						ConfigureGameResponse.CHILD_ELEMENT)) {
-					_onConfigureGameResponse((ConfigureGameResponse) proxyBean
+					onConfigureGameResponse((ConfigureGameResponse) proxyBean
 							.parsePayload(new ConfigureGameResponse()));
 				} else {
 					throw new Exception("No responsible type for received proxyBean!");
