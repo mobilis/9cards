@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xpd xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://mobilis.inf.tu-dresden.de/xpd"
+	xsi:schemaLocation="http://mobilis.inf.tu-dresden.de/xpd src/main/xsd/xpd.xsd http://mobilis.inf.tu-dresden.de/apps/9Cards 9Cards.xsd"
+	xmlns:nc="http://mobilis.inf.tu-dresden.de/apps/9Cards" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<protocol>
+		<name>9Cards</name>
+		<ident>http://mobilis.inf.tu-dresden.de/apps/9Cards</ident>
+		<version>1</version>
+		<role>Client</role>
+		<role>Service</role>
+		<channel name="MUC" identifier="http://mobilis.inf.tu-dresden.de/channels#muc" />
+	</protocol>
+	<operation name="nc:ConfigureGame">
+		<direction from="Client" to="Service" />
+		<iq>
+			<request type="SET" element="nc:ConfigureGameRequest" />
+			<result element="nc:ConfigureGameResponse" />
+		</iq>
+	</operation>
+	<operation name="nc:GetGameConfiguration">
+		<direction from="Client" to="Service" />
+		<iq>
+			<request type="GET" element="nc:GetGameConfigurationRequest" />
+			<result element="nc:GetGameConfigurationResponse" />
+		</iq>
+	</operation>
+	<operation name="nc:StartGame">
+		<direction from="Client" to="Service" />
+		<message element="nc:StartGameMessage" />
+	</operation>
+	<operation name="nc:GameStarts">
+		<direction from="Service" via="MUC" to="Client" />
+		<message element="nc:GameStartsMessage" />
+	</operation>
+	<operation name="nc:PlayCard">
+		<direction from="Client" to="Service" />
+		<message element="nc:PlayCardMessage" />
+	</operation>
+	<operation name="nc:CardPlayed">
+		<direction from="Service" via="MUC" to="Client" />
+		<message element="nc:CardPlayedMessage" />
+	</operation>
+	<operation name="nc:GameOver">
+		<direction from="Service" via="MUC" to="Client" />
+		<message element="nc:GameOverMessage" />
+	</operation>
+	<operation name="nc:RoundComplete">
+		<direction from="Service" via="MUC" to="Client" />
+		<message element="nc:RoundCompleteMessage" />
+	</operation>
+</xpd>

@@ -62,7 +62,7 @@
 				<attribute name="Class-Path" value="${mf.classpath}" />
 
 				<attribute name="Service-Class" value="${service.package}.${service.name}" />
-				<attribute name="MSDL-File" value="${msdl.filepath}/${msdl.filename}" />
+				<attribute name="XPD-File" value="${xpd.filepath}/${xpd.filename}" />
 			</manifest>
 		</jar>
 	</target>
