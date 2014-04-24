@@ -106,7 +106,7 @@ public class GameOverMessage extends XMPPBean {
 						PlayerInfo value = new PlayerInfo();
 						value.fromXML(parser);
 						if (null == this.playerInfos)
-							this.playerInfos = new ArrayList<>();
+							this.playerInfos = new ArrayList<PlayerInfo>();
 						this.playerInfos.add(value);
 					} else
 						parser.next();
