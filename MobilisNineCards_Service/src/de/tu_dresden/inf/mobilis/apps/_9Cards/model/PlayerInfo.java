@@ -62,7 +62,7 @@ public class PlayerInfo implements XMPPInfo {
 	public String toXML() {
 		return this.payloadToXML();
 	}
-
+	
 	public String payloadToXML() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<id>");
@@ -99,7 +99,7 @@ public class PlayerInfo implements XMPPInfo {
 					} else if (tagName.equals("usedcards")) {
 						Integer value = new Integer(parser.nextText());
 						if (null == this.usedcards)
-							this.usedcards = new ArrayList<>();
+							this.usedcards = new ArrayList<Integer>();
 						this.usedcards.add(value);
 					} else
 						parser.next();

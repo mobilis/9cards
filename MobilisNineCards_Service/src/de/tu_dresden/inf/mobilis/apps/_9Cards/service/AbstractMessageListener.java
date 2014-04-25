@@ -10,11 +10,11 @@ import org.jivesoftware.smack.packet.Packet;
 
 import java.util.logging.Logger;
 
-public abstract class AbstractServiceMessageListener implements PacketListener {
+public abstract class AbstractMessageListener implements PacketListener {
 
-private final static Logger LOGGER = Logger.getLogger(AbstractServiceMessageListener.class.getCanonicalName());
+private final static Logger LOGGER = Logger.getLogger(AbstractMessageListener.class.getCanonicalName());
 
-@Override
+	@Override
 	public void processPacket(Packet packet) {
 		if (packet instanceof BeanIQAdapter) {
 			XMPPBean inBean = ((BeanIQAdapter) packet).getBean();
@@ -32,7 +32,7 @@ private final static Logger LOGGER = Logger.getLogger(AbstractServiceMessageList
 					onStartGameMessage((StartGameMessage) proxyBean
 							.parsePayload(new StartGameMessage()));
 				} else {
-					throw new Exception("No responsible type for received proxyBean!");
+					LOGGER.warning("No responsible type for received proxyBean!");
 				}
 			}
 		}
