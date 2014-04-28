@@ -33,7 +33,7 @@
     for (NSXMLElement *usedcardsElement in usedcardsElements)
     {
             NSNumber * element =
-             [NSNumber numberWithChar:(char )[[usedcardsElement stringValue] UTF8String]];
+             [NSNumber numberWithChar:[[usedcardsElement stringValue] UTF8String]];
                     [self.usedcards addObject:element];
     }
 }
