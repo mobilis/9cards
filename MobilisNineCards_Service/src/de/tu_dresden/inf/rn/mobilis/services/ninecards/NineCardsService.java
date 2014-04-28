@@ -22,15 +22,13 @@ package de.tu_dresden.inf.rn.mobilis.services.ninecards;
 import java.util.List;
 import java.util.logging.Logger;
 
-import de.tu_dresden.inf.rn.mobilis.services.ninecards.communication.IQListener;
-import de.tu_dresden.inf.rn.mobilis.services.ninecards.communication.IqConnection;
-import de.tu_dresden.inf.rn.mobilis.services.ninecards.communication.MucConnection;
-
 import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.PacketExtension;
 
+import de.tu_dresden.inf.rn.mobilis.services.ninecards.communication.IQListener;
+import de.tu_dresden.inf.rn.mobilis.services.ninecards.communication.MucConnection;
 import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
 import de.tudresden.inf.rn.mobilis.server.services.MobilisService;
 
