@@ -25,6 +25,7 @@
 {
     ConfigureGameResponse *mutableCopy = [[ConfigureGameResponse alloc] init];
     mutableCopy.muc = self.muc;
+    mutableCopy.beanType = RESULT;
 
     return mutableCopy;
 }
@@ -34,6 +35,7 @@
 - (void)fromXML:(NSXMLElement *)xml
 {
     self.muc = (NSString *)[[xml elementsForName:@"muc"] firstObject];
+    self.beanType = RESULT;
 }
 
 - (NSXMLElement *)toXML

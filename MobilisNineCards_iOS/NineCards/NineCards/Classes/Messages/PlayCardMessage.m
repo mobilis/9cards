@@ -20,6 +20,7 @@
     PlayCardMessage *mutableCopy = [[PlayCardMessage alloc] init];
     mutableCopy.round = self.round;
     mutableCopy.card = self.card;
+    mutableCopy.beanType = GET;
 
     return mutableCopy;
 }
@@ -35,6 +36,7 @@
 {
     self.round = (NSNumber *)[[xml elementsForName:@"round"] firstObject];
     self.card = (NSNumber *)[[xml elementsForName:@"card"] firstObject];
+    self.beanType = GET;
 }
 
 - (NSXMLElement *)toXML

@@ -24,6 +24,7 @@
 - (id)mutableCopyWithZone:(NSZone *)zone
 {
     GetGameConfigurationRequest *mutableCopy = [[GetGameConfigurationRequest alloc] init];
+    mutableCopy.beanType = GET;
 
     return mutableCopy;
 }
@@ -32,6 +33,7 @@
 
 - (void)fromXML:(NSXMLElement *)xml
 {
+    self.beanType = GET;
 }
 
 - (NSXMLElement *)toXML

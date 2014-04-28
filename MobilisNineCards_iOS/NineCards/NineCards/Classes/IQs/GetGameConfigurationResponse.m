@@ -27,6 +27,7 @@
     mutableCopy.muc = self.muc;
     mutableCopy.maxRounds = self.maxRounds;
     mutableCopy.maxPlayers = self.maxPlayers;
+    mutableCopy.beanType = RESULT;
 
     return mutableCopy;
 }
@@ -38,6 +39,7 @@
     self.muc = (NSString *)[[xml elementsForName:@"muc"] firstObject];
     self.maxRounds = (NSNumber *)[[xml elementsForName:@"maxRounds"] firstObject];
     self.maxPlayers = (NSNumber *)[[xml elementsForName:@"maxPlayers"] firstObject];
+    self.beanType = RESULT;
 }
 
 - (NSXMLElement *)toXML

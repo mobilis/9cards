@@ -26,6 +26,7 @@
     ConfigureGameRequest *mutableCopy = [[ConfigureGameRequest alloc] init];
     mutableCopy.players = self.players;
     mutableCopy.rounds = self.rounds;
+    mutableCopy.beanType = SET;
 
     return mutableCopy;
 }
@@ -36,6 +37,7 @@
 {
     self.players = (NSNumber *)[[xml elementsForName:@"players"] firstObject];
     self.rounds = (NSNumber *)[[xml elementsForName:@"rounds"] firstObject];
+    self.beanType = SET;
 }
 
 - (NSXMLElement *)toXML

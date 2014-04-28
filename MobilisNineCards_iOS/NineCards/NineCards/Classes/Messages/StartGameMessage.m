@@ -18,6 +18,7 @@
 - (id)mutableCopyWithZone:(NSZone *)zone
 {
     StartGameMessage *mutableCopy = [[StartGameMessage alloc] init];
+    mutableCopy.beanType = GET;
 
     return mutableCopy;
 }
@@ -31,6 +32,7 @@
 
 - (void)fromXML:(NSXMLElement *)xml
 {
+    self.beanType = GET;
 }
 
 - (NSXMLElement *)toXML

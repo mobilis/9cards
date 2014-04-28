@@ -19,6 +19,7 @@
 {
     GameStartsMessage *mutableCopy = [[GameStartsMessage alloc] init];
     mutableCopy.rounds = self.rounds;
+    mutableCopy.beanType = GET;
 
     return mutableCopy;
 }
@@ -33,6 +34,7 @@
 - (void)fromXML:(NSXMLElement *)xml
 {
     self.rounds = (NSNumber *)[[xml elementsForName:@"rounds"] firstObject];
+    self.beanType = GET;
 }
 
 - (NSXMLElement *)toXML

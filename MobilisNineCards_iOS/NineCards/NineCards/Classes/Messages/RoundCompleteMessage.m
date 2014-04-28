@@ -22,6 +22,7 @@
     mutableCopy.round = self.round;
     mutableCopy.winner = self.winner;
     mutableCopy.playerInfos = self.playerInfos;
+    mutableCopy.beanType = GET;
 
     return mutableCopy;
 }
@@ -45,6 +46,7 @@
         [element fromXML:playerInfosElement];
         [self.playerInfos addObject:element];
     }
+    self.beanType = GET;
 }
 
 - (NSXMLElement *)toXML

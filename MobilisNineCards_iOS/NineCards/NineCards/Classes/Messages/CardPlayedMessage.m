@@ -20,6 +20,7 @@
     CardPlayedMessage *mutableCopy = [[CardPlayedMessage alloc] init];
     mutableCopy.round = self.round;
     mutableCopy.player = self.player;
+    mutableCopy.beanType = GET;
 
     return mutableCopy;
 }
@@ -35,6 +36,7 @@
 {
     self.round = (NSNumber *)[[xml elementsForName:@"round"] firstObject];
     self.player = (NSString *)[[xml elementsForName:@"player"] firstObject];
+    self.beanType = GET;
 }
 
 - (NSXMLElement *)toXML

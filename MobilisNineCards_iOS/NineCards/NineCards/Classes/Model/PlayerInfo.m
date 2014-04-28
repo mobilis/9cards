@@ -3,6 +3,13 @@
 #import "DDXML.h"
 
 
+@interface PlayerInfo ()
+
++ (NSString *)elementName;
++ (NSString *)namespace;
+
+@end
+
 @implementation PlayerInfo
 
 + (NSString *)elementName
