@@ -1,3 +1,5 @@
+
+
 package de.tu_dresden.inf.mobilis.apps._9Cards.beans;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -19,9 +21,11 @@ public class ConfigureGameResponse extends XMPPBean {
 
 	public ConfigureGameResponse(String muc) {
 		this.muc = muc; 
+		this.setType(XMPPBean.TYPE_RESULT);
 	}
 	
 	public ConfigureGameResponse() {
+		this.setType(XMPPBean.TYPE_RESULT);
 	}
 
 	public static final String CHILD_ELEMENT = "ConfigureGameResponse";
@@ -51,6 +55,9 @@ public class ConfigureGameResponse extends XMPPBean {
 		sb.append("<muc>");
 		sb.append(this.muc);
 		sb.append("</muc>");
+		
+		sb = this.appendErrorPayload(sb);
+
 		return sb.toString();
 	}
 
@@ -68,6 +75,8 @@ public class ConfigureGameResponse extends XMPPBean {
 					} else if (tagName.equals("muc")) {
 						String value = parser.nextText();
 						this.muc = value;
+					} else if (tagName.equals("error")) {
+						parser = this.parseErrorAttributes(parser);
 					} else
 						parser.next();
 				break;

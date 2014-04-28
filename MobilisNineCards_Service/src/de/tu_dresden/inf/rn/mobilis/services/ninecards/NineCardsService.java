@@ -22,8 +22,10 @@ package de.tu_dresden.inf.rn.mobilis.services.ninecards;
 import java.util.List;
 import java.util.logging.Logger;
 
+import de.tu_dresden.inf.rn.mobilis.services.ninecards.communication.IQListener;
 import de.tu_dresden.inf.rn.mobilis.services.ninecards.communication.IqConnection;
 import de.tu_dresden.inf.rn.mobilis.services.ninecards.communication.MucConnection;
+
 import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
@@ -42,7 +44,7 @@ public class NineCardsService extends MobilisService
 {
 	
 	/** The class for managing IQ communication. */
-	private IqConnection mIqConnection;
+	private IQListener iqListener;
 	/** The class for multiuser and private chat communication. */
 	private MucConnection mMucConnection;
 	
@@ -66,7 +68,7 @@ public class NineCardsService extends MobilisService
 		mGame = new Game(this);
 		
 		try {
-			mIqConnection = new IqConnection(this);
+			iqListener = new IQListener(this);
 			mMucConnection = new MucConnection(this);
 			mMucConnection.createMultiUserChat();
 			LOGGER.info("Succesfully setup connections");
@@ -88,7 +90,7 @@ public class NineCardsService extends MobilisService
 	{
 		// set packet filters, ignore packets of type presence
 		PacketTypeFilter iqFilter = new PacketTypeFilter(IQ.class);		
-		getAgent().getConnection().addPacketListener(mIqConnection, iqFilter);
+		getAgent().getConnection().addPacketListener(iqListener, iqFilter);
 		
 		PacketTypeFilter mesgFilter = new PacketTypeFilter(Message.class);		
 		getAgent().getConnection().addPacketListener(mMucConnection, mesgFilter);		
@@ -129,9 +131,9 @@ public class NineCardsService extends MobilisService
 	 * 
 	 * @return the IQ communication wrapper
 	 */
-	public IqConnection getIqConnection()
+	public IQListener getIqListener()
 	{
-		return mIqConnection;
+		return iqListener;
 	}
 	
 	

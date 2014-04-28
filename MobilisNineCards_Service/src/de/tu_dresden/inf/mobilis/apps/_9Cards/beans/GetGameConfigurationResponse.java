@@ -1,3 +1,5 @@
+
+
 package de.tu_dresden.inf.mobilis.apps._9Cards.beans;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -39,9 +41,11 @@ public class GetGameConfigurationResponse extends XMPPBean {
 		this.muc = muc; 
 		this.maxRounds = maxRounds; 
 		this.maxPlayers = maxPlayers; 
+		this.setType(XMPPBean.TYPE_RESULT);
 	}
 	
 	public GetGameConfigurationResponse() {
+		this.setType(XMPPBean.TYPE_RESULT);
 	}
 
 	public static final String CHILD_ELEMENT = "GetGameConfigurationResponse";
@@ -77,6 +81,9 @@ public class GetGameConfigurationResponse extends XMPPBean {
 		sb.append("<maxPlayers>");
 		sb.append(this.maxPlayers);
 		sb.append("</maxPlayers>");
+		
+		sb = this.appendErrorPayload(sb);
+
 		return sb.toString();
 	}
 
@@ -100,6 +107,8 @@ public class GetGameConfigurationResponse extends XMPPBean {
 					} else if (tagName.equals("maxPlayers")) {
 						Integer value = new Integer(parser.nextText());
 						this.maxPlayers = value;
+					} else if (tagName.equals("error")) {
+						parser = this.parseErrorAttributes(parser);
 					} else
 						parser.next();
 				break;

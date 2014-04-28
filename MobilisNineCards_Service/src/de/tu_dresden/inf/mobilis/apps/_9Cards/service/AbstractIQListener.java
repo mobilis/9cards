@@ -3,6 +3,7 @@ package de.tu_dresden.inf.mobilis.apps._9Cards.service;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.ProxyBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanIQAdapter;
+import de.tudresden.inf.rn.mobilis.xmpp.server.BeanProviderAdapter;
 
 import de.tu_dresden.inf.mobilis.apps._9Cards.beans.GetGameConfigurationRequest;
 import de.tu_dresden.inf.mobilis.apps._9Cards.beans.GetGameConfigurationResponse;
@@ -16,6 +17,17 @@ import java.util.logging.Logger;
 public abstract class AbstractIQListener implements PacketListener {
 
 private final static Logger LOGGER = Logger.getLogger(AbstractIQListener.class.getCanonicalName());
+
+	public AbstractIQListener() {
+		this.registerBeanPrototypes();
+	}
+	
+	public void registerBeanPrototypes() {
+		(new BeanProviderAdapter(new ProxyBean(GetGameConfigurationRequest.NAMESPACE, GetGameConfigurationRequest.CHILD_ELEMENT))).addToProviderManager();
+		(new BeanProviderAdapter(new ProxyBean(GetGameConfigurationResponse.NAMESPACE, GetGameConfigurationResponse.CHILD_ELEMENT))).addToProviderManager();
+		(new BeanProviderAdapter(new ProxyBean(ConfigureGameRequest.NAMESPACE, ConfigureGameRequest.CHILD_ELEMENT))).addToProviderManager();
+		(new BeanProviderAdapter(new ProxyBean(ConfigureGameResponse.NAMESPACE, ConfigureGameResponse.CHILD_ELEMENT))).addToProviderManager();
+	}
 
 	@Override
 	public void processPacket(Packet packet) {
@@ -41,22 +53,29 @@ private final static Logger LOGGER = Logger.getLogger(AbstractIQListener.class.g
 		}
 	}
 
-	public final void _onGetGameConfigurationRequest(GetGameConfigurationRequest inBean) {
+	private final void _onGetGameConfigurationRequest(GetGameConfigurationRequest inBean) {
 		GetGameConfigurationResponse out = new GetGameConfigurationResponse();
 		out.setId(inBean.getId());
 		out.setTo(inBean.getFrom());
-		this.onGetGameConfigurationRequest(inBean, out);
+		out.setFrom(inBean.getTo());
+		out.setType(XMPPBean.TYPE_RESULT);
+		this.sendIQBean(this.onGetGameConfigurationRequest(inBean, out));
 	}
 	
-	public abstract void onGetGameConfigurationRequest(GetGameConfigurationRequest inBean, GetGameConfigurationResponse outBean);
+	public abstract GetGameConfigurationResponse onGetGameConfigurationRequest(GetGameConfigurationRequest inBean, GetGameConfigurationResponse outBean);
 	
-	public final void _onConfigureGameRequest(ConfigureGameRequest inBean) {
+	private final void _onConfigureGameRequest(ConfigureGameRequest inBean) {
 		ConfigureGameResponse out = new ConfigureGameResponse();
 		out.setId(inBean.getId());
 		out.setTo(inBean.getFrom());
-		this.onConfigureGameRequest(inBean, out);
+		out.setFrom(inBean.getTo());
+		out.setType(XMPPBean.TYPE_RESULT);
+		this.sendIQBean(this.onConfigureGameRequest(inBean, out));
 	}
 	
-	public abstract void onConfigureGameRequest(ConfigureGameRequest inBean, ConfigureGameResponse outBean);
+	public abstract ConfigureGameResponse onConfigureGameRequest(ConfigureGameRequest inBean, ConfigureGameResponse outBean);
 	
+
+	public abstract void sendIQBean(XMPPBean bean);
+
 }
