@@ -1,3 +1,5 @@
+
+
 package de.tu_dresden.inf.mobilis.apps._9Cards.beans;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -9,6 +11,7 @@ public class GetGameConfigurationRequest extends XMPPBean {
 
 
 	public GetGameConfigurationRequest() {
+		this.setType(XMPPBean.TYPE_GET);
 	}
 	
 
@@ -36,6 +39,9 @@ public class GetGameConfigurationRequest extends XMPPBean {
 	@Override
 	public String payloadToXML() {
 		StringBuilder sb = new StringBuilder();
+		
+		sb = this.appendErrorPayload(sb);
+
 		return sb.toString();
 	}
 
@@ -50,6 +56,8 @@ public class GetGameConfigurationRequest extends XMPPBean {
 			
 					if (tagName.equals(getChildElement())) {
 						parser.next();
+					} else if (tagName.equals("error")) {
+						parser = this.parseErrorAttributes(parser);
 					} else
 						parser.next();
 				break;

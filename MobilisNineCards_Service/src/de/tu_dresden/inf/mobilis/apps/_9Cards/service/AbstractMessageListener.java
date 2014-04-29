@@ -2,7 +2,7 @@ package de.tu_dresden.inf.mobilis.apps._9Cards.service;
 
 import de.tudresden.inf.rn.mobilis.xmpp.beans.ProxyBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
-import de.tudresden.inf.rn.mobilis.xmpp.server.BeanIQAdapter;
+import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanIQAdapter;
 import de.tu_dresden.inf.mobilis.apps._9Cards.beans.PlayCardMessage;
 import de.tu_dresden.inf.mobilis.apps._9Cards.beans.StartGameMessage;
 import org.jivesoftware.smack.PacketListener;
