@@ -76,6 +76,18 @@ typedef enum {
 	_gameStarted = NO;
     if ([self.game hasGameConfiguration]) {
         [[MXiConnectionHandler sharedInstance].connection connectToMultiUserChatRoom:[_game roomJid].bare withDelegate:self];
+        [[MXiConnectionHandler sharedInstance].connection addBeanDelegate:self
+                                                             withSelector:@selector(cardPlayedMessageReceived:)
+                                                             forBeanClass:[CardPlayedMessage class]];
+        [[MXiConnectionHandler sharedInstance].connection addBeanDelegate:self
+                                                             withSelector:@selector(gameOverMessageReceived:)
+                                                             forBeanClass:[GameOverMessage class]];
+        [[MXiConnectionHandler sharedInstance].connection addBeanDelegate:self
+                                                             withSelector:@selector(roundCompleteMessageReceived:)
+                                                             forBeanClass:[RoundCompleteMessage class]];
+        [[MXiConnectionHandler sharedInstance].connection addBeanDelegate:self
+                                                             withSelector:@selector(startGameMessageReceived:)
+                                                             forBeanClass:[GameStartsMessage class]];
     } else {
         [[MXiConnectionHandler sharedInstance].connection addBeanDelegate:self
                                                              withSelector:@selector(gameConfigurationReceived:)
@@ -270,30 +282,30 @@ typedef enum {
 
 -(void)didReceiveMultiUserChatMessage:(NSString *)message fromUser:(NSString *)user publishedInRoom:(NSString *)roomJID
 {
-	NSError *error;
-	NSXMLElement *messageBean = [[NSXMLElement alloc] initWithXMLString:message error:&error];
-	if(!error) {
-		NSLog(@"Bean: %@", messageBean.name);
-		if ([messageBean.name isEqualToString:[GameStartsMessage elementName] ignoreCase:YES]) {
-			GameStartsMessage *start = [GameStartsMessage new];
-			[start fromXML:messageBean];
-			[self performSelectorOnMainThread:@selector(startGameMessageReceived:) withObject:start waitUntilDone:NO];
-		} else if ([messageBean.name isEqualToString:[CardPlayedMessage elementName] ignoreCase:YES]) {
-			CardPlayedMessage *card = [CardPlayedMessage new];
-			[card fromXML:messageBean];
-			[self performSelectorOnMainThread:@selector(cardPlayedMessageReceived:) withObject:card waitUntilDone:NO];
-		} else if ([messageBean.name isEqualToString:[RoundCompleteMessage elementName] ignoreCase:YES]) {
-			RoundCompleteMessage *round = [RoundCompleteMessage new];
-			[round fromXML:messageBean];
-			[self performSelectorOnMainThread:@selector(roundCompleteMessageReceived:) withObject:round waitUntilDone:NO];
-		} else if ([messageBean.name isEqualToString:[GameOverMessage elementName] ignoreCase:YES]) {
-			GameOverMessage *gameOver = [GameOverMessage new];
-			[gameOver fromXML:messageBean];
-			[self performSelectorOnMainThread:@selector(gameOverMessageReceived:) withObject:gameOver waitUntilDone:NO];
-		} else {
-			NSLog(@"Message %@ from User %@ in room %@ wasn't processed.", message, user, roomJID);
-		}
-	}
+//	NSError *error;
+//	NSXMLElement *messageBean = [[NSXMLElement alloc] initWithXMLString:message error:&error];
+//	if(!error) {
+//		NSLog(@"Bean: %@", messageBean.name);
+//		if ([messageBean.name isEqualToString:[GameStartsMessage elementName] ignoreCase:YES]) {
+//			GameStartsMessage *start = [GameStartsMessage new];
+//			[start fromXML:messageBean];
+//			[self performSelectorOnMainThread:@selector(startGameMessageReceived:) withObject:start waitUntilDone:NO];
+//		} else if ([messageBean.name isEqualToString:[CardPlayedMessage elementName] ignoreCase:YES]) {
+//			CardPlayedMessage *card = [CardPlayedMessage new];
+//			[card fromXML:messageBean];
+//			[self performSelectorOnMainThread:@selector(cardPlayedMessageReceived:) withObject:card waitUntilDone:NO];
+//		} else if ([messageBean.name isEqualToString:[RoundCompleteMessage elementName] ignoreCase:YES]) {
+//			RoundCompleteMessage *round = [RoundCompleteMessage new];
+//			[round fromXML:messageBean];
+//			[self performSelectorOnMainThread:@selector(roundCompleteMessageReceived:) withObject:round waitUntilDone:NO];
+//		} else if ([messageBean.name isEqualToString:[GameOverMessage elementName] ignoreCase:YES]) {
+//			GameOverMessage *gameOver = [GameOverMessage new];
+//			[gameOver fromXML:messageBean];
+//			[self performSelectorOnMainThread:@selector(gameOverMessageReceived:) withObject:gameOver waitUntilDone:NO];
+//		} else {
+//			NSLog(@"Message %@ from User %@ in room %@ wasn't processed.", message, user, roomJID);
+//		}
+//	}
 }
 
 - (void)startGameMessageReceived:(GameStartsMessage *)bean

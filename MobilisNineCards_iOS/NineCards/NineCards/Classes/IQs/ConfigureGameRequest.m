@@ -35,9 +35,11 @@
 
 - (void)fromXML:(NSXMLElement *)xml
 {
-    self.players = (NSNumber *)[[xml elementsForName:@"players"] firstObject];
-    self.rounds = (NSNumber *)[[xml elementsForName:@"rounds"] firstObject];
-    self.beanType = SET;
+    self.players =
+         [NSNumber numberWithDouble:[[[[xml elementsForName:@"players"] firstObject] stringValue] doubleValue]];
+            self.rounds =
+         [NSNumber numberWithDouble:[[[[xml elementsForName:@"rounds"] firstObject] stringValue] doubleValue]];
+            self.beanType = SET;
 }
 
 - (NSXMLElement *)toXML

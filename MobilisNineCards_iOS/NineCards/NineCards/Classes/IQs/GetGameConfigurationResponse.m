@@ -36,10 +36,13 @@
 
 - (void)fromXML:(NSXMLElement *)xml
 {
-    self.muc = (NSString *)[[xml elementsForName:@"muc"] firstObject];
-    self.maxRounds = (NSNumber *)[[xml elementsForName:@"maxRounds"] firstObject];
-    self.maxPlayers = (NSNumber *)[[xml elementsForName:@"maxPlayers"] firstObject];
-    self.beanType = RESULT;
+    self.muc =
+         [[[xml elementsForName:@"muc"] firstObject] stringValue];
+            self.maxRounds =
+         [NSNumber numberWithDouble:[[[[xml elementsForName:@"maxRounds"] firstObject] stringValue] doubleValue]];
+            self.maxPlayers =
+         [NSNumber numberWithDouble:[[[[xml elementsForName:@"maxPlayers"] firstObject] stringValue] doubleValue]];
+            self.beanType = RESULT;
 }
 
 - (NSXMLElement *)toXML

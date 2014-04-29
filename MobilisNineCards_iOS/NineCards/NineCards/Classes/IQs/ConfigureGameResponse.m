@@ -34,8 +34,9 @@
 
 - (void)fromXML:(NSXMLElement *)xml
 {
-    self.muc = (NSString *)[[xml elementsForName:@"muc"] firstObject];
-    self.beanType = RESULT;
+    self.muc =
+         [[[xml elementsForName:@"muc"] firstObject] stringValue];
+            self.beanType = RESULT;
 }
 
 - (NSXMLElement *)toXML

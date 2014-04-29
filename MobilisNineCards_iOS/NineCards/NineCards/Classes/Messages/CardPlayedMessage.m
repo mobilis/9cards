@@ -34,9 +34,11 @@
 
 - (void)fromXML:(NSXMLElement *)xml
 {
-    self.round = (NSNumber *)[[xml elementsForName:@"round"] firstObject];
-    self.player = (NSString *)[[xml elementsForName:@"player"] firstObject];
-    self.beanType = GET;
+    self.round =
+         [NSNumber numberWithDouble:[[[[xml elementsForName:@"round"] firstObject] stringValue] doubleValue]];
+            self.player =
+         [[[xml elementsForName:@"player"] firstObject] stringValue];
+            self.beanType = GET;
 }
 
 - (NSXMLElement *)toXML

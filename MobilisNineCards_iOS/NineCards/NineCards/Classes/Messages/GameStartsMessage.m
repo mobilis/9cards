@@ -33,8 +33,9 @@
 
 - (void)fromXML:(NSXMLElement *)xml
 {
-    self.rounds = (NSNumber *)[[xml elementsForName:@"rounds"] firstObject];
-    self.beanType = GET;
+    self.rounds =
+         [NSNumber numberWithDouble:[[[[xml elementsForName:@"rounds"] firstObject] stringValue] doubleValue]];
+            self.beanType = GET;
 }
 
 - (NSXMLElement *)toXML

@@ -34,9 +34,11 @@
 
 - (void)fromXML:(NSXMLElement *)xml
 {
-    self.round = (NSNumber *)[[xml elementsForName:@"round"] firstObject];
-    self.card = (NSNumber *)[[xml elementsForName:@"card"] firstObject];
-    self.beanType = GET;
+    self.round =
+         [NSNumber numberWithDouble:[[[[xml elementsForName:@"round"] firstObject] stringValue] doubleValue]];
+            self.card =
+         [NSNumber numberWithDouble:[[[[xml elementsForName:@"card"] firstObject] stringValue] doubleValue]];
+            self.beanType = GET;
 }
 
 - (NSXMLElement *)toXML

@@ -33,14 +33,16 @@
 
 - (void)fromXML:(NSXMLElement *)xml
 {
-    self.id = (NSString *)[[xml elementsForName:@"id"] firstObject];
-    self.score = (NSNumber *)[[xml elementsForName:@"score"] firstObject];
-    NSArray *usedcardsElements = [[xml elementsForName:@"usedcards"] firstObject];
+    self.id =
+     [[[xml elementsForName:@"id"] firstObject] stringValue];
+            self.score =
+     [NSNumber numberWithDouble:[[[[xml elementsForName:@"score"] firstObject] stringValue] doubleValue]];
+            NSArray *usedcardsElements = [xml elementsForName:@"usedcards"];
     self.usedcards = [[NSMutableArray alloc] initWithCapacity:usedcardsElements.count];
     for (NSXMLElement *usedcardsElement in usedcardsElements)
     {
             NSNumber * element =
-             [NSNumber numberWithChar:[[usedcardsElement stringValue] UTF8String]];
+             [NSNumber numberWithDouble:[[usedcardsElement stringValue] doubleValue]];
                     [self.usedcards addObject:element];
     }
 }

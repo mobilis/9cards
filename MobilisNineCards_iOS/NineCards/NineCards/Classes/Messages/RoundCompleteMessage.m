@@ -36,9 +36,11 @@
 
 - (void)fromXML:(NSXMLElement *)xml
 {
-    self.round = (NSNumber *)[[xml elementsForName:@"round"] firstObject];
-    self.winner = (NSString *)[[xml elementsForName:@"winner"] firstObject];
-    NSArray *playerInfosElements = [[xml elementsForName:@"playerInfos"] firstObject];
+    self.round =
+         [NSNumber numberWithDouble:[[[[xml elementsForName:@"round"] firstObject] stringValue] doubleValue]];
+            self.winner =
+         [[[xml elementsForName:@"winner"] firstObject] stringValue];
+            NSArray *playerInfosElements = [xml elementsForName:@"playerInfos"];
     self.playerInfos = [[NSMutableArray alloc] initWithCapacity:playerInfosElements.count];
     for (NSXMLElement *playerInfosElement in playerInfosElements)
     {

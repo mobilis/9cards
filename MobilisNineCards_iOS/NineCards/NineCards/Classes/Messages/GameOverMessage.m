@@ -36,9 +36,11 @@
 
 - (void)fromXML:(NSXMLElement *)xml
 {
-    self.winner = (NSString *)[[xml elementsForName:@"winner"] firstObject];
-    self.score = (NSNumber *)[[xml elementsForName:@"score"] firstObject];
-    NSArray *playerInfosElements = [[xml elementsForName:@"playerInfos"] firstObject];
+    self.winner =
+         [[[xml elementsForName:@"winner"] firstObject] stringValue];
+            self.score =
+         [NSNumber numberWithDouble:[[[[xml elementsForName:@"score"] firstObject] stringValue] doubleValue]];
+            NSArray *playerInfosElements = [xml elementsForName:@"playerInfos"];
     self.playerInfos = [[NSMutableArray alloc] initWithCapacity:playerInfosElements.count];
     for (NSXMLElement *playerInfosElement in playerInfosElements)
     {
