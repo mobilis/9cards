@@ -41,8 +41,7 @@
 
 - (NSXMLElement *)toXML
 {
-    NSXMLElement *serializedObject = [[NSXMLElement alloc] initWithName:[[self class] elementName]];
-    [serializedObject addNamespace:[NSXMLNode namespaceWithName:@"xml:ns" stringValue:[[self class] namespace]]];
+    NSXMLElement *serializedObject = [[NSXMLElement alloc] initWithName:[[self class] elementName] URI:[[self class] namespace]];
     @autoreleasepool {
         NSXMLElement *roundElement = [[NSXMLElement alloc] initWithName:@"round"];
         [roundElement setStringValue:[NSString stringWithFormat:@"%@", self.round]];

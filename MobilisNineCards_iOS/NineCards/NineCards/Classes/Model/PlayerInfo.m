@@ -47,8 +47,7 @@
 
 - (NSXMLElement *)toXML
 {
-    NSXMLElement *serializedObject = [[NSXMLElement alloc] initWithName:[[self class] elementName]];
-    [serializedObject addNamespace:[NSXMLNode namespaceWithName:@"xml:ns" stringValue:[[self class] namespace]]];
+    NSXMLElement *serializedObject = [[NSXMLElement alloc] initWithName:[[self class] elementName] URI:[[self class] namespace]];
     @autoreleasepool {
         NSXMLElement *idElement = [[NSXMLElement alloc] initWithName:@"id"];
         [idElement setStringValue:[NSString stringWithFormat:@"%@", self.id]];

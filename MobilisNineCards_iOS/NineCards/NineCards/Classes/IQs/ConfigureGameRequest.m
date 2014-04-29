@@ -16,7 +16,7 @@
 
 - (id)init
 {
-    return [self initWithBeanType:GET];
+    return [self initWithBeanType:SET];
 }
 
 #pragma mark - NSMutableCopy Protocol
@@ -42,8 +42,7 @@
 
 - (NSXMLElement *)toXML
 {
-    NSXMLElement *serializedObject = [[NSXMLElement alloc] initWithName:[[self class] elementName]];
-    [serializedObject addNamespace:[NSXMLNode namespaceWithName:@"xml:ns" stringValue:[[self class] namespace]]];
+    NSXMLElement *serializedObject = [[NSXMLElement alloc] initWithName:[[self class] elementName] URI:[[self class] namespace]];
     @autoreleasepool {
         NSXMLElement *playersElement = [[NSXMLElement alloc] initWithName:@"players"];
         [playersElement setStringValue:[NSString stringWithFormat:@"%@", self.players]];
