@@ -199,6 +199,11 @@ typedef enum {
 - (void)viewWillDisappear:(BOOL)animated
 {
     [[MXiConnectionHandler sharedInstance].connection removeBeanDelegate:self forBeanClass:[GetGameConfigurationResponse class]];
+    [[MXiConnectionHandler sharedInstance].connection removeBeanDelegate:self forBeanClass:[CardPlayedMessage class]];
+    [[MXiConnectionHandler sharedInstance].connection removeBeanDelegate:self forBeanClass:[GameOverMessage class]];
+    [[MXiConnectionHandler sharedInstance].connection removeBeanDelegate:self forBeanClass:[RoundCompleteMessage class]];
+    [[MXiConnectionHandler sharedInstance].connection removeBeanDelegate:self forBeanClass:[GameStartsMessage class]];
+
     [super viewWillDisappear:animated];
 }
 
