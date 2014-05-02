@@ -1,38 +1,58 @@
 package de.tu_dresden.inf.mobilis.apps._9Cards.service;
 
-import de.tudresden.inf.rn.mobilis.xmpp.beans.ProxyBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
-import de.tudresden.inf.rn.mobilis.xmpp.mxj.BeanIQAdapter;
 import de.tu_dresden.inf.mobilis.apps._9Cards.beans.PlayCardMessage;
 import de.tu_dresden.inf.mobilis.apps._9Cards.beans.StartGameMessage;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.Message;
+import org.xmlpull.mxp1.MXParser;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import java.util.logging.Logger;
+import java.io.StringReader;
 
 public abstract class AbstractMessageListener implements PacketListener {
 
 private final static Logger LOGGER = Logger.getLogger(AbstractMessageListener.class.getCanonicalName());
 
 	@Override
-	public void processPacket(Packet packet) {
-		if (packet instanceof BeanIQAdapter) {
-			XMPPBean inBean = ((BeanIQAdapter) packet).getBean();
-
-			LOGGER.info(inBean.toXML());
-
-			if (inBean instanceof ProxyBean) {
-				ProxyBean proxyBean = (ProxyBean) inBean;
-				if (proxyBean.isTypeOf(PlayCardMessage.NAMESPACE,
-						PlayCardMessage.CHILD_ELEMENT)) {
-					onPlayCardMessage((PlayCardMessage) proxyBean
-							.parsePayload(new PlayCardMessage()));
-				} else if (proxyBean.isTypeOf(StartGameMessage.NAMESPACE,
-						StartGameMessage.CHILD_ELEMENT)) {
-					onStartGameMessage((StartGameMessage) proxyBean
-							.parsePayload(new StartGameMessage()));
+	public final void processPacket(Packet packet) {
+		if (packet instanceof Message) {
+			Message msg = (Message) packet;
+			if (null != msg.getBody()) {
+				if (msg.getBody().startsWith("<")) {
+					XMPPBean msgBean;
+					XmlPullParser parser = new MXParser();
+					
+					try {
+						parser.setFeature(MXParser.FEATURE_PROCESS_NAMESPACES, true);
+						parser.setInput(new StringReader(msg.getBody()));
+						if (msg.getBody().startsWith("<"+PlayCardMessage.CHILD_ELEMENT)) {
+							msgBean = new PlayCardMessage();
+							msgBean.fromXML(parser);
+							msgBean.setFrom(msg.getFrom());
+							msgBean.setTo(msg.getTo());
+							msgBean.setId(msg.getPacketID());
+							this.onPlayCardMessage((PlayCardMessage) msgBean);
+						} else if (msg.getBody().startsWith("<"+StartGameMessage.CHILD_ELEMENT)) {
+							msgBean = new StartGameMessage();
+							msgBean.fromXML(parser);
+							msgBean.setFrom(msg.getFrom());
+							msgBean.setTo(msg.getTo());
+							msgBean.setId(msg.getPacketID());
+							this.onStartGameMessage((StartGameMessage) msgBean);
+						}
+					} catch (XmlPullParserException e) {
+						LOGGER.severe(e.getLocalizedMessage());
+						return;
+					} catch (Exception e) {
+						LOGGER.warning("Couldn't parse incoming Message Bean: "+msg.getBody());
+						this.handleMessage(msg);
+					}
 				} else {
-					LOGGER.warning("No responsible type for received proxyBean!");
+					this.handleMessage(msg);
 				}
 			}
 		}
@@ -42,4 +62,5 @@ private final static Logger LOGGER = Logger.getLogger(AbstractMessageListener.cl
 	
 	public abstract void onStartGameMessage(StartGameMessage inBean);
 	
+	public void handleMessage(Message msg) {}
 }

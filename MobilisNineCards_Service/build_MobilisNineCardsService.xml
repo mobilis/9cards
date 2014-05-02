@@ -6,7 +6,7 @@
 
 	
 	<!-- none: ""; separate entrylist by ':' -->
-	<property name="src.dirs.extern" value="${mobilis.root}/MobilisServer/src:${mobilis.root}/MobilisXMPP/src" />
+	<property name="src.dirs.extern" value="${mobilis.root}/MobilisServer/src:${mobilis.root}/MobilisXMPP/src:${mobilis.root}/MXJ/src" />
 
 	<!-- Create build and dist directory-->
 	<target name="makedir">
@@ -21,6 +21,7 @@
 		<!-- Add external library dirs of all projects in ${src.dirs.extern} -->
 		<fileset dir="basedir/../../../mobilis/MobilisServer/libs" includes="**/*.jar" />
 		<fileset dir="basedir/../../../mobilis/MobilisXMPP/libs" includes="**/*.jar" />
+		<fileset dir="basedir/../../../mobilis/MXJ/libs" includes="**/*.jar" erroronmissingdir="false"/>
 	</path>
 
 	<!-- Create classpath for libraries on jar-packing -->

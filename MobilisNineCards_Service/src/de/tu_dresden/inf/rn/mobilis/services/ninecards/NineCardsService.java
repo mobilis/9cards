@@ -28,6 +28,7 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.PacketExtension;
 
 import de.tu_dresden.inf.rn.mobilis.services.ninecards.communication.IQListener;
+import de.tu_dresden.inf.rn.mobilis.services.ninecards.communication.MessageListener;
 import de.tu_dresden.inf.rn.mobilis.services.ninecards.communication.MucConnection;
 import de.tudresden.inf.rn.mobilis.server.agents.MobilisAgent;
 import de.tudresden.inf.rn.mobilis.server.services.MobilisService;
@@ -50,6 +51,7 @@ public class NineCardsService extends MobilisService
 	private Game mGame;
 	/** The settings object which contains game specific configuration. */
 	private Settings mSettings;
+	private MessageListener messageListener;
 	
 	/** The class specific Logger object. */
 	private final static Logger LOGGER = Logger.getLogger(NineCardsService.class.getCanonicalName());
@@ -67,6 +69,7 @@ public class NineCardsService extends MobilisService
 		
 		try {
 			iqListener = new IQListener(this);
+			messageListener = new MessageListener(this);
 			mMucConnection = new MucConnection(this);
 			mMucConnection.createMultiUserChat();
 			LOGGER.info("Succesfully setup connections");
@@ -91,7 +94,7 @@ public class NineCardsService extends MobilisService
 		getAgent().getConnection().addPacketListener(iqListener, iqFilter);
 		
 		PacketTypeFilter mesgFilter = new PacketTypeFilter(Message.class);		
-		getAgent().getConnection().addPacketListener(mMucConnection, mesgFilter);		
+		getAgent().getConnection().addPacketListener(messageListener, mesgFilter);		
 		
 		LOGGER.info("PacketListeners successfully registered (IQListener and MessageListener");
 	}
