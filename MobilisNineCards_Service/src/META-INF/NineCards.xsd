@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://mobilis.inf.tu-dresden.de/apps/9Cards" targetNamespace="http://mobilis.inf.tu-dresden.de/apps/9Cards" elementFormDefault="qualified">
+	<xs:element name="ConfigureGameRequest">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="players" type="xs:int" />
+				<xs:element name="rounds" type="xs:int" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ConfigureGameResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="muc" type="xs:string" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GetGameConfigurationRequest" />
+	<xs:element name="GetGameConfigurationResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="muc" type="xs:string" />
+				<xs:element name="maxRounds" type="xs:int" />
+				<xs:element name="maxPlayers" type="xs:int" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="StartGameMessage" />
+	<xs:element name="GameStartsMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="rounds" type="xs:int" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="PlayCardMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="round" type="xs:int" />
+				<xs:element name="card" type="xs:int" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="CardPlayedMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="round" type="xs:int" />
+				<xs:element name="player" type="xs:string" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="RoundCompleteMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="round" type="xs:int" />
+				<xs:element name="winner" type="xs:string" />
+				<xs:element name="playerInfos" type="PlayerInfo"
+					minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GameOverMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="winner" type="xs:string" />
+				<xs:element name="score" type="xs:int" />
+				<xs:element name="playerInfos" type="PlayerInfo"
+					minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- Custom data structures -->
+	<xs:complexType name="PlayerInfo">
+		<xs:sequence>
+			<xs:element name="id" type="xs:string" />
+			<xs:element name="score" type="xs:int" />
+			<xs:element name="usedcards" type="xs:int" minOccurs="0"
+				maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
