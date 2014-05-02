@@ -1,6 +1,8 @@
 #import "RoundCompleteMessage.h"
 
+#if TARGET_OS_IPHONE
 #import "DDXML.h"
+#endif
 
 #import "PlayerInfo.h"
 
@@ -22,14 +24,13 @@
     mutableCopy.round = self.round;
     mutableCopy.winner = self.winner;
     mutableCopy.playerInfos = self.playerInfos;
-    mutableCopy.beanType = GET;
 
     return mutableCopy;
 }
 
 - (id)init
 {
-    return [self initWithBeanType:GET];
+    return [self initWithBeanType:GET andBeanContainer:BEAN_CONTAINER_MESSAGE];
 }
 
 #pragma mark - (De-)Serialization
@@ -48,7 +49,6 @@
         [element fromXML:playerInfosElement];
         [self.playerInfos addObject:element];
     }
-    self.beanType = GET;
 }
 
 - (NSXMLElement *)toXML

@@ -1,6 +1,8 @@
 #import "ConfigureGameResponse.h"
 
+#if TARGET_OS_IPHONE
 #import "DDXML.h"
+#endif
 
 @implementation ConfigureGameResponse
 
@@ -16,7 +18,7 @@
 
 - (id)init
 {
-    return [self initWithBeanType:RESULT];
+    return [self initWithBeanType:RESULT andBeanContainer:BEAN_CONTAINER_IQ];
 }
 
 #pragma mark - NSMutableCopy Protocol
@@ -25,7 +27,6 @@
 {
     ConfigureGameResponse *mutableCopy = [[ConfigureGameResponse alloc] init];
     mutableCopy.muc = self.muc;
-    mutableCopy.beanType = RESULT;
 
     return mutableCopy;
 }
@@ -36,8 +37,7 @@
 {
     self.muc =
          [[[xml elementsForName:@"muc"] firstObject] stringValue];
-            self.beanType = RESULT;
-}
+        }
 
 - (NSXMLElement *)toXML
 {

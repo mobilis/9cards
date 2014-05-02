@@ -1,6 +1,8 @@
 #import "GetGameConfigurationRequest.h"
 
+#if TARGET_OS_IPHONE
 #import "DDXML.h"
+#endif
 
 @implementation GetGameConfigurationRequest
 
@@ -16,7 +18,7 @@
 
 - (id)init
 {
-    return [self initWithBeanType:GET];
+    return [self initWithBeanType:GET andBeanContainer:BEAN_CONTAINER_IQ];
 }
 
 #pragma mark - NSMutableCopy Protocol
@@ -24,7 +26,6 @@
 - (id)mutableCopyWithZone:(NSZone *)zone
 {
     GetGameConfigurationRequest *mutableCopy = [[GetGameConfigurationRequest alloc] init];
-    mutableCopy.beanType = GET;
 
     return mutableCopy;
 }
@@ -33,7 +34,6 @@
 
 - (void)fromXML:(NSXMLElement *)xml
 {
-    self.beanType = GET;
 }
 
 - (NSXMLElement *)toXML

@@ -1,6 +1,8 @@
 #import "CardPlayedMessage.h"
 
+#if TARGET_OS_IPHONE
 #import "DDXML.h"
+#endif
 
 
 @implementation CardPlayedMessage
@@ -20,14 +22,13 @@
     CardPlayedMessage *mutableCopy = [[CardPlayedMessage alloc] init];
     mutableCopy.round = self.round;
     mutableCopy.player = self.player;
-    mutableCopy.beanType = GET;
 
     return mutableCopy;
 }
 
 - (id)init
 {
-    return [self initWithBeanType:GET];
+    return [self initWithBeanType:GET andBeanContainer:BEAN_CONTAINER_MESSAGE];
 }
 
 #pragma mark - (De-)Serialization
@@ -38,8 +39,7 @@
          [NSNumber numberWithDouble:[[[[xml elementsForName:@"round"] firstObject] stringValue] doubleValue]];
             self.player =
          [[[xml elementsForName:@"player"] firstObject] stringValue];
-            self.beanType = GET;
-}
+        }
 
 - (NSXMLElement *)toXML
 {

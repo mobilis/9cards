@@ -1,6 +1,8 @@
 #import "StartGameMessage.h"
 
+#if TARGET_OS_IPHONE
 #import "DDXML.h"
+#endif
 
 
 @implementation StartGameMessage
@@ -18,21 +20,19 @@
 - (id)mutableCopyWithZone:(NSZone *)zone
 {
     StartGameMessage *mutableCopy = [[StartGameMessage alloc] init];
-    mutableCopy.beanType = GET;
 
     return mutableCopy;
 }
 
 - (id)init
 {
-    return [self initWithBeanType:GET];
+    return [self initWithBeanType:GET andBeanContainer:BEAN_CONTAINER_MESSAGE];
 }
 
 #pragma mark - (De-)Serialization
 
 - (void)fromXML:(NSXMLElement *)xml
 {
-    self.beanType = GET;
 }
 
 - (NSXMLElement *)toXML

@@ -1,6 +1,8 @@
 #import "ConfigureGameRequest.h"
 
+#if TARGET_OS_IPHONE
 #import "DDXML.h"
+#endif
 
 @implementation ConfigureGameRequest
 
@@ -16,7 +18,7 @@
 
 - (id)init
 {
-    return [self initWithBeanType:SET];
+    return [self initWithBeanType:SET andBeanContainer:BEAN_CONTAINER_IQ];
 }
 
 #pragma mark - NSMutableCopy Protocol
@@ -26,7 +28,6 @@
     ConfigureGameRequest *mutableCopy = [[ConfigureGameRequest alloc] init];
     mutableCopy.players = self.players;
     mutableCopy.rounds = self.rounds;
-    mutableCopy.beanType = SET;
 
     return mutableCopy;
 }
@@ -39,8 +40,7 @@
          [NSNumber numberWithDouble:[[[[xml elementsForName:@"players"] firstObject] stringValue] doubleValue]];
             self.rounds =
          [NSNumber numberWithDouble:[[[[xml elementsForName:@"rounds"] firstObject] stringValue] doubleValue]];
-            self.beanType = SET;
-}
+        }
 
 - (NSXMLElement *)toXML
 {

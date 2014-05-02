@@ -1,6 +1,8 @@
 #import "GetGameConfigurationResponse.h"
 
+#if TARGET_OS_IPHONE
 #import "DDXML.h"
+#endif
 
 @implementation GetGameConfigurationResponse
 
@@ -16,7 +18,7 @@
 
 - (id)init
 {
-    return [self initWithBeanType:RESULT];
+    return [self initWithBeanType:RESULT andBeanContainer:BEAN_CONTAINER_IQ];
 }
 
 #pragma mark - NSMutableCopy Protocol
@@ -27,7 +29,6 @@
     mutableCopy.muc = self.muc;
     mutableCopy.maxRounds = self.maxRounds;
     mutableCopy.maxPlayers = self.maxPlayers;
-    mutableCopy.beanType = RESULT;
 
     return mutableCopy;
 }
@@ -42,8 +43,7 @@
          [NSNumber numberWithDouble:[[[[xml elementsForName:@"maxRounds"] firstObject] stringValue] doubleValue]];
             self.maxPlayers =
          [NSNumber numberWithDouble:[[[[xml elementsForName:@"maxPlayers"] firstObject] stringValue] doubleValue]];
-            self.beanType = RESULT;
-}
+        }
 
 - (NSXMLElement *)toXML
 {

@@ -1,6 +1,8 @@
 #import "GameStartsMessage.h"
 
+#if TARGET_OS_IPHONE
 #import "DDXML.h"
+#endif
 
 
 @implementation GameStartsMessage
@@ -19,14 +21,13 @@
 {
     GameStartsMessage *mutableCopy = [[GameStartsMessage alloc] init];
     mutableCopy.rounds = self.rounds;
-    mutableCopy.beanType = GET;
 
     return mutableCopy;
 }
 
 - (id)init
 {
-    return [self initWithBeanType:GET];
+    return [self initWithBeanType:GET andBeanContainer:BEAN_CONTAINER_MESSAGE];
 }
 
 #pragma mark - (De-)Serialization
@@ -35,8 +36,7 @@
 {
     self.rounds =
          [NSNumber numberWithDouble:[[[[xml elementsForName:@"rounds"] firstObject] stringValue] doubleValue]];
-            self.beanType = GET;
-}
+        }
 
 - (NSXMLElement *)toXML
 {

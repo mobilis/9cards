@@ -29,12 +29,6 @@
 
 #import "NSString+StringUtils.h"
 
-typedef enum {
-	CardPlayedWaiting,
-	CardPlayedSuccess,
-	CardPlayedWinner
-} CardPlayedState;
-
 @interface GameViewController () <MXiMultiUserChatDelegate, UICollectionViewDataSource, UICollectionViewDelegate>
 
 @property (strong, nonatomic) IBOutletCollection(UIButton) NSArray *cardButtons;
@@ -107,12 +101,6 @@ typedef enum {
         _initialLandscape = YES;
         [self didRotateFromInterfaceOrientation:UIInterfaceOrientationPortrait];
     } else _initialLandscape = NO;
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
@@ -213,16 +201,16 @@ typedef enum {
 }
 
 - (IBAction)cardPlayed:(CardButton *)card {
-	for (CardButton *card in _cardButtons) {
-		[card setEnabled:NO];
+	for (CardButton *cardButton in _cardButtons) {
+		[cardButton setEnabled:NO];
 	}
     PlayCardMessage *play = [PlayCardMessage new];
     play.card = card.cardNumber;
     play.round = _currentRound;
     
-    [[MXiConnectionHandler sharedInstance] sendMessageString:[[play toXML] XMLString] toJID:[[_game gameJid] full]];
-	
-	[UIView transitionWithView:card duration:0.5f options:UIViewAnimationOptionTransitionFlipFromTop animations:^{
+    [[MXiConnectionHandler sharedInstance] sendBean:play toJID:[[_game gameJid] full]];
+
+    [UIView transitionWithView:card duration:0.5f options:UIViewAnimationOptionTransitionFlipFromTop animations:^{
 		card.alpha = 0.f;
 	} completion:^(BOOL finished) {
 		if(finished) {
@@ -242,8 +230,8 @@ typedef enum {
 
 	StartGameMessage *startGame = [StartGameMessage new];
 		
-	[[MXiConnectionHandler sharedInstance] sendMessageString:[[startGame toXML] XMLString] toJID:[_game.gameJid full]];
-	NSLog(@"%@", [[startGame toXML] XMLString]);
+    [[MXiConnectionHandler sharedInstance] sendBean:startGame toJID:[_game.gameJid full]];
+    NSLog(@"%@", [[startGame toXML] XMLString]);
 
 }
 
@@ -285,34 +273,6 @@ typedef enum {
     }
 }
 
--(void)didReceiveMultiUserChatMessage:(NSString *)message fromUser:(NSString *)user publishedInRoom:(NSString *)roomJID
-{
-//	NSError *error;
-//	NSXMLElement *messageBean = [[NSXMLElement alloc] initWithXMLString:message error:&error];
-//	if(!error) {
-//		NSLog(@"Bean: %@", messageBean.name);
-//		if ([messageBean.name isEqualToString:[GameStartsMessage elementName] ignoreCase:YES]) {
-//			GameStartsMessage *start = [GameStartsMessage new];
-//			[start fromXML:messageBean];
-//			[self performSelectorOnMainThread:@selector(startGameMessageReceived:) withObject:start waitUntilDone:NO];
-//		} else if ([messageBean.name isEqualToString:[CardPlayedMessage elementName] ignoreCase:YES]) {
-//			CardPlayedMessage *card = [CardPlayedMessage new];
-//			[card fromXML:messageBean];
-//			[self performSelectorOnMainThread:@selector(cardPlayedMessageReceived:) withObject:card waitUntilDone:NO];
-//		} else if ([messageBean.name isEqualToString:[RoundCompleteMessage elementName] ignoreCase:YES]) {
-//			RoundCompleteMessage *round = [RoundCompleteMessage new];
-//			[round fromXML:messageBean];
-//			[self performSelectorOnMainThread:@selector(roundCompleteMessageReceived:) withObject:round waitUntilDone:NO];
-//		} else if ([messageBean.name isEqualToString:[GameOverMessage elementName] ignoreCase:YES]) {
-//			GameOverMessage *gameOver = [GameOverMessage new];
-//			[gameOver fromXML:messageBean];
-//			[self performSelectorOnMainThread:@selector(gameOverMessageReceived:) withObject:gameOver waitUntilDone:NO];
-//		} else {
-//			NSLog(@"Message %@ from User %@ in room %@ wasn't processed.", message, user, roomJID);
-//		}
-//	}
-}
-
 - (void)startGameMessageReceived:(GameStartsMessage *)bean
 {
 	if (!_gameStarted) {
@@ -328,7 +288,6 @@ typedef enum {
 - (void)cardPlayedMessageReceived:(CardPlayedMessage *)bean
 {
 	if(_gameStarted && [bean.round isEqualToNumber:_currentRound]) {
-//		[[_players objectForKey:[XMPPJID jidWithString:bean.player]] insertObject:@{@"card": @-1} atIndex:bean.round.unsignedIntegerValue -1];
 		[_playerStatsView reloadData];
 	}
 }

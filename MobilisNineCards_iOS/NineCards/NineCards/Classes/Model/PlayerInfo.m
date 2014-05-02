@@ -1,6 +1,8 @@
 #import "PlayerInfo.h"
 
+#if TARGET_OS_IPHONE
 #import "DDXML.h"
+#endif
 
 
 @interface PlayerInfo ()
