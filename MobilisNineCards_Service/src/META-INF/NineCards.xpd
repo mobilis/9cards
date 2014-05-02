@@ -8,6 +8,7 @@
 		<version>1</version>
 		<role>Client</role>
 		<role>Service</role>
+		<type>MULTI</type>
 		<channel name="MUC" identifier="http://mobilis.inf.tu-dresden.de/channels#muc" />
 	</protocol>
 	<operation name="nc:ConfigureGame">
