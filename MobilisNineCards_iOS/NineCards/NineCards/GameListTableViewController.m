@@ -82,11 +82,12 @@
 
 - (void)handleRefresh:(UIRefreshControl *)sender
 {
+	self.availableGames = nil;
+	[self.tableView reloadData];
 	[[MXiConnectionHandler sharedInstance].serviceManager rediscoverServices];
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10000000000), dispatch_get_main_queue(), ^{
 		[self.refreshControl endRefreshing];
 	});
-	self.availableGames = [MXiConnectionHandler sharedInstance].serviceManager.services;
 }
 
 #pragma mark - MXiServiceManagerDelegate
