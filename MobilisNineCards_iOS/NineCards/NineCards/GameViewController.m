@@ -54,6 +54,7 @@
 	NSNumber *_currentRound;
 	NSMutableArray *_players;
 	NSString *_mucJid;
+	NSString *_myRoomJid;
     
     __strong UIView *_waitingView;
     
@@ -246,6 +247,7 @@
         _players = [NSMutableArray arrayWithCapacity:[_game.players unsignedIntegerValue]];
     }
 	_mucJid = roomJID;
+	_myRoomJid = myRoomJID;
     [_players addObject:[Player playerWithJid:[XMPPJID jidWithString:myRoomJID]]];
     NSLog(@"ConnectionToRoomEstablished: %@", roomJID);
 }
@@ -323,8 +325,14 @@
 - (void)gameOverMessageReceived:(GameOverMessage *)bean
 {
     [self hideWaitingView];
+	NSString *message;
+	if ([bean.winner isEqualToString:_myRoomJid ignoreCase:YES]) {
+		message = [NSString stringWithFormat:@"You won with %i points", [bean.score intValue]];
+	} else {
+		message = [NSString stringWithFormat:@"Player %@ won with %i points", bean.winner, [bean.score intValue]];
+	}
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Game finished."
-                                                        message:[NSString stringWithFormat:@"Player %@ won with %i points", bean.winner, [bean.score intValue]]
+                                                        message:message
                                                        delegate:self
                                               cancelButtonTitle:nil
                                               otherButtonTitles:@"OK", nil];
@@ -460,7 +468,14 @@
 	if (!view) {
 		view = [[PlayerListSectionHeader alloc] initWithFrame:CGRectMake(0.f, 0.f, 320.f, 38.f)];
 	}
-    view.userNameLabel.text = [((Player *)[_players objectAtIndex:indexPath.section]).jid resource];
+	XMPPJID *jid = ((Player *)[_players objectAtIndex:indexPath.section]).jid;
+	NSString *user;
+	if ([jid.full isEqualToString:_myRoomJid ignoreCase:YES]) {
+		user = @"You";
+	} else {
+		user = [jid resource];
+	}
+    view.userNameLabel.text = user;
     view.scoreLabel.text = [NSString stringWithFormat:@"%i", ((Player *)[_players objectAtIndex:indexPath.section]).score];
 	return view;
 }
