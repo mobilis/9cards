@@ -16,7 +16,7 @@
 
 	<!-- Create classpath for libraries to compile binaries -->
 	<path id="build.classpath">
-		<fileset dir="${lib.dir}" includes="**/*.jar" />
+		<fileset dir="${lib.dir}" includes="**/*.jar" erroronmissingdir="false" />
 		
 		<!-- Add external library dirs of all projects in ${src.dirs.extern} -->
 		<fileset dir="basedir/../../../mobilis/MobilisServer/libs" includes="**/*.jar" />
@@ -26,7 +26,7 @@
 
 	<!-- Create classpath for libraries on jar-packing -->
 	<path id="jar.classpath">
-		<fileset dir="${lib.dir}" includes="${required.libraries}" />
+		<fileset dir="${lib.dir}" includes="${required.libraries}" erroronmissingdir="false" />
 	</path>
 
 	<!-- Convert classpath to one mf attribute value -->
@@ -57,7 +57,7 @@
 			<fileset dir="${src.dir}" includes="" />
 			<fileset dir="${basedir}" includes="${res.dir}/${required.resources}" />
 
-			<zipgroupfileset dir="${lib.dir}" includes="${required.libraries}" excludes="" />
+			<zipgroupfileset dir="${lib.dir}" includes="${required.libraries}" erroronmissingdir="false" excludes="" />
 
 			<manifest>
 				<attribute name="Class-Path" value="${mf.classpath}" />
