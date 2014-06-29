@@ -53,6 +53,7 @@
 	BOOL _gameStarted;
 	NSNumber *_currentRound;
 	NSMutableArray *_players;
+	NSString *_mucJid;
     
     __strong UIView *_waitingView;
     
@@ -197,6 +198,9 @@
 
 - (IBAction)quitGame:(UIBarButtonItem *)sender
 {
+	if (_mucJid) {
+		[[MXiConnectionHandler sharedInstance].connection leaveMultiUserChatRoom:_mucJid];
+	}
 	[self.navigationController popToRootViewControllerAnimated:YES];
 }
 
@@ -241,6 +245,7 @@
     if (!_players) {
         _players = [NSMutableArray arrayWithCapacity:[_game.players unsignedIntegerValue]];
     }
+	_mucJid = roomJID;
     [_players addObject:[Player playerWithJid:[XMPPJID jidWithString:myRoomJID]]];
     NSLog(@"ConnectionToRoomEstablished: %@", roomJID);
 }
@@ -338,6 +343,18 @@
 	self.game.gameJid = response.from;
     
     [[MXiConnectionHandler sharedInstance].connection connectToMultiUserChatRoom:response.muc withDelegate:self];
+	[[MXiConnectionHandler sharedInstance].connection addBeanDelegate:self
+														 withSelector:@selector(cardPlayedMessageReceived:)
+														 forBeanClass:[CardPlayedMessage class]];
+	[[MXiConnectionHandler sharedInstance].connection addBeanDelegate:self
+														 withSelector:@selector(gameOverMessageReceived:)
+														 forBeanClass:[GameOverMessage class]];
+	[[MXiConnectionHandler sharedInstance].connection addBeanDelegate:self
+														 withSelector:@selector(roundCompleteMessageReceived:)
+														 forBeanClass:[RoundCompleteMessage class]];
+	[[MXiConnectionHandler sharedInstance].connection addBeanDelegate:self
+														 withSelector:@selector(startGameMessageReceived:)
+														 forBeanClass:[GameStartsMessage class]];
 }
 
 - (void)showWaitingView
